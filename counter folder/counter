@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <title>Hit Counter</title>
+  </head>
+  <body>
+    <h1 id="hit-count">Loading...</h1>
+    <button 
+	style="height: 100px; width: 200px;"
+	id="hit-button">Kill confirmed</button>
+    <script>
+      const hitCountElement = document.getElementById('hit-count');
+      const hitButton = document.getElementById('hit-button');
+      
+      // Fetch the current hit count when the page loads
+      fetch('https://api.countapi.xyz/hit/www.marksnpcgenerator.gacounter20page.html/awesomeclick')
+        .then(response => response.json())
+        .then(data => {
+          hitCountElement.innerHTML = data.value;
+        });
+        
+      // Increment the hit count when the button is clicked
+      hitButton.addEventListener('click', () => {
+        fetch('https://api.countapi.xyz/hit/www.marksnpcgenerator.gacounter20page.html/awesomeclick', {
+          method: 'POST'
+        }).then(() => {
+          // Update the hit count display after the hit has been counted
+          fetch('https://api.countapi.xyz/hit/www.marksnpcgenerator.gacounter20page.html/awesomeclick')
+            .then(response => response.json())
+            .then(data => {
+              hitCountElement.innerHTML = data.value;
+            });
+        });
+      });
+    </script>
+  </body>
+  <div> <button onclick="location.href='hostindex.html'">Return to Homepage</button>
+  </div>
+</html>

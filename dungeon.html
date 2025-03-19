@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Dungeon Generator</title>
+  </head>
+  <body>
+    <h1>My Dungeon Generator</h1>
+    <p>Use the form below to generate a dungeon map:</p>
+    <form id="dungeon-form">
+      <label for="width-input">Width:</label>
+      <input type="number" id="width-input" min="1" max="100" value="50">
+      <br>
+      <label for="height-input">Height:</label>
+      <input type="number" id="height-input" min="1" max="100" value="50">
+      <br>
+      <label for="room-input">Number of rooms:</label>
+      <input type="number" id="room-input" min="1" max="20" value="10">
+      <br>
+      <label for="size-input">Room size:</label>
+      <input type="range" id="size-input" min="3" max="8" value="5">
+      <br>
+      <button type="submit">Generate</button>
+    </form>
+    <div id="dungeon-container"></div>
+    <script src="dungeon.js"></script>
+    <script>
+      // select the form and the container element
+      let form = document.querySelector("#dungeon-form");
+      let container = document.querySelector("#dungeon-container");
+
+      // attach an event listener to the form
+      form.addEventListener("submit", function(event) {
+        // prevent the form from submitting
+        event.preventDefault();
+             // get the form values
+      let width = document.querySelector("#width-input").value;
+      let height = document.querySelector("#height-input").value;
+      let roomCount = document.querySelector("#room-input").value;
+      let roomSize = document.querySelector("#size-input").value;
+
+      // generate the dungeon map
+      let map = generateDungeon(width, height, roomCount, roomSize);
+
+      // clear the container element
+      container.innerHTML = "";
+
+      // create a table to display the map
+      let table = document.createElement("table");
+      for (let y = 0; y < height; y++) {
+        let row = document.createElement("tr");
+        for (let x = 0; x < width; x++) {
+          let cell = document.createElement("td");
+          let tile = map[y][x];
+          if (tile.type === 0) {
+            cell.innerHTML = ".";
+          } else if (tile.type === 1) {
+            cell.innerHTML = "X";
+          } else if (tile.type === 2) {
+            cell.innerHTML = "O";
+          }
+          if (tile.trap) {
+            cell.innerHTML += "T";
+          }
+              if (tile.monster) {
+      cell.innerHTML += "M";
+    }
+    row.appendChild(cell);
+  }
+  table.appendChild(row);
+}
+container.appendChild(table);
+});
+</script>
+</body>
+</html>
