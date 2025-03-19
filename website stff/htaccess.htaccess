@@ -1,8 +1,0 @@
-RewriteEngine On
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^dicegame\.js$ dicegame.js [L]
-RewriteRule ^submitscore\.js$ submitscore.js [L]
-RewriteRule ^scorefetch\.js$ scorefetch.js [L]
