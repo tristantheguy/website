@@ -1,0 +1,21 @@
+.magic {
+  animation: magic 1s infinite;
+}
+
+@keyframes magic {
+  0% {
+    color: red;
+  }
+  25% {
+    color: orange;
+  }
+  50% {
+    color: yellow;
+  }
+  75% {
+    color: green;
+  }
+  100% {
+    color: blue;
+  }
+}

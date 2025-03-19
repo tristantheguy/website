@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <title>Message Board</title>
+  </head>
+  <body>
+    <!-- Form for posting a new message -->
+    <form action="post_message.php" method="post">
+      <label for="username">Username:</label><br>
+      <input type="text" id="username" name="username"><br>
+      <label for="message">Message:</label><br>
+      <textarea id="message" name="message"></textarea><br>
+      <input type="submit" value="Submit">
+    </form>
+
+    <!-- Display messages from the 'messages' table -->
+    <h2>Messages</h2>
+    <div id="messages">
+      <?php
+        // Connect to the database
+        $host = "localhost";
+        $username = "1150214";
+        $password = "Goose99seven";
+        $dbname = "1150214";
+        $conn = mysqli_connect($host, $username, $password, $dbname);
+
+        // Check connection
+        if (!$conn) {
+          die("Connection failed: " . mysqli_connect_error());
+        }
+
+       
+      ?>
+    </div>

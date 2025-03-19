@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Vote</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='votestyle.css') }}">
+  </head>
+  <body>
+    {% if prompt %}
+    <h1>{{ prompt }}</h1>
+    <form method="post" action="/vote">
+      {% for choice in choices %}
+      <input type="radio" name="choice" value="{{ choice }}"> {{ choice }}<br>
+      {% endfor %}
+      <input type="submit" value="Vote">
+    </form>
+    {% else %}
+    <h1>No prompt</h1>
+    {% endif %}
+    <form method="post" action="/reset">
+      <input type="submit" value="Reset">
+    </form>
+  </body>
+</html>

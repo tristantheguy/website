@@ -1,0 +1,41 @@
+<html>
+
+<head>
+    <title>Dice Game</title>
+    <link rel="stylesheet" href="dicestyle.css">
+    <button onclick="location.href='hostindex.html'">Return to Homepage</button>
+</head>
+
+<body>
+ 
+    <script src="dicegame.js"></script>
+	<script src="submitscore.js"></script>
+	
+	
+    <!-- display buttons that the player can click to roll the dice and set the mode -->
+    <button onclick="setEasyMode()">Easy</button>
+    <button onclick="setNormalMode()">Normal</button>
+
+    <!-- display the player's roll, score and the required number for the current die -->
+    <p id="mode"></p>
+    <p id="roll"></p>
+    <p id="score"></p>
+    <p id="total"></p>
+    <p id="session"></p>
+    <p id="wins"></p>
+    <p id="losses"></p>
+    <p id="high"></p>
+	<!--unique roll button id-->
+	<button id="roll-button" onclick="rollDice()">Roll</button>
+	<form id="submit-form">
+        <label for="username">Enter your name:</label>
+        <input type="text" id="name" name="name">
+       <input type="button" value="Submit" onclick="submitScore(score,name);">
+</form>
+
+
+<div id="leaderboard"></div>
+  <script src="scorefetch.js"></script> 
+</body>
+
+</html>

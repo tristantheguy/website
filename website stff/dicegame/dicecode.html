@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <title>Dice Game</title>
+  </head>
+  <body>
+    <!-- define a list of dice to roll, with the number of sides on each die -->
+    <script>
+      var dice = [4, 6, 8, 10, 12, 20];
+      
+      // define a variable to keep track of the current die that the player is on
+      var currentDie = 0;
+      
+      // define a variable to store the player's current score
+      var score = 0;
+      
+      // define a variable to store the number of rolls that the player has taken
+      var rolls = 0;
+      
+      // define a function to roll the dice
+      function rollDice() {
+        // if the player has rolled all of the dice, display a congratulations message and reset the game
+        if (currentDie >= dice.length) {
+          alert("Congratulations! You have rolled all of the dice in " + rolls + " rolls!");
+          currentDie = 0;
+          score = 0;
+          rolls = 0;
+          document.getElementById("roll").innerHTML = "";
+          document.getElementById("total").innerHTML = "Total rolls: " + rolls;
+          return;
+        }
+        
+        // roll the current die
+        var roll = Math.floor(Math.random() * dice[currentDie]) + 1;
+        
+        // if the roll is equal to or higher than the required number to move on to the next die, increment the current die and add the roll to the player's score
+        if (roll >= dice[currentDie]) {
+          currentDie += 1;
+          score += roll;
+                    // if the player has rolled a 20 on the final die, clear the "required" text from the page and display the total number of rolls
+          if (currentDie >= dice.length) {
+            document.getElementById("roll").innerHTML = "";
+            document.getElementById("total").innerHTML = "Total rolls: " + rolls;
+          }
+        }
+        // if the roll is not high enough, display a message and let the player roll again
+        else {
+          alert("You rolled a " + roll + ", which is not high enough. Roll again.");
+        }
+        
+        // increment the number of rolls that the player has taken
+        rolls += 1;
+        
+        // update the display to show the player's roll and the required number for the current die
+        document.getElementById("roll").innerHTML = "You rolled a " + roll + " (required: " + dice[currentDie] + ")";
+        document.getElementById("total").innerHTML = "Total rolls: " + rolls;
+      }
+      
+      // when the page loads, display the required roll for the first die
+      window.onload = function() {
+        document.getElementById("roll").innerHTML = "Required roll: " + dice[currentDie];
+        document.getElementById("total").innerHTML = "Total rolls: " + rolls;
+      }
+    </script>
+    
+    <!-- display a button that the player can click to roll the dice -->
+    <button onclick="rollDice()">Roll</button>
+    <!-- display the player's roll and the required number for the current die -->
+    <p id="roll"></p>
+    <!-- display the player's running total of rolls -->
+    <p id="total"></p>
+  </body>
+</html>
+
