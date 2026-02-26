@@ -14,20 +14,19 @@ body {
 }
 
 #server-name {
-  font-size: 1.2rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 #status-text {
+  margin: 0;
   font-size: 4rem;
   font-weight: bold;
-  margin: 0;
 }
 
 .online {
-  color: #32cd32;
+  color: #00cc00;
 }
 
 .offline {
-  color: #ff3b30;
+  color: #ff0000;
 }
