@@ -24,6 +24,12 @@ body {
   margin: 0;
 }
 
+.player-count {
+  margin-top: 1rem;
+  font-size: 1.25rem;
+  color: #d1d1d1;
+}
+
 .online {
   color: #32cd32;
 }

@@ -11,11 +11,13 @@
     <h1>Minecraft Server Status</h1>
     <p id="server-name">minecraft.tristans-website.com</p>
     <p id="status-text">Checking...</p>
+    <p id="player-count" class="player-count">Players Online: --</p>
   </main>
 
   <script>
     const serverAddress = 'minecraft.tristans-website.com';
     const statusText = document.getElementById('status-text');
+    const playerCountText = document.getElementById('player-count');
 
     async function checkServerStatus() {
       try {
@@ -26,15 +28,21 @@
           statusText.textContent = 'ONLINE';
           statusText.classList.add('online');
           statusText.classList.remove('offline');
+
+          const onlinePlayers = data.players?.online ?? 0;
+          const maxPlayers = data.players?.max ?? '?';
+          playerCountText.textContent = `Players Online: ${onlinePlayers}/${maxPlayers}`;
         } else {
           statusText.textContent = 'OFFLINE';
           statusText.classList.add('offline');
           statusText.classList.remove('online');
+          playerCountText.textContent = 'Players Online: 0';
         }
       } catch (error) {
         statusText.textContent = 'OFFLINE';
         statusText.classList.add('offline');
         statusText.classList.remove('online');
+        playerCountText.textContent = 'Players Online: 0';
       }
     }
 
