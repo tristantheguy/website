@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minecraft Server Status</title>
+  <link rel="stylesheet" href="minecraft-status.css" />
+</head>
+<body>
+  <main class="status-container">
+    <h1>Minecraft Server Status</h1>
+    <p id="server-name">minecraft.tristans-website.com</p>
+    <p id="status-text">Checking...</p>
+  </main>
+
+  <script>
+    const serverAddress = 'minecraft.tristans-website.com';
+    const statusText = document.getElementById('status-text');
+
+    async function checkServerStatus() {
+      try {
+        const response = await fetch(`https://api.mcsrvstat.us/2/${serverAddress}`);
+        const data = await response.json();
+
+        if (data && data.online) {
+          statusText.textContent = 'ONLINE';
+          statusText.classList.add('online');
+          statusText.classList.remove('offline');
+        } else {
+          statusText.textContent = 'OFFLINE';
+          statusText.classList.add('offline');
+          statusText.classList.remove('online');
+        }
+      } catch (error) {
+        statusText.textContent = 'OFFLINE';
+        statusText.classList.add('offline');
+        statusText.classList.remove('online');
+      }
+    }
+
+    checkServerStatus();
+  </script>
+</body>
+</html>
