@@ -7,11 +7,16 @@
 </head>
 
 <body>
- 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = "https://ykfrfjfjfzthumypaxqi.supabase.co";
+        const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_4jG2VqKcKpGuGRqAYzNYjg_V5V-qN_W";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    </script>
+
     <script src="dicegame.js"></script>
-	<script src="submitscore.js"></script>
-	
-	
+    <script src="submitscore.js"></script>
+
     <!-- display buttons that the player can click to roll the dice and set the mode -->
     <button onclick="setEasyMode()">Easy</button>
     <button onclick="setNormalMode()">Normal</button>
@@ -25,17 +30,16 @@
     <p id="wins"></p>
     <p id="losses"></p>
     <p id="high"></p>
-	<!--unique roll button id-->
-	<button id="roll-button" onclick="rollDice()">Roll</button>
-	<form id="submit-form">
-        <label for="username">Enter your name:</label>
-        <input type="text" id="name" name="name">
-       <input type="button" value="Submit" onclick="submitScore(score,name);">
-</form>
+    <!--unique roll button id-->
+    <button id="roll-button" onclick="rollDice()">Roll</button>
+    <form id="submit-form">
+        <label for="playerName">Enter your name:</label>
+        <input type="text" id="playerName" name="name">
+        <input type="button" value="Submit" onclick="submitScore(score);">
+    </form>
 
-
-<div id="leaderboard"></div>
-  <script src="scorefetch.js"></script> 
+    <div id="leaderboard"></div>
+    <script src="scorefetch.js"></script>
 </body>
 
 </html>
