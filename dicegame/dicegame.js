@@ -55,6 +55,10 @@ function isPowerupUnlocked(powerupId) {
 }
 
 function togglePowerupsMenu() {
+    if (progression.totalRolls < POWERUP_UNLOCK_ROLLS) {
+        return;
+    }
+
     var panel = document.getElementById("powerups-panel");
     panel.classList.toggle("open");
     updatePowerupsUI();
@@ -71,6 +75,8 @@ function selectPowerup(powerupId) {
 }
 
 function updatePowerupsUI() {
+    var powerupsToggle = document.getElementById("powerups-toggle");
+    var powerupsPanel = document.getElementById("powerups-panel");
     var powerupCard = document.getElementById("loaded-dice-powerup");
     var progressText = document.getElementById("loaded-dice-progress");
     var statusText = document.getElementById("loaded-dice-status");
@@ -78,6 +84,14 @@ function updatePowerupsUI() {
     var activationMessage = document.getElementById("powerup-activation-message");
 
     unlockPowerupsIfEligible();
+
+    var shouldShowPowerups = progression.totalRolls >= POWERUP_UNLOCK_ROLLS;
+    powerupsToggle.style.display = shouldShowPowerups ? "block" : "none";
+    powerupsPanel.style.display = shouldShowPowerups ? "block" : "none";
+
+    if (!shouldShowPowerups) {
+        powerupsPanel.classList.remove("open");
+    }
 
     var unlocked = isPowerupUnlocked(POWERUP_ID_LOADED_DICE);
     var selected = progression.selectedPowerup === POWERUP_ID_LOADED_DICE;
@@ -130,8 +144,9 @@ function rollDice() {
     }
 
     var roll = Math.floor(Math.random() * dice[currentDie]) + 1;
+    var loadedDiceActive = progression.selectedPowerup === POWERUP_ID_LOADED_DICE && isPowerupUnlocked(POWERUP_ID_LOADED_DICE);
 
-    if (progression.selectedPowerup === POWERUP_ID_LOADED_DICE && isPowerupUnlocked(POWERUP_ID_LOADED_DICE)) {
+    if (loadedDiceActive) {
         roll = dice[currentDie];
         showPowerupActivationMessage("Loaded Dice activated! Maximum roll!");
     } else {

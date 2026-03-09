@@ -17,8 +17,8 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
     <script src="dicegame.js"></script>
     <script src="submitscore.js"></script>
 
-    <button id="powerups-toggle" onclick="togglePowerupsMenu()">Powerups</button>
-    <div id="powerups-panel">
+    <button id="powerups-toggle" onclick="togglePowerupsMenu()" style="display: none;">Powerups</button>
+    <div id="powerups-panel" style="display: none;">
         <h3>Powerups</h3>
         <p id="powerups-total-rolls"></p>
         <div id="loaded-dice-powerup" class="powerup-card" onclick="selectPowerup('loadedDice')">
