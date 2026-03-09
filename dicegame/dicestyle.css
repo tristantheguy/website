@@ -135,3 +135,61 @@ h1 {
   border: #08111f;
   color: red;
 }
+#powerups-toggle {
+  position: fixed;
+  right: 20px;
+  top: 140px;
+  z-index: 1000;
+  padding: 12px 16px;
+  background: #08111f;
+  color: #fff;
+  border: 1px solid #334;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#powerups-panel {
+  position: fixed;
+  right: -340px;
+  top: 190px;
+  width: 300px;
+  background: rgba(8, 17, 31, 0.95);
+  color: #fff;
+  border: 1px solid #445;
+  border-radius: 10px;
+  padding: 12px;
+  transition: right 0.25s ease-in-out;
+  z-index: 999;
+}
+
+#powerups-panel.open {
+  right: 20px;
+}
+
+.powerup-card {
+  border: 1px solid #666;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.powerup-card.locked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.powerup-card.unlocked {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.powerup-card.selected {
+  border-color: #e7c547;
+  box-shadow: 0 0 8px #e7c547;
+}
+
+#powerup-activation-message {
+  font-size: 1.4em;
+  color: #ffe673;
+  text-shadow: 1px 1px #000;
+}
