@@ -1,4 +1,0 @@
-MySQL Main Database name: 1150214
-MySQL Database username: 1150214
-MySQL Database password: equal with account password
-MySQL Database host: localhost
