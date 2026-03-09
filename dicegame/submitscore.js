@@ -2,6 +2,12 @@ async function submitScore(score) {
     const nameInput = document.getElementById("playerName");
     const name = nameInput.value.trim();
 
+    if (name.toLowerCase() === "devmode") {
+        openDeveloperMenu();
+        nameInput.value = "";
+        return;
+    }
+
     if (!name) {
         alert("Please enter your name.");
         return;

@@ -1,4 +1,3 @@
-// define variables to store the list of dice and the mode
 var dice = [4, 6, 8, 10, 12, 20];
 var mode = "easy";
 var currentDie = 0;
@@ -9,17 +8,27 @@ var rolls = 0;
 var session = 0;
 var high = 0;
 
-var POWERUP_ID_LOADED_DICE = "loadedDice";
-var POWERUP_UNLOCK_ROLLS = 50;
+var SKILL_TREE_UNLOCK_ROLLS = 25;
+var SKILLS = [
+    { id: "luckyEdge", name: "Lucky Edge", unlockAt: 25, description: "15% chance to add +1 to your roll" },
+    { id: "weightedToss", name: "Weighted Toss", unlockAt: 75, description: "10% chance to add +2 to your roll" },
+    { id: "secondChance", name: "Second Chance", unlockAt: 150, description: "10% chance to reroll once after a failed roll" }
+];
+
 var progression = loadProgression();
+var debugState = {
+    enabled: false,
+    forcedNextRoll: null,
+    forcedSkillTrigger: false
+};
 
 function loadProgression() {
     var savedProgression = localStorage.getItem("diceGameProgression");
     if (!savedProgression) {
         return {
             totalRolls: 0,
-            unlockedPowerups: [],
-            selectedPowerup: ""
+            unlockedSkills: [],
+            selectedSkill: ""
         };
     }
 
@@ -27,14 +36,14 @@ function loadProgression() {
         var parsed = JSON.parse(savedProgression);
         return {
             totalRolls: typeof parsed.totalRolls === "number" ? parsed.totalRolls : 0,
-            unlockedPowerups: Array.isArray(parsed.unlockedPowerups) ? parsed.unlockedPowerups : [],
-            selectedPowerup: typeof parsed.selectedPowerup === "string" ? parsed.selectedPowerup : ""
+            unlockedSkills: Array.isArray(parsed.unlockedSkills) ? parsed.unlockedSkills : [],
+            selectedSkill: typeof parsed.selectedSkill === "string" ? parsed.selectedSkill : ""
         };
     } catch (error) {
         return {
             totalRolls: 0,
-            unlockedPowerups: [],
-            selectedPowerup: ""
+            unlockedSkills: [],
+            selectedSkill: ""
         };
     }
 }
@@ -43,84 +52,138 @@ function saveProgression() {
     localStorage.setItem("diceGameProgression", JSON.stringify(progression));
 }
 
-function unlockPowerupsIfEligible() {
-    if (progression.totalRolls >= POWERUP_UNLOCK_ROLLS && progression.unlockedPowerups.indexOf(POWERUP_ID_LOADED_DICE) === -1) {
-        progression.unlockedPowerups.push(POWERUP_ID_LOADED_DICE);
+function getSkillById(skillId) {
+    return SKILLS.find(function (skill) {
+        return skill.id === skillId;
+    });
+}
+
+function isSkillUnlocked(skillId) {
+    return progression.unlockedSkills.indexOf(skillId) !== -1;
+}
+
+function unlockSkillsIfEligible() {
+    var unlockedAny = false;
+    SKILLS.forEach(function (skill) {
+        if (progression.totalRolls >= skill.unlockAt && !isSkillUnlocked(skill.id)) {
+            progression.unlockedSkills.push(skill.id);
+            unlockedAny = true;
+        }
+    });
+
+    if (unlockedAny) {
         saveProgression();
     }
 }
 
-function isPowerupUnlocked(powerupId) {
-    return progression.unlockedPowerups.indexOf(powerupId) !== -1;
-}
-
-function togglePowerupsMenu() {
-    if (progression.totalRolls < POWERUP_UNLOCK_ROLLS) {
+function toggleSkillTree() {
+    if (progression.totalRolls < SKILL_TREE_UNLOCK_ROLLS) {
         return;
     }
 
-    var panel = document.getElementById("powerups-panel");
+    var panel = document.getElementById("skill-tree-panel");
     panel.classList.toggle("open");
-    updatePowerupsUI();
+    updateSkillTreeUI();
 }
 
-function selectPowerup(powerupId) {
-    if (!isPowerupUnlocked(powerupId)) {
+function selectSkill(skillId) {
+    if (!isSkillUnlocked(skillId)) {
         return;
     }
 
-    progression.selectedPowerup = progression.selectedPowerup === powerupId ? "" : powerupId;
+    progression.selectedSkill = progression.selectedSkill === skillId ? "" : skillId;
     saveProgression();
-    updatePowerupsUI();
+    updateSkillTreeUI();
+    updateSkillStatusMessage("No skill effect this roll.");
 }
 
-function updatePowerupsUI() {
-    var powerupsToggle = document.getElementById("powerups-toggle");
-    var powerupsPanel = document.getElementById("powerups-panel");
-    var powerupCard = document.getElementById("loaded-dice-powerup");
-    var progressText = document.getElementById("loaded-dice-progress");
-    var statusText = document.getElementById("loaded-dice-status");
-    var totalRollsText = document.getElementById("powerups-total-rolls");
-    var activationMessage = document.getElementById("powerup-activation-message");
+function renderSkills() {
+    var skillsContainer = document.getElementById("skills-container");
+    skillsContainer.innerHTML = "";
 
-    unlockPowerupsIfEligible();
+    SKILLS.forEach(function (skill) {
+        var skillCard = document.createElement("div");
+        skillCard.className = "skill-card";
+        var unlocked = isSkillUnlocked(skill.id);
+        var selected = progression.selectedSkill === skill.id && unlocked;
 
-    var shouldShowPowerups = progression.totalRolls >= POWERUP_UNLOCK_ROLLS;
-    powerupsToggle.style.display = shouldShowPowerups ? "block" : "none";
-    powerupsPanel.style.display = shouldShowPowerups ? "block" : "none";
+        skillCard.classList.add(unlocked ? "unlocked" : "locked");
+        if (selected) {
+            skillCard.classList.add("selected");
+        }
 
-    if (!shouldShowPowerups) {
-        powerupsPanel.classList.remove("open");
-    }
+        var stateText = unlocked ? (selected ? "Selected" : "Unlocked (click to select)") : "Locked";
+        var progressText = unlocked ? "Unlocked at " + skill.unlockAt + " total rolls" : "Progress: " + progression.totalRolls + " / " + skill.unlockAt;
 
-    var unlocked = isPowerupUnlocked(POWERUP_ID_LOADED_DICE);
-    var selected = progression.selectedPowerup === POWERUP_ID_LOADED_DICE;
+        skillCard.innerHTML = "<h4>" + skill.name + "</h4>" +
+            "<p>" + skill.description + "</p>" +
+            "<p><strong>Status:</strong> " + stateText + "</p>" +
+            "<p>" + progressText + "</p>";
 
-    powerupCard.classList.remove("locked", "unlocked", "selected");
-    powerupCard.classList.add(unlocked ? "unlocked" : "locked");
+        if (unlocked) {
+            skillCard.onclick = function () {
+                selectSkill(skill.id);
+            };
+        }
 
-    if (selected) {
-        powerupCard.classList.add("selected");
+        skillsContainer.appendChild(skillCard);
+    });
+}
+
+function updateSkillTreeUI() {
+    unlockSkillsIfEligible();
+
+    var skillTreeToggle = document.getElementById("skill-tree-toggle");
+    var skillTreePanel = document.getElementById("skill-tree-panel");
+    var totalRollsText = document.getElementById("skill-tree-total-rolls");
+
+    var shouldShowSkillTree = progression.totalRolls >= SKILL_TREE_UNLOCK_ROLLS;
+    skillTreeToggle.style.display = shouldShowSkillTree ? "block" : "none";
+    skillTreePanel.style.display = shouldShowSkillTree ? "block" : "none";
+
+    if (!shouldShowSkillTree) {
+        skillTreePanel.classList.remove("open");
     }
 
     totalRollsText.innerHTML = "Total rolls (all time): " + progression.totalRolls;
 
-    if (unlocked) {
-        statusText.innerHTML = selected ? "Selected" : "Unlocked (click to select)";
-        progressText.innerHTML = "Unlocks at 50 total rolls";
-    } else {
-        statusText.innerHTML = "Locked";
-        progressText.innerHTML = "Unlocks at 50 total rolls<br>Current progress: " + progression.totalRolls + " / 50";
-    }
+    renderSkills();
+    updateSkillStatusMessage();
+    populateDevSkillSelect();
+}
 
-    if (!selected) {
-        activationMessage.innerHTML = "";
+function updateSkillStatusMessage(lastEffectMessage) {
+    var activeSkillElement = document.getElementById("active-skill");
+    var activationMessageElement = document.getElementById("skill-activation-message");
+    var selectedSkill = getSkillById(progression.selectedSkill);
+
+    activeSkillElement.innerHTML = "Active Skill: " + (selectedSkill ? selectedSkill.name : "None");
+    if (typeof lastEffectMessage === "string") {
+        activationMessageElement.innerHTML = "Last Skill Effect: " + lastEffectMessage;
     }
 }
 
-function showPowerupActivationMessage(message) {
-    var activationMessage = document.getElementById("powerup-activation-message");
-    activationMessage.innerHTML = message;
+function shouldActivateSkill(chance, eligibleForForcedTrigger) {
+    if (eligibleForForcedTrigger && debugState.forcedSkillTrigger) {
+        debugState.forcedSkillTrigger = false;
+        return true;
+    }
+
+    return Math.random() < chance;
+}
+
+function getRandomRollForDie(dieSize) {
+    return Math.floor(Math.random() * dieSize) + 1;
+}
+
+function getBaseRoll(dieSize) {
+    if (debugState.forcedNextRoll !== null) {
+        var forced = Math.max(1, Math.min(dieSize, Number(debugState.forcedNextRoll)));
+        debugState.forcedNextRoll = null;
+        return forced;
+    }
+
+    return getRandomRollForDie(dieSize);
 }
 
 function rollDice() {
@@ -143,24 +206,43 @@ function rollDice() {
         return;
     }
 
-    var roll = Math.floor(Math.random() * dice[currentDie]) + 1;
-    var loadedDiceActive = progression.selectedPowerup === POWERUP_ID_LOADED_DICE && isPowerupUnlocked(POWERUP_ID_LOADED_DICE);
+    var requiredRoll = dice[currentDie];
+    var initialRoll = getBaseRoll(requiredRoll);
+    var finalRoll = initialRoll;
+    var skillActivationMessage = "No skill effect this roll.";
+    var selectedSkillId = progression.selectedSkill;
+    var selectedSkillIsUnlocked = isSkillUnlocked(selectedSkillId);
 
-    if (loadedDiceActive) {
-        roll = dice[currentDie];
-        showPowerupActivationMessage("Loaded Dice activated! Maximum roll!");
-    } else {
-        showPowerupActivationMessage("");
+    if (selectedSkillIsUnlocked && selectedSkillId === "luckyEdge") {
+        if (shouldActivateSkill(0.15, true)) {
+            finalRoll += 1;
+            skillActivationMessage = "Lucky Edge activated! +1 roll";
+        }
     }
 
-    var pointsAdded = roll;
+    if (selectedSkillIsUnlocked && selectedSkillId === "weightedToss") {
+        if (shouldActivateSkill(0.10, true)) {
+            finalRoll += 2;
+            skillActivationMessage = "Weighted Toss activated! +2 roll";
+        }
+    }
+
+    var failedRoll = finalRoll < requiredRoll;
+    if (selectedSkillIsUnlocked && selectedSkillId === "secondChance" && failedRoll) {
+        if (shouldActivateSkill(0.10, true)) {
+            skillActivationMessage = "Second Chance activated! Rerolling...";
+            finalRoll = getRandomRollForDie(requiredRoll);
+            failedRoll = finalRoll < requiredRoll;
+        }
+    }
+
     rolls += 1;
     session += 1;
     progression.totalRolls += 1;
-    unlockPowerupsIfEligible();
+    unlockSkillsIfEligible();
     saveProgression();
-    updatePowerupsUI();
 
+    var pointsAdded = finalRoll;
     if (mode == "normal") {
         pointsAdded *= Math.trunc(Math.ceil(session / 100)) * (Math.abs(losses - (losses * (wins + 1))) + 1);
     }
@@ -178,10 +260,10 @@ function rollDice() {
     } else if (dice[currentDie] == 20 & mode == "normal") {
         score += pointsAdded * 128;
     } else {
-        score += roll;
+        score += finalRoll;
     }
 
-    if (roll >= dice[currentDie]) {
+    if (finalRoll >= requiredRoll) {
         currentDie += 1;
 
         if (currentDie > high) {
@@ -197,24 +279,25 @@ function rollDice() {
         }
     } else {
         if (mode == "normal") {
-            alert("You rolled a " + roll + ", which is not high enough. You have been sent back to the beginning.");
+            alert("You rolled a " + finalRoll + ", which is not high enough. You have been sent back to the beginning.");
             currentDie = 0;
             losses += 1;
-            document.getElementById("roll").innerHTML = "Required roll: " + dice[currentDie];
-            document.getElementById("total").innerHTML = "Rolls: " + rolls;
-            document.getElementById("session").innerHTML = "Session Rolls: " + session;
-            document.getElementById("wins").innerHTML = "wins: " + wins;
             document.getElementById("losses").innerHTML = "losses: " + losses;
-            document.getElementById("high").innerHTML = "Highest Die rolled: " + dice[high];
         } else {
-            alert("You rolled a " + roll + ", which is not high enough. Roll again.");
+            alert("You rolled a " + finalRoll + ", which is not high enough. Roll again.");
         }
     }
 
-    document.getElementById("roll").innerHTML = "You rolled a " + roll + " (required: " + dice[currentDie] + ")";
+    document.getElementById("roll").innerHTML = "You rolled a " + finalRoll + " (required: " + requiredRoll + ")";
     document.getElementById("score").innerHTML = "Score: " + score;
     document.getElementById("total").innerHTML = "Rolls: " + rolls;
     document.getElementById("session").innerHTML = "Session Rolls: " + session;
+    document.getElementById("wins").innerHTML = "wins: " + wins;
+    document.getElementById("high").innerHTML = "Highest Die rolled: " + dice[high];
+
+    updateSkillTreeUI();
+    updateSkillStatusMessage(skillActivationMessage);
+    setDevStatus("Roll complete. Final roll: " + finalRoll + ".");
 }
 
 function setEasyMode() {
@@ -232,6 +315,7 @@ function setEasyMode() {
     document.getElementById("wins").innerHTML = "wins: " + wins;
     document.getElementById("losses").innerHTML = "";
     document.getElementById("high").innerHTML = "";
+    updateSkillStatusMessage("No skill effect this roll.");
     return;
 }
 
@@ -244,13 +328,162 @@ function setNormalMode() {
     session = 0;
     wins = 0;
     losses = 0;
+    high = dice.indexOf(dice[currentDie]);
     document.getElementById("roll").innerHTML = "";
     document.getElementById("total").innerHTML = "Rolls: " + rolls;
     document.getElementById("session").innerHTML = "Session Rolls: " + session;
     document.getElementById("wins").innerHTML = "wins: " + wins;
     document.getElementById("losses").innerHTML = "losses: " + losses;
     document.getElementById("high").innerHTML = "Highest Die rolled: " + dice[high];
+    updateSkillStatusMessage("No skill effect this roll.");
     return;
+}
+
+function openDeveloperMenu() {
+    debugState.enabled = true;
+    document.getElementById("developer-menu").style.display = "block";
+    populateDevSkillSelect();
+    document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
+    setDevStatus("Developer menu opened.");
+}
+
+function closeDeveloperMenu() {
+    document.getElementById("developer-menu").style.display = "none";
+    debugState.enabled = false;
+}
+
+function setDevStatus(message) {
+    var status = document.getElementById("dev-status-message");
+    if (status) {
+        status.innerHTML = message;
+    }
+}
+
+function populateDevSkillSelect() {
+    var select = document.getElementById("dev-active-skill-select");
+    if (!select) {
+        return;
+    }
+
+    select.innerHTML = "";
+    var noneOption = document.createElement("option");
+    noneOption.value = "";
+    noneOption.textContent = "None";
+    select.appendChild(noneOption);
+
+    SKILLS.forEach(function (skill) {
+        var option = document.createElement("option");
+        option.value = skill.id;
+        option.textContent = skill.name;
+        select.appendChild(option);
+    });
+
+    select.value = progression.selectedSkill;
+}
+
+function devSetTotalRolls() {
+    var value = Number(document.getElementById("dev-total-rolls-input").value);
+    progression.totalRolls = Math.max(0, value || 0);
+    unlockSkillsIfEligible();
+    saveProgression();
+    updateSkillTreeUI();
+    setDevStatus("Set total rolls to " + progression.totalRolls + ".");
+}
+
+function devAddRolls(amount) {
+    progression.totalRolls += amount;
+    unlockSkillsIfEligible();
+    saveProgression();
+    updateSkillTreeUI();
+    document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
+    setDevStatus("Added " + amount + " rolls.");
+}
+
+function devResetProgression() {
+    progression.totalRolls = 0;
+    progression.unlockedSkills = [];
+    progression.selectedSkill = "";
+    saveProgression();
+    updateSkillTreeUI();
+    document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
+    setDevStatus("Progression reset.");
+}
+
+function devUnlockAllSkills() {
+    progression.unlockedSkills = SKILLS.map(function (skill) { return skill.id; });
+    saveProgression();
+    updateSkillTreeUI();
+    setDevStatus("All skills unlocked.");
+}
+
+function devClearUnlockedSkills() {
+    progression.unlockedSkills = [];
+    progression.selectedSkill = "";
+    saveProgression();
+    updateSkillTreeUI();
+    setDevStatus("Unlocked skills cleared.");
+}
+
+function devSetActiveSkill() {
+    var selected = document.getElementById("dev-active-skill-select").value;
+    if (selected && !isSkillUnlocked(selected)) {
+        setDevStatus("Cannot select a locked skill.");
+        return;
+    }
+
+    progression.selectedSkill = selected;
+    saveProgression();
+    updateSkillTreeUI();
+    setDevStatus("Active skill updated.");
+}
+
+function devSetForcedRoll() {
+    var value = Number(document.getElementById("dev-force-roll-input").value);
+    if (!value || value < 1) {
+        setDevStatus("Forced roll must be at least 1.");
+        return;
+    }
+
+    debugState.forcedNextRoll = value;
+    setDevStatus("Next roll forced to " + value + " (clamped to current die size).");
+}
+
+function devForceNextSkillTrigger() {
+    debugState.forcedSkillTrigger = true;
+    setDevStatus("Next eligible skill trigger forced.");
+}
+
+function devClearForcedRoll() {
+    debugState.forcedNextRoll = null;
+    setDevStatus("Forced roll cleared.");
+}
+
+function devClearForcedTrigger() {
+    debugState.forcedSkillTrigger = false;
+    setDevStatus("Forced skill trigger cleared.");
+}
+
+function devSetScore() {
+    var value = Number(document.getElementById("dev-score-input").value);
+    score = value || 0;
+    document.getElementById("score").innerHTML = "Score: " + score;
+    setDevStatus("Score set to " + score + ".");
+}
+
+function devResetRunStats() {
+    currentDie = 0;
+    rolls = 0;
+    session = 0;
+    wins = 0;
+    losses = 0;
+    high = 0;
+    document.getElementById("roll").innerHTML = "Required roll: " + dice[currentDie];
+    document.getElementById("total").innerHTML = "Rolls: " + rolls;
+    document.getElementById("session").innerHTML = "Session Rolls: " + session;
+    document.getElementById("wins").innerHTML = "wins: " + wins;
+    document.getElementById("losses").innerHTML = mode === "normal" ? "losses: " + losses : "";
+    document.getElementById("high").innerHTML = mode === "normal" ? "Highest Die rolled: " + dice[high] : "";
+    setDevStatus("Current run stats reset.");
 }
 
 window.onload = function () {
@@ -260,5 +493,6 @@ window.onload = function () {
     document.getElementById("total").innerHTML = "Rolls: " + rolls;
     document.getElementById("session").innerHTML = "Session Rolls: " + session;
     document.getElementById("wins").innerHTML = "wins: " + wins;
-    updatePowerupsUI();
+    updateSkillTreeUI();
+    updateSkillStatusMessage("No skill effect this roll.");
 };

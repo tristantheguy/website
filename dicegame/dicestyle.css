@@ -1,107 +1,29 @@
 body {
   background-image: url("wood.png");
   background-repeat: no-repeat;
-   background-size: cover;
+  background-size: cover;
   background-color: #f2f2f2;
   font-family: Arial, sans-serif;
 }
 
-h1 {
-  text-align: center;
-  color: #333333;
-  margin-top: 50px;
-  animation: fadeIn 1s ease-in;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-#dice-container {
-  width: 800px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-#easy-button, #normal-button {
-  padding: 30px 20px;
-  border-radius: 5px;
-  background-color: #333333;
-  color: white;
+#roll,
+#score,
+#total,
+#session,
+#mode,
+#wins,
+#losses,
+#high {
   font-size: 2em;
-  margin-top: 20px;
-  cursor: pointer;
-  margin-right: 10px;
-  animation: button-animation 0.5s ease-in-out;
-}
-
-@keyframes button-animation {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-}
-
-#roll-button:hover {
-  background-color: #3E8E41;
-  box-shadow: none;
-}
-
-#roll, #score, #total, #session, #mode, #wins, #losses, #high {
-  font-size: 2em;
-    color: white;
-   text-shadow: 2px 2px red;
-  margin-top: 20px;
-  animation: text-animation 2s ease-in-out;
-}
-
-@keyframes text-animation {
-  0% {
-    transform: translateX(-20px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-}
-
-#mode {
-  font-weight: bold;
-}
-
-#easy-button, #normal-button {
-  padding: 10px 20px;
-  border-radius: 5px;
-  background-color: #333333;
   color: white;
-  font-size: 1.2em;
+  text-shadow: 2px 2px red;
   margin-top: 20px;
-  cursor: pointer;
-  margin-right: 10px;
-  box-shadow: 2px 2px #444;
-  transition: all 0.3s ease-in-out;
 }
 
-#easy-button:hover, #normal-button:hover {
-  background-color: #444;
-  box-shadow: none;
-}
 #leaderboard {
   margin: 50px auto;
   width: 800px;
   text-align: center;
-  animation: fadeIn 1s ease-in;
 }
 
 #leaderboard table {
@@ -109,7 +31,8 @@ h1 {
   border-collapse: collapse;
 }
 
-#leaderboard th, #leaderboard td {
+#leaderboard th,
+#leaderboard td {
   padding: 10px;
   border: 1px solid #333333;
   text-align: center;
@@ -124,6 +47,7 @@ h1 {
 #leaderboard td {
   background-color: #808080;
 }
+
 #roll-button {
   font-size: 4em;
   width: 100%;
@@ -135,7 +59,8 @@ h1 {
   border: #08111f;
   color: red;
 }
-#powerups-toggle {
+
+#skill-tree-toggle {
   position: fixed;
   right: 20px;
   top: 140px;
@@ -148,11 +73,11 @@ h1 {
   cursor: pointer;
 }
 
-#powerups-panel {
+#skill-tree-panel {
   position: fixed;
-  right: -340px;
+  right: -360px;
   top: 190px;
-  width: 300px;
+  width: 320px;
   background: rgba(8, 17, 31, 0.95);
   color: #fff;
   border: 1px solid #445;
@@ -160,36 +85,91 @@ h1 {
   padding: 12px;
   transition: right 0.25s ease-in-out;
   z-index: 999;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
-#powerups-panel.open {
+#skill-tree-panel.open {
   right: 20px;
 }
 
-.powerup-card {
+.skill-card {
   border: 1px solid #666;
   border-radius: 8px;
   padding: 10px;
   margin-top: 10px;
 }
 
-.powerup-card.locked {
+.skill-card.locked {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.powerup-card.unlocked {
+.skill-card.unlocked {
   opacity: 1;
   cursor: pointer;
 }
 
-.powerup-card.selected {
-  border-color: #e7c547;
-  box-shadow: 0 0 8px #e7c547;
+.skill-card.selected {
+  border-color: #49d17f;
+  box-shadow: 0 0 8px #49d17f;
 }
 
-#powerup-activation-message {
-  font-size: 1.4em;
+#skill-status-area {
+  margin-top: 20px;
+  background: rgba(8, 17, 31, 0.85);
+  border: 1px solid #3b4860;
+  border-radius: 8px;
+  padding: 10px;
+  color: #fff;
+  max-width: 600px;
+}
+
+#active-skill,
+#skill-activation-message {
+  font-size: 1.3em;
   color: #ffe673;
   text-shadow: 1px 1px #000;
+  margin: 4px 0;
+}
+
+#developer-menu {
+  position: fixed;
+  left: 20px;
+  top: 80px;
+  width: 360px;
+  max-height: 82vh;
+  overflow-y: auto;
+  z-index: 1100;
+  background: rgba(24, 24, 30, 0.96);
+  border: 2px solid #ff6565;
+  border-radius: 10px;
+  color: #fff;
+  padding: 12px;
+}
+
+.dev-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.dev-section {
+  border-top: 1px solid #5c5c5c;
+  padding-top: 8px;
+  margin-top: 8px;
+}
+
+.dev-section button,
+.dev-section input,
+.dev-section select {
+  margin: 4px 0;
+  width: 100%;
+}
+
+#dev-status-message {
+  margin-top: 10px;
+  color: #8df58d;
+  font-weight: bold;
 }

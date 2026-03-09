@@ -17,16 +17,11 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
     <script src="dicegame.js"></script>
     <script src="submitscore.js"></script>
 
-    <button id="powerups-toggle" onclick="togglePowerupsMenu()" style="display: none;">Powerups</button>
-    <div id="powerups-panel" style="display: none;">
-        <h3>Powerups</h3>
-        <p id="powerups-total-rolls"></p>
-        <div id="loaded-dice-powerup" class="powerup-card" onclick="selectPowerup('loadedDice')">
-            <h4>Loaded Dice</h4>
-            <p>Always roll the highest possible value on the current die.</p>
-            <p id="loaded-dice-status"></p>
-            <p id="loaded-dice-progress"></p>
-        </div>
+    <button id="skill-tree-toggle" onclick="toggleSkillTree()" style="display: none;">Skill Tree</button>
+    <div id="skill-tree-panel" style="display: none;">
+        <h3>Skill Tree</h3>
+        <p id="skill-tree-total-rolls"></p>
+        <div id="skills-container"></div>
     </div>
 
     <!-- display buttons that the player can click to roll the dice and set the mode -->
@@ -42,7 +37,12 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
     <p id="wins"></p>
     <p id="losses"></p>
     <p id="high"></p>
-    <p id="powerup-activation-message"></p>
+
+    <div id="skill-status-area">
+        <p id="active-skill">Active Skill: None</p>
+        <p id="skill-activation-message">Last Skill Effect: No skill effect this roll.</p>
+    </div>
+
     <!--unique roll button id-->
     <button id="roll-button" onclick="rollDice()">Roll</button>
     <form id="submit-form">
@@ -50,6 +50,46 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
         <input type="text" id="playerName" name="name">
         <input type="button" value="Submit" onclick="submitScore(score);">
     </form>
+
+    <div id="developer-menu" style="display: none;">
+        <div class="dev-header">
+            <h3>DEV MODE ACTIVE</h3>
+            <button onclick="closeDeveloperMenu()">Close</button>
+        </div>
+
+        <div class="dev-section">
+            <h4>Progression Testing</h4>
+            <label>Total rolls: <input type="number" id="dev-total-rolls-input" min="0"></label>
+            <button onclick="devSetTotalRolls()">Set total rolls</button>
+            <button onclick="devAddRolls(10)">+10 rolls</button>
+            <button onclick="devAddRolls(50)">+50 rolls</button>
+            <button onclick="devResetProgression()">Reset progression</button>
+            <button onclick="devUnlockAllSkills()">Unlock all skills</button>
+            <button onclick="devClearUnlockedSkills()">Clear unlocked skills</button>
+            <label>Active skill:
+                <select id="dev-active-skill-select"></select>
+            </label>
+            <button onclick="devSetActiveSkill()">Set active skill</button>
+        </div>
+
+        <div class="dev-section">
+            <h4>Roll Testing</h4>
+            <label>Force next roll value: <input type="number" id="dev-force-roll-input" min="1"></label>
+            <button onclick="devSetForcedRoll()">Apply forced next roll</button>
+            <button onclick="devForceNextSkillTrigger()">Force next skill trigger</button>
+            <button onclick="devClearForcedRoll()">Clear forced roll</button>
+            <button onclick="devClearForcedTrigger()">Clear forced trigger</button>
+        </div>
+
+        <div class="dev-section">
+            <h4>Game State Testing</h4>
+            <label>Set score: <input type="number" id="dev-score-input"></label>
+            <button onclick="devSetScore()">Set score manually</button>
+            <button onclick="devResetRunStats()">Reset current run stats</button>
+        </div>
+
+        <p id="dev-status-message"></p>
+    </div>
 
     <div id="leaderboard"></div>
     <script src="scorefetch.js"></script>
