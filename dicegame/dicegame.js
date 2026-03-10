@@ -35,33 +35,33 @@ var SKILLS = [
 var ROLL_COOLDOWN_MS = 320;
 var isRollCoolingDown = false;
 var SKILL_GRAPH_NODE_SIZE = 86;
-var SKILL_GRAPH_WIDTH = 1800;
-var SKILL_GRAPH_HEIGHT = 1400;
+var SKILL_GRAPH_WIDTH = 1600;
+var SKILL_GRAPH_HEIGHT = 760;
 var selectedSkillId = null;
 var SKILL_GRAPH_LAYOUT = {};
 
 function buildSkillGraphLayout() {
     return {
-        luckyEdge: { x: 240, y: 160 },
-        sharperEdge: { x: 120, y: 560 },
-        heavyEdge: { x: 360, y: 560 },
-        keenEdge: { x: 30, y: 980 },
-        brutalEdge: { x: 280, y: 980 },
-        reliableEdge: { x: 510, y: 980 },
+        luckyEdge: { x: 180, y: 90 },
+        sharperEdge: { x: 90, y: 290 },
+        heavyEdge: { x: 270, y: 290 },
+        keenEdge: { x: 40, y: 500 },
+        brutalEdge: { x: 210, y: 500 },
+        reliableEdge: { x: 380, y: 500 },
 
-        momentum: { x: 870, y: 160 },
-        greaterMomentum: { x: 740, y: 560 },
-        criticalMomentum: { x: 1000, y: 560 },
-        overflowMomentum: { x: 740, y: 980 },
-        burstMomentum: { x: 930, y: 980 },
-        deadlyMomentum: { x: 1130, y: 980 },
+        momentum: { x: 700, y: 90 },
+        greaterMomentum: { x: 610, y: 290 },
+        criticalMomentum: { x: 790, y: 290 },
+        overflowMomentum: { x: 610, y: 500 },
+        burstMomentum: { x: 760, y: 500 },
+        deadlyMomentum: { x: 910, y: 500 },
 
-        secondChance: { x: 1490, y: 160 },
-        saferChance: { x: 1340, y: 560 },
-        echoChance: { x: 1620, y: 560 },
-        steadierChance: { x: 1320, y: 980 },
-        tripleEcho: { x: 1530, y: 980 },
-        doubleRoll: { x: 1710, y: 980 }
+        secondChance: { x: 1220, y: 90 },
+        saferChance: { x: 1130, y: 290 },
+        echoChance: { x: 1310, y: 290 },
+        steadierChance: { x: 1080, y: 500 },
+        tripleEcho: { x: 1240, y: 500 },
+        doubleRoll: { x: 1400, y: 500 }
     };
 }
 

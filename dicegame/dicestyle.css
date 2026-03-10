@@ -300,10 +300,10 @@ select {
 
 #skill-tree-canvas {
   position: relative;
-  width: 1800px;
-  height: 1400px;
-  min-width: 1800px;
-  min-height: 1400px;
+  width: 1600px;
+  height: 760px;
+  min-width: 1600px;
+  min-height: 760px;
   max-width: none;
   margin: 0;
   background:
