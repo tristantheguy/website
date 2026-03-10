@@ -31,15 +31,15 @@ var SKILL_GRAPH_MAX_SCALE = 2.0;
 var skillGraphPan = { x: -200, y: -120, scale: 1, initialized: false, dragging: false, startX: 0, startY: 0, startPanX: 0, startPanY: 0 };
 var selectedSkillId = null;
 var SKILL_GRAPH_LAYOUT = {
-    luckyEdge: { x: 150, y: 250 },
-    sharperEdge: { x: 40, y: 470 },
-    heavyEdge: { x: 260, y: 470 },
-    momentum: { x: 400, y: 190 },
-    greaterMomentum: { x: 340, y: 410 },
-    criticalMomentum: { x: 560, y: 410 },
-    secondChance: { x: 650, y: 250 },
-    saferChance: { x: 580, y: 470 },
-    echoChance: { x: 800, y: 470 }
+    luckyEdge: { x: 300, y: 180 },
+    sharperEdge: { x: 170, y: 340 },
+    heavyEdge: { x: 430, y: 340 },
+    momentum: { x: 800, y: 180 },
+    greaterMomentum: { x: 670, y: 340 },
+    criticalMomentum: { x: 930, y: 340 },
+    secondChance: { x: 1300, y: 180 },
+    saferChance: { x: 1170, y: 340 },
+    echoChance: { x: 1430, y: 340 }
 };
 
 var progression = loadProgression();
@@ -402,6 +402,10 @@ function renderSkills() {
 
     nodeLayer.innerHTML = "";
     connectionLayer.innerHTML = "";
+    connectionLayer.setAttribute("width", String(canvas.offsetWidth));
+    connectionLayer.setAttribute("height", String(canvas.offsetHeight));
+    connectionLayer.setAttribute("viewBox", "0 0 " + canvas.offsetWidth + " " + canvas.offsetHeight);
+    connectionLayer.setAttribute("preserveAspectRatio", "none");
 
     visibleSkills.forEach(function (skill) {
         nodeLayer.appendChild(renderSingleSkillNode(skill));
