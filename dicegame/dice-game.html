@@ -22,6 +22,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
         <h3>Skill Tree</h3>
         <p id="skill-tree-total-rolls"></p>
         <p id="skill-tree-skill-points"></p>
+        <p id="skill-tree-lifetime-score"></p>
         <p id="skill-tree-owned-skills"></p>
         <p id="skill-tree-selected-skill"></p>
         <div id="skills-container"></div>
@@ -39,9 +40,9 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
         <h3>How to Play</h3>
         <ul>
             <li><strong>Dice progression:</strong> clear each die in order: d4, d6, d8, d10, d12, then d20.</li>
-            <li><strong>Easy mode:</strong> safer runs, failed rolls do not reset progression. Earn 1 skill point per 250 score.</li>
-            <li><strong>Normal mode:</strong> harder runs, failed rolls reset the die progression to the beginning. Earn 1 skill point per 100 score.</li>
-            <li><strong>Skill points:</strong> awarded when you complete a run based on your final score and mode.</li>
+            <li><strong>Easy mode:</strong> safer, slower skill point gain. Failed rolls do not reset die progression, and you gain 1 skill point per 250 score earned.</li>
+            <li><strong>Normal mode:</strong> riskier, faster skill point gain. Failed rolls reset die progression to the beginning, and you gain 1 skill point per 100 score earned.</li>
+            <li><strong>Skill points:</strong> awarded continuously during gameplay as your lifetime score crosses each mode threshold.</li>
             <li><strong>Failed rolls:</strong> if your roll is below the required value, you fail that step (and reset to start in normal mode).</li>
             <li><strong>Dev mode:</strong> enter <code>devmode</code> as the player name to open developer tools.</li>
         </ul>
