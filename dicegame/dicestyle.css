@@ -180,42 +180,43 @@ select {
   margin-top: 10px;
 }
 
-#floating-skill-effect {
-  position: absolute;
-  left: 50%;
-  bottom: 100%;
-  transform: translateX(-50%);
-  margin-bottom: 10px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(132, 211, 166, 0.9);
-  background: rgba(7, 24, 15, 0.92);
-  color: #ccffd8;
-  font-size: 1.05em;
+.floating-text {
+  position: fixed;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  animation: floatingTextDrift var(--float-duration, 1000ms) ease-out forwards;
+  font-size: 1.08em;
   font-weight: 700;
+  letter-spacing: 0.01em;
   white-space: nowrap;
-  opacity: 0;
   pointer-events: none;
+  z-index: 1500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
 }
 
-#floating-skill-effect.animate {
-  animation: skillEffectFloat 1.25s ease-out;
+.floating-text-skill {
+  color: #c7ffd8;
 }
 
-@keyframes skillEffectFloat {
+.floating-text-score {
+  color: #ffe59c;
+}
+
+@keyframes floatingTextDrift {
   0% {
     opacity: 0;
-    transform: translate(-50%, 18px);
+    transform: translate(-50%, -35%) scale(0.94);
   }
 
-  18% {
+  12% {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translate(-50%, -50%) scale(var(--float-scale, 1));
   }
 
   100% {
     opacity: 0;
-    transform: translate(-50%, -32px);
+    transform: translate(calc(-50% + var(--float-x, 0px)), calc(-50% + var(--float-y, -90px))) scale(calc(var(--float-scale, 1) * 0.97));
   }
 }
 
