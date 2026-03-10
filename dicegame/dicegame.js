@@ -9,10 +9,11 @@ var session = 0;
 var high = 0;
 
 var SKILL_TREE_UNLOCK_ROLLS = 25;
+var SKILL_POINT_ROLL_INTERVAL = 25;
 var SKILLS = [
-    { id: "luckyEdge", name: "Lucky Edge", unlockAt: 25, description: "15% chance to add +1 to your roll" },
-    { id: "weightedToss", name: "Weighted Toss", unlockAt: 75, description: "10% chance to add +2 to your roll" },
-    { id: "secondChance", name: "Second Chance", unlockAt: 150, description: "10% chance to reroll once after a failed roll" }
+    { id: "luckyEdge", name: "Lucky Edge", cost: 1, description: "15% chance to add +1 to your roll" },
+    { id: "weightedToss", name: "Weighted Toss", cost: 2, description: "10% chance to add +2 to your roll" },
+    { id: "secondChance", name: "Second Chance", cost: 3, description: "10% chance to reroll once after a failed roll" }
 ];
 
 var progression = loadProgression();
@@ -27,22 +28,40 @@ function loadProgression() {
     if (!savedProgression) {
         return {
             totalRolls: 0,
-            unlockedSkills: [],
+            skillPoints: 0,
+            spentSkillPoints: 0,
+            ownedSkills: [],
             selectedSkill: ""
         };
     }
 
     try {
         var parsed = JSON.parse(savedProgression);
-        return {
+        var progressionState = {
             totalRolls: typeof parsed.totalRolls === "number" ? parsed.totalRolls : 0,
-            unlockedSkills: Array.isArray(parsed.unlockedSkills) ? parsed.unlockedSkills : [],
+            skillPoints: typeof parsed.skillPoints === "number" ? parsed.skillPoints : 0,
+            spentSkillPoints: typeof parsed.spentSkillPoints === "number" ? parsed.spentSkillPoints : 0,
+            ownedSkills: Array.isArray(parsed.ownedSkills) ? parsed.ownedSkills : [],
             selectedSkill: typeof parsed.selectedSkill === "string" ? parsed.selectedSkill : ""
         };
+
+        if ((!parsed.ownedSkills || parsed.ownedSkills.length === 0) && Array.isArray(parsed.unlockedSkills) && parsed.unlockedSkills.length > 0) {
+            progressionState.ownedSkills = parsed.unlockedSkills.filter(function (skillId) {
+                return !!getSkillById(skillId);
+            });
+            progressionState.spentSkillPoints = progressionState.ownedSkills.reduce(function (total, skillId) {
+                var skill = getSkillById(skillId);
+                return total + (skill ? skill.cost : 0);
+            }, 0);
+        }
+
+        return progressionState;
     } catch (error) {
         return {
             totalRolls: 0,
-            unlockedSkills: [],
+            skillPoints: 0,
+            spentSkillPoints: 0,
+            ownedSkills: [],
             selectedSkill: ""
         };
     }
@@ -58,22 +77,51 @@ function getSkillById(skillId) {
     });
 }
 
-function isSkillUnlocked(skillId) {
-    return progression.unlockedSkills.indexOf(skillId) !== -1;
+function isSkillOwned(skillId) {
+    return progression.ownedSkills.indexOf(skillId) !== -1;
 }
 
-function unlockSkillsIfEligible() {
-    var unlockedAny = false;
-    SKILLS.forEach(function (skill) {
-        if (progression.totalRolls >= skill.unlockAt && !isSkillUnlocked(skill.id)) {
-            progression.unlockedSkills.push(skill.id);
-            unlockedAny = true;
-        }
+function normalizeProgression() {
+    progression.totalRolls = Math.max(0, Number(progression.totalRolls) || 0);
+    progression.spentSkillPoints = Math.max(0, Number(progression.spentSkillPoints) || 0);
+
+    var earnedSkillPoints = Math.floor(progression.totalRolls / SKILL_POINT_ROLL_INTERVAL);
+    if (progression.spentSkillPoints > earnedSkillPoints) {
+        progression.spentSkillPoints = earnedSkillPoints;
+    }
+
+    progression.skillPoints = Math.max(0, earnedSkillPoints - progression.spentSkillPoints);
+
+    progression.ownedSkills = (Array.isArray(progression.ownedSkills) ? progression.ownedSkills : []).filter(function (skillId, index, list) {
+        return !!getSkillById(skillId) && list.indexOf(skillId) === index;
     });
 
-    if (unlockedAny) {
-        saveProgression();
+    if (progression.selectedSkill && !isSkillOwned(progression.selectedSkill)) {
+        progression.selectedSkill = "";
     }
+}
+
+function canBuySkill(skillId) {
+    var skill = getSkillById(skillId);
+    if (!skill || isSkillOwned(skillId)) {
+        return false;
+    }
+
+    return progression.skillPoints >= skill.cost;
+}
+
+function buySkill(skillId) {
+    var skill = getSkillById(skillId);
+    if (!skill || !canBuySkill(skillId)) {
+        return;
+    }
+
+    progression.ownedSkills.push(skillId);
+    progression.spentSkillPoints += skill.cost;
+    normalizeProgression();
+    saveProgression();
+    updateSkillTreeUI();
+    setDevStatus("Purchased " + skill.name + " for " + skill.cost + " skill point(s).");
 }
 
 function toggleSkillTree() {
@@ -87,7 +135,7 @@ function toggleSkillTree() {
 }
 
 function selectSkill(skillId) {
-    if (!isSkillUnlocked(skillId)) {
+    if (!isSkillOwned(skillId)) {
         return;
     }
 
@@ -104,38 +152,51 @@ function renderSkills() {
     SKILLS.forEach(function (skill) {
         var skillCard = document.createElement("div");
         skillCard.className = "skill-card";
-        var unlocked = isSkillUnlocked(skill.id);
-        var selected = progression.selectedSkill === skill.id && unlocked;
+        var owned = isSkillOwned(skill.id);
+        var selected = progression.selectedSkill === skill.id && owned;
+        var canBuy = canBuySkill(skill.id);
 
-        skillCard.classList.add(unlocked ? "unlocked" : "locked");
+        skillCard.classList.add(owned ? "owned" : "locked");
         if (selected) {
             skillCard.classList.add("selected");
         }
 
-        var stateText = unlocked ? (selected ? "Selected" : "Unlocked (click to select)") : "Locked";
-        var progressText = unlocked ? "Unlocked at " + skill.unlockAt + " total rolls" : "Progress: " + progression.totalRolls + " / " + skill.unlockAt;
+        var stateText = owned ? (selected ? "Selected" : "Owned") : "Not owned";
 
         skillCard.innerHTML = "<h4>" + skill.name + "</h4>" +
             "<p>" + skill.description + "</p>" +
-            "<p><strong>Status:</strong> " + stateText + "</p>" +
-            "<p>" + progressText + "</p>";
+            "<p><strong>Cost:</strong> " + skill.cost + " skill point(s)</p>" +
+            "<p><strong>Status:</strong> " + stateText + "</p>";
 
-        if (unlocked) {
-            skillCard.onclick = function () {
+        var actionButton = document.createElement("button");
+        if (!owned) {
+            actionButton.textContent = canBuy ? "Buy" : "Need " + skill.cost + " SP";
+            actionButton.disabled = !canBuy;
+            actionButton.onclick = function () {
+                buySkill(skill.id);
+            };
+        } else {
+            actionButton.textContent = selected ? "Selected" : "Select";
+            actionButton.disabled = selected;
+            actionButton.onclick = function () {
                 selectSkill(skill.id);
             };
         }
 
+        skillCard.appendChild(actionButton);
         skillsContainer.appendChild(skillCard);
     });
 }
 
 function updateSkillTreeUI() {
-    unlockSkillsIfEligible();
+    normalizeProgression();
 
     var skillTreeToggle = document.getElementById("skill-tree-toggle");
     var skillTreePanel = document.getElementById("skill-tree-panel");
     var totalRollsText = document.getElementById("skill-tree-total-rolls");
+    var skillPointsText = document.getElementById("skill-tree-skill-points");
+    var ownedSkillsText = document.getElementById("skill-tree-owned-skills");
+    var selectedSkillText = document.getElementById("skill-tree-selected-skill");
 
     var shouldShowSkillTree = progression.totalRolls >= SKILL_TREE_UNLOCK_ROLLS;
     skillTreeToggle.style.display = shouldShowSkillTree ? "block" : "none";
@@ -146,6 +207,9 @@ function updateSkillTreeUI() {
     }
 
     totalRollsText.innerHTML = "Total rolls (all time): " + progression.totalRolls;
+    skillPointsText.innerHTML = "Available Skill Points: " + progression.skillPoints + " (Spent: " + progression.spentSkillPoints + ")";
+    ownedSkillsText.innerHTML = "Owned skills: " + (progression.ownedSkills.length ? progression.ownedSkills.map(function (skillId) { return getSkillById(skillId).name; }).join(", ") : "None");
+    selectedSkillText.innerHTML = "Selected skill: " + (progression.selectedSkill ? getSkillById(progression.selectedSkill).name : "None");
 
     renderSkills();
     updateSkillStatusMessage();
@@ -210,8 +274,9 @@ function rollDice() {
     var initialRoll = getBaseRoll(requiredRoll);
     var finalRoll = initialRoll;
     var skillActivationMessage = "No skill effect this roll.";
+    normalizeProgression();
     var selectedSkillId = progression.selectedSkill;
-    var selectedSkillIsUnlocked = isSkillUnlocked(selectedSkillId);
+    var selectedSkillIsUnlocked = isSkillOwned(selectedSkillId);
 
     if (selectedSkillIsUnlocked && selectedSkillId === "luckyEdge") {
         if (shouldActivateSkill(0.15, true)) {
@@ -239,7 +304,7 @@ function rollDice() {
     rolls += 1;
     session += 1;
     progression.totalRolls += 1;
-    unlockSkillsIfEligible();
+    normalizeProgression();
     saveProgression();
 
     var pointsAdded = finalRoll;
@@ -344,6 +409,7 @@ function openDeveloperMenu() {
     document.getElementById("developer-menu").style.display = "block";
     populateDevSkillSelect();
     document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
+    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
     setDevStatus("Developer menu opened.");
 }
 
@@ -384,49 +450,95 @@ function populateDevSkillSelect() {
 function devSetTotalRolls() {
     var value = Number(document.getElementById("dev-total-rolls-input").value);
     progression.totalRolls = Math.max(0, value || 0);
-    unlockSkillsIfEligible();
+    normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
+    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
     setDevStatus("Set total rolls to " + progression.totalRolls + ".");
 }
 
 function devAddRolls(amount) {
     progression.totalRolls += amount;
-    unlockSkillsIfEligible();
+    normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
     document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
+    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
     setDevStatus("Added " + amount + " rolls.");
+}
+
+
+function devAddSkillPoints() {
+    var value = Number(document.getElementById("dev-add-skill-points-input").value);
+    var pointsToAdd = Math.max(0, value || 0);
+    if (pointsToAdd <= 0) {
+        setDevStatus("Add skill points value must be at least 1.");
+        return;
+    }
+
+    progression.totalRolls += pointsToAdd * SKILL_POINT_ROLL_INTERVAL;
+    normalizeProgression();
+    saveProgression();
+    updateSkillTreeUI();
+    document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
+    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
+    setDevStatus("Added " + pointsToAdd + " skill point(s).");
+}
+
+function devSetSkillPoints() {
+    var targetPoints = Number(document.getElementById("dev-set-skill-points-input").value);
+    targetPoints = Math.max(0, targetPoints || 0);
+
+    progression.totalRolls = progression.spentSkillPoints * SKILL_POINT_ROLL_INTERVAL + (targetPoints * SKILL_POINT_ROLL_INTERVAL);
+    normalizeProgression();
+    saveProgression();
+    updateSkillTreeUI();
+    document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
+    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
+    setDevStatus("Set available skill points to " + progression.skillPoints + ".");
 }
 
 function devResetProgression() {
     progression.totalRolls = 0;
-    progression.unlockedSkills = [];
+    progression.skillPoints = 0;
+    progression.spentSkillPoints = 0;
+    progression.ownedSkills = [];
     progression.selectedSkill = "";
     saveProgression();
     updateSkillTreeUI();
     document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
+    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
     setDevStatus("Progression reset.");
 }
 
 function devUnlockAllSkills() {
-    progression.unlockedSkills = SKILLS.map(function (skill) { return skill.id; });
+    progression.ownedSkills = SKILLS.map(function (skill) { return skill.id; });
+    progression.spentSkillPoints = progression.ownedSkills.reduce(function (total, skillId) {
+        var skill = getSkillById(skillId);
+        return total + (skill ? skill.cost : 0);
+    }, 0);
+    progression.totalRolls = Math.max(progression.totalRolls, progression.spentSkillPoints * SKILL_POINT_ROLL_INTERVAL);
+    normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
-    setDevStatus("All skills unlocked.");
+    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
+    setDevStatus("All skills purchased/unlocked.");
 }
 
 function devClearUnlockedSkills() {
-    progression.unlockedSkills = [];
+    progression.spentSkillPoints = 0;
+    progression.ownedSkills = [];
     progression.selectedSkill = "";
+    normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
-    setDevStatus("Unlocked skills cleared.");
+    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
+    setDevStatus("Owned skills cleared.");
 }
 
 function devSetActiveSkill() {
     var selected = document.getElementById("dev-active-skill-select").value;
-    if (selected && !isSkillUnlocked(selected)) {
+    if (selected && !isSkillOwned(selected)) {
         setDevStatus("Cannot select a locked skill.");
         return;
     }
@@ -487,6 +599,8 @@ function devResetRunStats() {
 }
 
 window.onload = function () {
+    normalizeProgression();
+    saveProgression();
     document.getElementById("mode").innerHTML = "Current mode: " + mode;
     document.getElementById("roll").innerHTML = "Required roll: " + dice[currentDie];
     document.getElementById("score").innerHTML = "Score: " + score;

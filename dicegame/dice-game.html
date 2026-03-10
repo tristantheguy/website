@@ -21,6 +21,9 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
     <div id="skill-tree-panel" style="display: none;">
         <h3>Skill Tree</h3>
         <p id="skill-tree-total-rolls"></p>
+        <p id="skill-tree-skill-points"></p>
+        <p id="skill-tree-owned-skills"></p>
+        <p id="skill-tree-selected-skill"></p>
         <div id="skills-container"></div>
     </div>
 
@@ -63,9 +66,13 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
             <button onclick="devSetTotalRolls()">Set total rolls</button>
             <button onclick="devAddRolls(10)">+10 rolls</button>
             <button onclick="devAddRolls(50)">+50 rolls</button>
+            <label>Add skill points: <input type="number" id="dev-add-skill-points-input" min="1" value="1"></label>
+            <button onclick="devAddSkillPoints()">Add skill points</button>
+            <label>Set skill points: <input type="number" id="dev-set-skill-points-input" min="0"></label>
+            <button onclick="devSetSkillPoints()">Set skill points manually</button>
             <button onclick="devResetProgression()">Reset progression</button>
-            <button onclick="devUnlockAllSkills()">Unlock all skills</button>
-            <button onclick="devClearUnlockedSkills()">Clear unlocked skills</button>
+            <button onclick="devUnlockAllSkills()">Buy/unlock all skills</button>
+            <button onclick="devClearUnlockedSkills()">Clear owned skills</button>
             <label>Active skill:
                 <select id="dev-active-skill-select"></select>
             </label>
