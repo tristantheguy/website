@@ -245,45 +245,67 @@ select {
 
 #skill-tree-panel {
   position: fixed;
-  right: -95vw;
-  top: 8vh;
-  width: 88vw;
-  height: 80vh;
-  background: rgba(9, 16, 28, 0.94);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  height: 85vh;
+  background: rgba(9, 16, 28, 0.97);
   color: #ecf1f8;
   border: 1px solid #435369;
-  border-radius: 10px;
-  padding: 12px;
-  transition: right 0.25s ease-in-out;
+  border-radius: 12px;
+  padding: 14px;
   z-index: 999;
-  max-width: 1500px;
-  overflow: hidden;
+  max-width: 1900px;
+  min-height: 620px;
   display: flex;
   flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
 }
 
 #skill-tree-panel.open {
-  right: 6vw;
+  opacity: 1;
+  pointer-events: auto;
 }
 
+#skill-tree-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#skill-tree-header-row h3 {
+  margin: 0;
+}
+
+#skill-tree-close {
+  width: auto;
+  min-width: 86px;
+  padding: 6px 10px;
+}
 
 #skill-tree-viewport {
   position: relative;
   height: 100%;
-  min-height: 460px;
+  min-height: 520px;
   border: 1px solid #4a5d74;
   border-radius: 10px;
   background: radial-gradient(circle at center, rgba(37, 52, 72, 0.9), rgba(8, 16, 28, 0.98));
-  overflow-y: auto;
   overflow-x: auto;
+  overflow-y: auto;
 }
 
 #skill-tree-canvas {
   position: relative;
-  width: 1600px;
-  height: 1100px;
+  width: 1800px;
+  height: 1400px;
+  min-width: 1800px;
+  min-height: 1400px;
   max-width: none;
-  margin: 18px;
+  margin: 0;
   background:
     radial-gradient(circle at center, rgba(118, 158, 205, 0.12), rgba(118, 158, 205, 0) 62%),
     radial-gradient(circle, rgba(146, 182, 224, 0.07) 1px, rgba(0, 0, 0, 0) 1.8px);
@@ -326,11 +348,12 @@ select {
 #skills-container {
   margin-top: 10px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
+  grid-template-columns: minmax(0, 3fr) minmax(260px, 1fr);
   gap: 10px;
-  align-items: start;
+  align-items: stretch;
   flex: 1;
   min-height: 0;
+  overflow: visible;
 }
 
 .skill-node {
@@ -380,6 +403,8 @@ select {
 
 #skill-detail-panel {
   min-height: 190px;
+  height: 100%;
+  overflow-y: auto;
   border: 1px solid #4c6079;
   border-radius: 8px;
   background: rgba(15, 25, 38, 0.92);
