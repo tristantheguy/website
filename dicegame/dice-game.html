@@ -24,7 +24,14 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
         <p id="skill-tree-skill-points"></p>
         <p id="skill-tree-lifetime-score"></p>
         <p id="skill-tree-owned-skills"></p>
-        <div id="skills-container"></div>
+        <div id="skills-container">
+            <div id="skill-tree-viewport" aria-label="Draggable skill tree graph">
+                <div id="skill-tree-canvas">
+                    <svg id="skill-tree-connections" xmlns="http://www.w3.org/2000/svg"></svg>
+                    <div id="skill-tree-node-layer"></div>
+                </div>
+            </div>
+        </div>
         <button id="skill-tree-reset-button" onclick="resetPlayerProgress()">Reset Player Progress</button>
     </div>
 

@@ -25,6 +25,20 @@ var SKILLS = [
 
 var ROLL_COOLDOWN_MS = 320;
 var isRollCoolingDown = false;
+var SKILL_GRAPH_NODE_WIDTH = 182;
+var SKILL_GRAPH_NODE_HEIGHT = 122;
+var skillGraphPan = { x: -200, y: -120, initialized: false, dragging: false, startX: 0, startY: 0, startPanX: 0, startPanY: 0 };
+var SKILL_GRAPH_LAYOUT = {
+    luckyEdge: { x: 150, y: 250 },
+    sharperEdge: { x: 40, y: 470 },
+    heavyEdge: { x: 260, y: 470 },
+    momentum: { x: 400, y: 190 },
+    greaterMomentum: { x: 340, y: 410 },
+    criticalMomentum: { x: 560, y: 410 },
+    secondChance: { x: 650, y: 250 },
+    saferChance: { x: 580, y: 470 },
+    echoChance: { x: 800, y: 470 }
+};
 
 var progression = loadProgression();
 var debugState = {
@@ -311,43 +325,48 @@ function toggleSkillTree() {
 }
 
 function renderSkills() {
-    var skillsContainer = document.getElementById("skills-container");
-    skillsContainer.innerHTML = "";
+    var canvas = document.getElementById("skill-tree-canvas");
+    var connectionLayer = document.getElementById("skill-tree-connections");
+    var nodeLayer = document.getElementById("skill-tree-node-layer");
+    if (!canvas || !connectionLayer || !nodeLayer) {
+        return;
+    }
 
     var rootSkills = SKILLS.filter(function (skill) {
         return skill.type === "root";
     });
 
+    nodeLayer.innerHTML = "";
+    connectionLayer.innerHTML = "";
+
     rootSkills.forEach(function (rootSkill) {
-        var rootNode = document.createElement("div");
-        rootNode.className = "skill-root-node";
-        var rootCard = renderSingleSkillCard(rootSkill, false);
-        rootNode.appendChild(rootCard);
+        nodeLayer.appendChild(renderSingleSkillCard(rootSkill));
 
         var branches = SKILLS.filter(function (skill) {
             return skill.parentSkill === rootSkill.id;
         });
 
-        if (branches.length) {
-            var branchContainer = document.createElement("div");
-            branchContainer.className = "skill-branches";
-            branches.forEach(function (branchSkill) {
-                branchContainer.appendChild(renderSingleSkillCard(branchSkill, true));
-            });
-            rootNode.appendChild(branchContainer);
-        }
-
-        skillsContainer.appendChild(rootNode);
+        branches.forEach(function (branchSkill) {
+            nodeLayer.appendChild(renderSingleSkillCard(branchSkill));
+            renderConnectorLine(connectionLayer, rootSkill.id, branchSkill.id);
+        });
     });
+
+    updateSkillGraphPanBounds();
+    applySkillGraphPan();
 }
 
-function renderSingleSkillCard(skill, isBranch) {
+function renderSingleSkillCard(skill) {
         var skillCard = document.createElement("div");
-        skillCard.className = "skill-card" + (isBranch ? " skill-card-branch" : "");
+        skillCard.className = "skill-card";
         var owned = isSkillOwned(skill.id);
         var lockedByBranchChoice = isSkillLockedByBranchChoice(skill.id);
         var parentMissing = !!skill.parentSkill && !isSkillOwned(skill.parentSkill);
         var canBuy = canBuySkill(skill.id);
+        var nodePosition = SKILL_GRAPH_LAYOUT[skill.id] || { x: 0, y: 0 };
+
+        skillCard.style.left = nodePosition.x + "px";
+        skillCard.style.top = nodePosition.y + "px";
 
         skillCard.classList.add(owned ? "owned" : "locked");
         if (owned) {
@@ -391,6 +410,107 @@ function renderSingleSkillCard(skill, isBranch) {
 
         skillCard.appendChild(actionButton);
         return skillCard;
+}
+
+function renderConnectorLine(svgElement, parentSkillId, childSkillId) {
+    var parentPosition = SKILL_GRAPH_LAYOUT[parentSkillId];
+    var childPosition = SKILL_GRAPH_LAYOUT[childSkillId];
+    if (!parentPosition || !childPosition) {
+        return;
+    }
+
+    var parentOwned = isSkillOwned(parentSkillId);
+    var childOwned = isSkillOwned(childSkillId);
+    var childUnavailable = isSkillLockedByBranchChoice(childSkillId);
+    var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+
+    line.setAttribute("x1", String(parentPosition.x + (SKILL_GRAPH_NODE_WIDTH / 2)));
+    line.setAttribute("y1", String(parentPosition.y + SKILL_GRAPH_NODE_HEIGHT));
+    line.setAttribute("x2", String(childPosition.x + (SKILL_GRAPH_NODE_WIDTH / 2)));
+    line.setAttribute("y2", String(childPosition.y));
+
+    if (parentOwned && childOwned) {
+        line.classList.add("path-active");
+    } else if (childUnavailable) {
+        line.classList.add("path-disabled");
+    }
+
+    svgElement.appendChild(line);
+}
+
+function applySkillGraphPan() {
+    var canvas = document.getElementById("skill-tree-canvas");
+    if (!canvas) {
+        return;
+    }
+
+    canvas.style.transform = "translate(" + skillGraphPan.x + "px, " + skillGraphPan.y + "px)";
+}
+
+function updateSkillGraphPanBounds() {
+    var viewport = document.getElementById("skill-tree-viewport");
+    var canvas = document.getElementById("skill-tree-canvas");
+    if (!viewport || !canvas) {
+        return;
+    }
+
+    var padding = 80;
+    var minX = viewport.clientWidth - canvas.offsetWidth - padding;
+    var minY = viewport.clientHeight - canvas.offsetHeight - padding;
+    var maxX = padding;
+    var maxY = padding;
+
+    skillGraphPan.x = Math.min(maxX, Math.max(minX, skillGraphPan.x));
+    skillGraphPan.y = Math.min(maxY, Math.max(minY, skillGraphPan.y));
+}
+
+function initSkillTreeGraphInteraction() {
+    var viewport = document.getElementById("skill-tree-viewport");
+    if (!viewport) {
+        return;
+    }
+
+    viewport.addEventListener("pointerdown", function (event) {
+        if (event.target.closest("button")) {
+            return;
+        }
+
+        skillGraphPan.dragging = true;
+        skillGraphPan.startX = event.clientX;
+        skillGraphPan.startY = event.clientY;
+        skillGraphPan.startPanX = skillGraphPan.x;
+        skillGraphPan.startPanY = skillGraphPan.y;
+        viewport.classList.add("dragging");
+        viewport.setPointerCapture(event.pointerId);
+    });
+
+    viewport.addEventListener("pointermove", function (event) {
+        if (!skillGraphPan.dragging) {
+            return;
+        }
+
+        skillGraphPan.x = skillGraphPan.startPanX + (event.clientX - skillGraphPan.startX);
+        skillGraphPan.y = skillGraphPan.startPanY + (event.clientY - skillGraphPan.startY);
+        updateSkillGraphPanBounds();
+        applySkillGraphPan();
+    });
+
+    viewport.addEventListener("pointerup", function (event) {
+        skillGraphPan.dragging = false;
+        viewport.classList.remove("dragging");
+        viewport.releasePointerCapture(event.pointerId);
+    });
+
+    viewport.addEventListener("pointercancel", function (event) {
+        skillGraphPan.dragging = false;
+        viewport.classList.remove("dragging");
+        viewport.releasePointerCapture(event.pointerId);
+    });
+
+    window.addEventListener("resize", function () {
+        updateSkillGraphPanBounds();
+        applySkillGraphPan();
+    });
 }
 
 function updateSkillTreeUI() {
@@ -870,4 +990,6 @@ window.onload = function () {
     setRunCompleteMessage("Easy mode: safer, slower progression (1 skill point per 250 score earned). Skill points are awarded during the run.");
     updateSkillTreeUI();
     updateSkillStatusMessage("No skill effect this roll.");
+    initSkillTreeGraphInteraction();
+    applySkillGraphPan();
 };

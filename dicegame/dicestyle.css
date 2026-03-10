@@ -245,9 +245,9 @@ select {
 
 #skill-tree-panel {
   position: fixed;
-  right: -360px;
+  right: -620px;
   top: 190px;
-  width: 320px;
+  width: 580px;
   background: rgba(9, 16, 28, 0.94);
   color: #ecf1f8;
   border: 1px solid #435369;
@@ -255,8 +255,8 @@ select {
   padding: 12px;
   transition: right 0.25s ease-in-out;
   z-index: 999;
-  max-height: 70vh;
-  overflow-y: auto;
+  max-height: 78vh;
+  overflow: hidden;
 }
 
 #skill-tree-panel.open {
@@ -265,40 +265,48 @@ select {
 
 
 #skills-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  margin-top: 10px;
 }
 
-.skill-root-node {
-  border-left: 2px solid rgba(95, 136, 178, 0.55);
-  padding-left: 10px;
-}
-
-.skill-branches {
-  margin-top: 8px;
-  margin-left: 14px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-}
-
-.skill-card-branch {
+#skill-tree-viewport {
   position: relative;
+  height: 420px;
+  border: 1px solid #4a5d74;
+  border-radius: 10px;
+  background: radial-gradient(circle at center, rgba(37, 52, 72, 0.9), rgba(8, 16, 28, 0.98));
+  overflow: hidden;
+  cursor: grab;
 }
 
-.skill-card-branch::before {
-  content: "";
+#skill-tree-viewport.dragging {
+  cursor: grabbing;
+}
+
+#skill-tree-canvas {
+  position: relative;
+  width: 980px;
+  height: 700px;
+  transform: translate(-200px, -120px);
+  will-change: transform;
+}
+
+#skill-tree-connections,
+#skill-tree-node-layer {
   position: absolute;
-  left: -16px;
-  top: 18px;
-  width: 12px;
-  border-top: 2px solid rgba(95, 136, 178, 0.55);
+  inset: 0;
 }
 
-.skill-card.branch-locked {
-  border-color: #8a5667;
-  background: rgba(49, 28, 37, 0.72);
+#skill-tree-connections line {
+  stroke: rgba(130, 158, 192, 0.38);
+  stroke-width: 3;
+}
+
+#skill-tree-connections line.path-active {
+  stroke: rgba(103, 232, 178, 0.8);
+}
+
+#skill-tree-connections line.path-disabled {
+  stroke: rgba(139, 97, 110, 0.36);
 }
 #skill-tree-panel h3,
 #skill-tree-panel p,
@@ -316,10 +324,12 @@ select {
 }
 
 .skill-card {
+  position: absolute;
+  width: 182px;
+  min-height: 122px;
   border: 1px solid #5b6f86;
   border-radius: 8px;
   padding: 10px;
-  margin-top: 10px;
   background: rgba(27, 40, 56, 0.78);
 }
 
@@ -331,6 +341,21 @@ select {
 .skill-card.active {
   border-color: #57d49a;
   box-shadow: 0 0 8px rgba(87, 212, 154, 0.4);
+}
+
+.skill-card.branch-locked {
+  border-color: #8a5667;
+  background: rgba(49, 28, 37, 0.8);
+}
+
+.skill-card h4 {
+  margin: 0 0 6px;
+  font-size: 1.02em;
+}
+
+.skill-card p {
+  margin: 4px 0;
+  font-size: 0.87em;
 }
 
 .skill-card button {
