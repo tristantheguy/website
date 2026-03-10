@@ -30,6 +30,7 @@ var debugState = {
 function getDefaultProgression() {
     return {
         totalRolls: 0,
+        lifetimeScoreForSkillPoints: 0,
         skillPoints: 0,
         spentSkillPoints: 0,
         ownedSkills: [],
@@ -47,6 +48,7 @@ function loadProgression() {
         var parsed = JSON.parse(savedProgression);
         var progressionState = {
             totalRolls: typeof parsed.totalRolls === "number" ? parsed.totalRolls : 0,
+            lifetimeScoreForSkillPoints: typeof parsed.lifetimeScoreForSkillPoints === "number" ? parsed.lifetimeScoreForSkillPoints : 0,
             skillPoints: typeof parsed.skillPoints === "number" ? parsed.skillPoints : 0,
             spentSkillPoints: typeof parsed.spentSkillPoints === "number" ? parsed.spentSkillPoints : 0,
             ownedSkills: Array.isArray(parsed.ownedSkills) ? parsed.ownedSkills : [],
@@ -85,6 +87,7 @@ function isSkillOwned(skillId) {
 
 function normalizeProgression() {
     progression.totalRolls = Math.max(0, Number(progression.totalRolls) || 0);
+    progression.lifetimeScoreForSkillPoints = Math.max(0, Number(progression.lifetimeScoreForSkillPoints) || 0);
     progression.skillPoints = Math.max(0, Number(progression.skillPoints) || 0);
     progression.spentSkillPoints = Math.max(0, Number(progression.spentSkillPoints) || 0);
 
@@ -110,9 +113,28 @@ function getSkillPointRateForMode(gameMode) {
     return gameMode === "normal" ? NORMAL_MODE_SKILL_POINT_SCORE_RATE : EASY_MODE_SKILL_POINT_SCORE_RATE;
 }
 
-function getSkillPointsForScore(finalScore, gameMode) {
-    var safeScore = Math.max(0, Number(finalScore) || 0);
-    return Math.floor(safeScore / getSkillPointRateForMode(gameMode));
+function awardSkillPointsFromScoreGain(scoreGained) {
+    var safeGain = Math.max(0, Math.floor(Number(scoreGained) || 0));
+    if (safeGain <= 0) {
+        return 0;
+    }
+
+    var previousLifetimeScore = progression.lifetimeScoreForSkillPoints;
+    var currentLifetimeScore = previousLifetimeScore + safeGain;
+    var skillPointRate = getSkillPointRateForMode(mode);
+    var previousSkillPointTotal = Math.floor(previousLifetimeScore / skillPointRate);
+    var nextSkillPointTotal = Math.floor(currentLifetimeScore / skillPointRate);
+    var pointsEarned = Math.max(0, nextSkillPointTotal - previousSkillPointTotal);
+
+    progression.lifetimeScoreForSkillPoints = currentLifetimeScore;
+    if (pointsEarned > 0) {
+        progression.skillPoints += pointsEarned;
+    }
+
+    normalizeProgression();
+    saveProgression();
+
+    return pointsEarned;
 }
 
 function setRunCompleteMessage(message) {
@@ -179,15 +201,10 @@ function triggerRollCooldown() {
 
 function completeRun() {
     var finalScore = score;
-    var skillPointsEarned = getSkillPointsForScore(finalScore, mode);
 
     wins += 1;
-    progression.skillPoints += skillPointsEarned;
-    normalizeProgression();
-    saveProgression();
-
-    setRunCompleteMessage("Run complete! You earned " + skillPointsEarned + " skill point" + (skillPointsEarned === 1 ? "" : "s") + ".");
-    setStatusMessage("Run complete! You earned " + skillPointsEarned + " skill point" + (skillPointsEarned === 1 ? "" : "s") + ".", "success");
+    setRunCompleteMessage("Run complete! Skill points are now earned continuously from score during each run.");
+    setStatusMessage("Run complete! Start another run to keep earning score-based skill points.", "success");
     submitScore(finalScore);
 
     currentDie = 0;
@@ -296,6 +313,7 @@ function updateSkillTreeUI() {
     var skillTreePanel = document.getElementById("skill-tree-panel");
     var totalRollsText = document.getElementById("skill-tree-total-rolls");
     var skillPointsText = document.getElementById("skill-tree-skill-points");
+    var lifetimeScoreText = document.getElementById("skill-tree-lifetime-score");
     var ownedSkillsText = document.getElementById("skill-tree-owned-skills");
     var selectedSkillText = document.getElementById("skill-tree-selected-skill");
 
@@ -309,6 +327,7 @@ function updateSkillTreeUI() {
 
     totalRollsText.innerHTML = "Total rolls (all time): " + progression.totalRolls;
     skillPointsText.innerHTML = "Available Skill Points: " + progression.skillPoints + " (Spent: " + progression.spentSkillPoints + ")";
+    lifetimeScoreText.innerHTML = "Lifetime score for skill point progression: " + progression.lifetimeScoreForSkillPoints;
     ownedSkillsText.innerHTML = "Owned skills: " + (progression.ownedSkills.length ? progression.ownedSkills.map(function (skillId) { return getSkillById(skillId).name; }).join(", ") : "None");
     selectedSkillText.innerHTML = "Selected skill: " + (progression.selectedSkill ? getSkillById(progression.selectedSkill).name : "None");
 
@@ -452,6 +471,7 @@ function rollDice() {
         pointsAdded *= Math.trunc(Math.ceil(session / 100)) * (Math.abs(losses - (losses * (wins + 1))) + 1);
     }
 
+    var scoreBeforeRoll = score;
     if (dice[currentDie] == 4 & mode == "normal") {
         score += pointsAdded;
     } else if (dice[currentDie] == 6 & mode == "normal") {
@@ -466,6 +486,13 @@ function rollDice() {
         score += pointsAdded * 128;
     } else {
         score += finalRoll;
+    }
+
+    var scoreGained = score - scoreBeforeRoll;
+    var skillPointsEarnedFromRoll = awardSkillPointsFromScoreGain(scoreGained);
+    var nextThreshold = getSkillPointRateForMode(mode) - (progression.lifetimeScoreForSkillPoints % getSkillPointRateForMode(mode));
+    if (nextThreshold === getSkillPointRateForMode(mode)) {
+        nextThreshold = 0;
     }
 
     if (finalRoll >= requiredRoll) {
@@ -483,16 +510,31 @@ function rollDice() {
         }
 
         updateGameDisplay("You rolled a " + finalRoll + " (required: " + requiredRoll + ")");
-        setStatusMessage("Great roll! Keep climbing.", "success");
+        if (skillPointsEarnedFromRoll > 0) {
+            setStatusMessage("Great roll! You earned " + skillPointsEarnedFromRoll + " skill point" + (skillPointsEarnedFromRoll === 1 ? "" : "s") + " from score.", "success");
+            setRunCompleteMessage("Skill point gained from score! Keep rolling to earn more.");
+        } else {
+            setStatusMessage("Great roll! Keep climbing. " + nextThreshold + " more score for next skill point.", "success");
+        }
     } else {
         if (mode == "normal") {
             currentDie = 0;
             losses += 1;
             updateGameDisplay("You rolled a " + finalRoll + " (required: " + requiredRoll + ")");
-            setStatusMessage("You rolled a " + finalRoll + ". Not high enough. Back to the beginning.", "warning");
+            if (skillPointsEarnedFromRoll > 0) {
+                setStatusMessage("You rolled a " + finalRoll + ". Back to start, but you earned " + skillPointsEarnedFromRoll + " skill point" + (skillPointsEarnedFromRoll === 1 ? "" : "s") + " from score.", "warning");
+                setRunCompleteMessage("You earned a skill point from score even though the run failed.");
+            } else {
+                setStatusMessage("You rolled a " + finalRoll + ". Not high enough. Back to the beginning.", "warning");
+            }
         } else {
             updateGameDisplay("You rolled a " + finalRoll + " (required: " + requiredRoll + ")");
-            setStatusMessage("You rolled a " + finalRoll + ". Not high enough. Roll again.", "warning");
+            if (skillPointsEarnedFromRoll > 0) {
+                setStatusMessage("You rolled a " + finalRoll + ". Not high enough, but you earned " + skillPointsEarnedFromRoll + " skill point" + (skillPointsEarnedFromRoll === 1 ? "" : "s") + " from score.", "warning");
+                setRunCompleteMessage("Skill point gained from score! Failed rolls do not remove earned progression.");
+            } else {
+                setStatusMessage("You rolled a " + finalRoll + ". Not high enough. Roll again.", "warning");
+            }
         }
     }
 
@@ -503,7 +545,7 @@ function rollDice() {
 
 function setEasyMode() {
     mode = "easy";
-    setRunCompleteMessage("Easy mode: safer runs, but skill points are earned at 1 per 250 score.");
+    setRunCompleteMessage("Easy mode: safer, slower progression (1 skill point per 250 score earned). Skill points are awarded during the run.");
     currentDie = 0;
     score = 0;
     rolls = 0;
@@ -518,7 +560,7 @@ function setEasyMode() {
 
 function setNormalMode() {
     mode = "normal";
-    setRunCompleteMessage("Normal mode: harder runs that reset progress on failed rolls, but skill points are earned at 1 per 100 score.");
+    setRunCompleteMessage("Normal mode: riskier, faster progression (1 skill point per 100 score earned). Skill points are awarded during the run.");
     currentDie = 0;
     score = 0;
     rolls = 0;
@@ -710,7 +752,7 @@ window.onload = function () {
     saveProgression();
     updateGameDisplay();
     setStatusMessage("Choose a mode and roll to begin.", "info");
-    setRunCompleteMessage("Easy mode: safer runs, but skill points are earned at 1 per 250 score.");
+    setRunCompleteMessage("Easy mode: safer, slower progression (1 skill point per 250 score earned). Skill points are awarded during the run.");
     updateSkillTreeUI();
     updateSkillStatusMessage("No skill effect this roll.");
 };
