@@ -31,7 +31,11 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
                     <div id="skill-tree-node-layer"></div>
                 </div>
             </div>
+            <div id="skill-detail-panel" aria-live="polite">
+                <p class="skill-detail-empty">Click a skill node to view details.</p>
+            </div>
         </div>
+        <div id="skill-node-tooltip" role="tooltip" aria-hidden="true"></div>
         <button id="skill-tree-reset-button" onclick="resetPlayerProgress()">Reset Player Progress</button>
     </div>
 
