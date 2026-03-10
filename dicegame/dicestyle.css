@@ -2,28 +2,90 @@ body {
   background-image: url("wood.png");
   background-repeat: no-repeat;
   background-size: cover;
-  background-color: #f2f2f2;
+  background-color: #121212;
+  color: #f1f3f5;
   font-family: Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  padding: 16px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
 }
 
+button,
+input,
+select {
+  font-family: inherit;
+}
+
+button {
+  background: #1f3d5b;
+  color: #f5f7fa;
+  border: 1px solid #3e6288;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+button:hover {
+  background: #285179;
+  border-color: #5f88b2;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+label {
+  color: #d3dae2;
+}
+
+input,
+select {
+  color: #e8edf2;
+  background: #1b2634;
+  border: 1px solid #4d6075;
+  border-radius: 6px;
+  padding: 7px;
+}
+
+#mode,
 #roll,
 #score,
 #total,
 #session,
-#mode,
 #wins,
 #losses,
 #high {
   font-size: 2em;
-  color: white;
-  text-shadow: 2px 2px red;
-  margin-top: 20px;
+  color: #f4f6f8;
+  margin-top: 18px;
+  margin-bottom: 0;
+}
+
+#roll {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+#score {
+  color: #cfe5ff;
 }
 
 #leaderboard {
   margin: 50px auto;
   width: 800px;
+  max-width: 100%;
   text-align: center;
+  background: rgba(10, 18, 30, 0.8);
+  border: 1px solid #44556d;
+  border-radius: 12px;
+  padding: 12px;
 }
 
 #leaderboard table {
@@ -34,30 +96,34 @@ body {
 #leaderboard th,
 #leaderboard td {
   padding: 10px;
-  border: 1px solid #333333;
+  border: 1px solid #3b4f63;
   text-align: center;
-  font-size: 1.2em;
-  color: white;
+  font-size: 1.1em;
+  color: #eef2f7;
 }
 
 #leaderboard th {
-  background-color: #333333;
+  background-color: #23374d;
 }
 
 #leaderboard td {
-  background-color: #808080;
+  background-color: rgba(34, 49, 65, 0.9);
 }
 
 #roll-button {
-  font-size: 4em;
+  font-size: 3.2em;
   width: 100%;
   height: 100px;
   text-align: center;
   vertical-align: middle;
-  background-color: #08111f;
-  padding: 12px 20px;
-  border: #08111f;
-  color: red;
+  background-color: #114a33;
+  border: 1px solid #3f916f;
+  color: #f4fff8;
+  margin-top: 10px;
+}
+
+#roll-button:hover {
+  background-color: #14603f;
 }
 
 #skill-tree-toggle {
@@ -65,12 +131,6 @@ body {
   right: 20px;
   top: 140px;
   z-index: 1000;
-  padding: 12px 16px;
-  background: #08111f;
-  color: #fff;
-  border: 1px solid #334;
-  border-radius: 8px;
-  cursor: pointer;
 }
 
 #skill-tree-panel {
@@ -78,9 +138,9 @@ body {
   right: -360px;
   top: 190px;
   width: 320px;
-  background: rgba(8, 17, 31, 0.95);
-  color: #fff;
-  border: 1px solid #445;
+  background: rgba(9, 16, 28, 0.94);
+  color: #ecf1f8;
+  border: 1px solid #435369;
   border-radius: 10px;
   padding: 12px;
   transition: right 0.25s ease-in-out;
@@ -93,57 +153,74 @@ body {
   right: 20px;
 }
 
+#skill-tree-panel h3,
+#skill-tree-panel p,
+.skill-card h4,
+.skill-card p {
+  color: #edf2f8;
+}
+
+#skill-tree-panel p,
+.skill-card p,
+#active-skill,
+#skill-activation-message,
+#dev-status-message {
+  line-height: 1.35;
+}
+
 .skill-card {
-  border: 1px solid #666;
+  border: 1px solid #5b6f86;
   border-radius: 8px;
   padding: 10px;
   margin-top: 10px;
+  background: rgba(27, 40, 56, 0.78);
 }
 
 .skill-card.locked {
-  opacity: 0.6;
+  opacity: 0.72;
   cursor: not-allowed;
 }
 
-.skill-card.owned {
-  opacity: 1;
+.skill-card.selected {
+  border-color: #57d49a;
+  box-shadow: 0 0 8px rgba(87, 212, 154, 0.4);
 }
 
 .skill-card button {
   width: 100%;
   padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #666;
-  background: #1d2f4a;
-  color: #fff;
-  cursor: pointer;
 }
 
-.skill-card button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+#skill-tree-reset-button {
+  width: 100%;
+  margin-top: 12px;
+  background: #6d1f2b;
+  border-color: #a94c5a;
 }
 
-.skill-card.selected {
-  border-color: #49d17f;
-  box-shadow: 0 0 8px #49d17f;
+#skill-tree-reset-button:hover {
+  background: #812735;
 }
 
 #skill-status-area {
   margin-top: 20px;
-  background: rgba(8, 17, 31, 0.85);
+  background: rgba(7, 14, 24, 0.88);
   border: 1px solid #3b4860;
   border-radius: 8px;
   padding: 10px;
-  color: #fff;
-  max-width: 600px;
+  color: #e9eef5;
+  max-width: 700px;
 }
 
-#active-skill,
+#active-skill {
+  font-size: 1.2em;
+  color: #f4f8ff;
+  margin: 4px 0;
+}
+
 #skill-activation-message {
-  font-size: 1.3em;
-  color: #ffe673;
-  text-shadow: 1px 1px #000;
+  font-size: 1.1em;
+  color: #c9d5e4;
   margin: 4px 0;
 }
 
@@ -155,10 +232,10 @@ body {
   max-height: 82vh;
   overflow-y: auto;
   z-index: 1100;
-  background: rgba(24, 24, 30, 0.96);
-  border: 2px solid #ff6565;
+  background: rgba(14, 21, 32, 0.96);
+  border: 1px solid #5e728c;
   border-radius: 10px;
-  color: #fff;
+  color: #edf3fa;
   padding: 12px;
 }
 
@@ -170,9 +247,14 @@ body {
 }
 
 .dev-section {
-  border-top: 1px solid #5c5c5c;
+  border-top: 1px solid #4d6075;
   padding-top: 8px;
   margin-top: 8px;
+}
+
+.dev-section h4 {
+  margin-bottom: 6px;
+  color: #f4f8ff;
 }
 
 .dev-section button,
@@ -184,6 +266,6 @@ body {
 
 #dev-status-message {
   margin-top: 10px;
-  color: #8df58d;
+  color: #a8f4b7;
   font-weight: bold;
 }

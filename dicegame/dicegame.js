@@ -23,16 +23,20 @@ var debugState = {
     forcedSkillTrigger: false
 };
 
+function getDefaultProgression() {
+    return {
+        totalRolls: 0,
+        skillPoints: 0,
+        spentSkillPoints: 0,
+        ownedSkills: [],
+        selectedSkill: ""
+    };
+}
+
 function loadProgression() {
     var savedProgression = localStorage.getItem("diceGameProgression");
     if (!savedProgression) {
-        return {
-            totalRolls: 0,
-            skillPoints: 0,
-            spentSkillPoints: 0,
-            ownedSkills: [],
-            selectedSkill: ""
-        };
+        return getDefaultProgression();
     }
 
     try {
@@ -57,13 +61,7 @@ function loadProgression() {
 
         return progressionState;
     } catch (error) {
-        return {
-            totalRolls: 0,
-            skillPoints: 0,
-            spentSkillPoints: 0,
-            ownedSkills: [],
-            selectedSkill: ""
-        };
+        return getDefaultProgression();
     }
 }
 
@@ -250,6 +248,65 @@ function getBaseRoll(dieSize) {
     return getRandomRollForDie(dieSize);
 }
 
+function resetCurrentRunState(keepMode) {
+    currentDie = 0;
+    wins = 0;
+    losses = 0;
+    score = 0;
+    rolls = 0;
+    session = 0;
+    high = 0;
+
+    if (!keepMode) {
+        mode = "easy";
+    }
+}
+
+function syncDevInputs() {
+    var totalRollInput = document.getElementById("dev-total-rolls-input");
+    var skillPointInput = document.getElementById("dev-set-skill-points-input");
+
+    if (totalRollInput) {
+        totalRollInput.value = progression.totalRolls;
+    }
+
+    if (skillPointInput) {
+        skillPointInput.value = progression.skillPoints;
+    }
+}
+
+function resetPlayerProgress(skipConfirm) {
+    if (!skipConfirm) {
+        var confirmed = window.confirm("Are you sure you want to reset all local progress and upgrades for this player?");
+        if (!confirmed) {
+            return;
+        }
+    }
+
+    progression = getDefaultProgression();
+    localStorage.removeItem("diceGameProgression");
+    saveProgression();
+
+    resetCurrentRunState(false);
+
+    debugState.forcedNextRoll = null;
+    debugState.forcedSkillTrigger = false;
+
+    document.getElementById("mode").innerHTML = "Current mode: " + mode;
+    document.getElementById("roll").innerHTML = "Required roll: " + dice[currentDie];
+    document.getElementById("score").innerHTML = "Score: " + score;
+    document.getElementById("total").innerHTML = "Rolls: " + rolls;
+    document.getElementById("session").innerHTML = "Session Rolls: " + session;
+    document.getElementById("wins").innerHTML = "wins: " + wins;
+    document.getElementById("losses").innerHTML = "";
+    document.getElementById("high").innerHTML = "";
+
+    updateSkillStatusMessage("No skill effect this roll.");
+    updateSkillTreeUI();
+    syncDevInputs();
+    setDevStatus("Local player progress and run state reset.");
+}
+
 function rollDice() {
     if (currentDie >= dice.length) {
         alert("Congratulations! You have rolled all of the dice in " + rolls + " rolls!");
@@ -375,6 +432,7 @@ function setEasyMode() {
     wins = 0;
     high = dice.indexOf(dice[currentDie]);
     document.getElementById("roll").innerHTML = "";
+    document.getElementById("score").innerHTML = "Score: " + score;
     document.getElementById("total").innerHTML = "Rolls: " + rolls;
     document.getElementById("session").innerHTML = "Session Rolls: " + session;
     document.getElementById("wins").innerHTML = "wins: " + wins;
@@ -395,6 +453,7 @@ function setNormalMode() {
     losses = 0;
     high = dice.indexOf(dice[currentDie]);
     document.getElementById("roll").innerHTML = "";
+    document.getElementById("score").innerHTML = "Score: " + score;
     document.getElementById("total").innerHTML = "Rolls: " + rolls;
     document.getElementById("session").innerHTML = "Session Rolls: " + session;
     document.getElementById("wins").innerHTML = "wins: " + wins;
@@ -408,8 +467,7 @@ function openDeveloperMenu() {
     debugState.enabled = true;
     document.getElementById("developer-menu").style.display = "block";
     populateDevSkillSelect();
-    document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
-    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
+    syncDevInputs();
     setDevStatus("Developer menu opened.");
 }
 
@@ -453,7 +511,7 @@ function devSetTotalRolls() {
     normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
-    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
+    syncDevInputs();
     setDevStatus("Set total rolls to " + progression.totalRolls + ".");
 }
 
@@ -462,8 +520,7 @@ function devAddRolls(amount) {
     normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
-    document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
-    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
+    syncDevInputs();
     setDevStatus("Added " + amount + " rolls.");
 }
 
@@ -480,8 +537,7 @@ function devAddSkillPoints() {
     normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
-    document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
-    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
+    syncDevInputs();
     setDevStatus("Added " + pointsToAdd + " skill point(s).");
 }
 
@@ -493,21 +549,12 @@ function devSetSkillPoints() {
     normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
-    document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
-    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
+    syncDevInputs();
     setDevStatus("Set available skill points to " + progression.skillPoints + ".");
 }
 
 function devResetProgression() {
-    progression.totalRolls = 0;
-    progression.skillPoints = 0;
-    progression.spentSkillPoints = 0;
-    progression.ownedSkills = [];
-    progression.selectedSkill = "";
-    saveProgression();
-    updateSkillTreeUI();
-    document.getElementById("dev-total-rolls-input").value = progression.totalRolls;
-    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
+    resetPlayerProgress(true);
     setDevStatus("Progression reset.");
 }
 
@@ -521,7 +568,7 @@ function devUnlockAllSkills() {
     normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
-    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
+    syncDevInputs();
     setDevStatus("All skills purchased/unlocked.");
 }
 
@@ -532,7 +579,7 @@ function devClearUnlockedSkills() {
     normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
-    document.getElementById("dev-set-skill-points-input").value = progression.skillPoints;
+    syncDevInputs();
     setDevStatus("Owned skills cleared.");
 }
 
@@ -583,16 +630,12 @@ function devSetScore() {
 }
 
 function devResetRunStats() {
-    currentDie = 0;
-    rolls = 0;
-    session = 0;
-    wins = 0;
-    losses = 0;
-    high = 0;
+    resetCurrentRunState(true);
     document.getElementById("roll").innerHTML = "Required roll: " + dice[currentDie];
     document.getElementById("total").innerHTML = "Rolls: " + rolls;
     document.getElementById("session").innerHTML = "Session Rolls: " + session;
     document.getElementById("wins").innerHTML = "wins: " + wins;
+    document.getElementById("score").innerHTML = "Score: " + score;
     document.getElementById("losses").innerHTML = mode === "normal" ? "losses: " + losses : "";
     document.getElementById("high").innerHTML = mode === "normal" ? "Highest Die rolled: " + dice[high] : "";
     setDevStatus("Current run stats reset.");
@@ -607,6 +650,8 @@ window.onload = function () {
     document.getElementById("total").innerHTML = "Rolls: " + rolls;
     document.getElementById("session").innerHTML = "Session Rolls: " + session;
     document.getElementById("wins").innerHTML = "wins: " + wins;
+    document.getElementById("losses").innerHTML = mode === "normal" ? "losses: " + losses : "";
+    document.getElementById("high").innerHTML = mode === "normal" ? "Highest Die rolled: " + dice[high] : "";
     updateSkillTreeUI();
     updateSkillStatusMessage("No skill effect this roll.");
 };
