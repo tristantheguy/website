@@ -279,9 +279,9 @@ select {
 
 #skill-tree-canvas {
   position: relative;
-  width: 920px;
-  height: 560px;
-  max-width: 100%;
+  width: 1600px;
+  height: 680px;
+  max-width: none;
   margin: 18px auto;
   background:
     radial-gradient(circle at center, rgba(118, 158, 205, 0.12), rgba(118, 158, 205, 0) 62%),
