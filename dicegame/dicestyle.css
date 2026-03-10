@@ -270,24 +270,19 @@ select {
 #skill-tree-viewport {
   position: relative;
   height: 100%;
-  min-height: 520px;
+  min-height: 460px;
   border: 1px solid #4a5d74;
   border-radius: 10px;
   background: radial-gradient(circle at center, rgba(37, 52, 72, 0.9), rgba(8, 16, 28, 0.98));
   overflow: hidden;
-  cursor: grab;
-}
-
-#skill-tree-viewport.dragging {
-  cursor: grabbing;
 }
 
 #skill-tree-canvas {
   position: relative;
-  width: 3200px;
-  height: 2400px;
-  will-change: transform;
-  transform-origin: top left;
+  width: 920px;
+  height: 420px;
+  max-width: 100%;
+  margin: 18px auto;
   background:
     radial-gradient(circle at center, rgba(118, 158, 205, 0.12), rgba(118, 158, 205, 0) 62%),
     radial-gradient(circle, rgba(146, 182, 224, 0.07) 1px, rgba(0, 0, 0, 0) 1.8px);
