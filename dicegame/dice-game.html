@@ -32,6 +32,11 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
     <button onclick="setEasyMode()">Easy</button>
     <button onclick="setNormalMode()">Normal</button>
 
+    <div id="mode-details">
+        <p><strong>Easy Mode:</strong> safer, lower skill point rewards (1 per 250 score).</p>
+        <p><strong>Normal Mode:</strong> harder, resets progress on failed rolls, better skill point rewards (1 per 100 score).</p>
+    </div>
+
     <!-- display the player's roll, score and the required number for the current die -->
     <p id="mode"></p>
     <p id="roll"></p>
@@ -41,6 +46,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
     <p id="wins"></p>
     <p id="losses"></p>
     <p id="high"></p>
+    <p id="run-complete-message">Run complete messages will appear here.</p>
 
     <div id="skill-status-area">
         <p id="active-skill">Active Skill: None</p>

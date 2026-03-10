@@ -9,7 +9,8 @@ var session = 0;
 var high = 0;
 
 var SKILL_TREE_UNLOCK_ROLLS = 25;
-var SKILL_POINT_ROLL_INTERVAL = 25;
+var EASY_MODE_SKILL_POINT_SCORE_RATE = 250;
+var NORMAL_MODE_SKILL_POINT_SCORE_RATE = 100;
 var SKILLS = [
     { id: "luckyEdge", name: "Lucky Edge", cost: 1, description: "15% chance to add +1 to your roll" },
     { id: "weightedToss", name: "Weighted Toss", cost: 2, description: "10% chance to add +2 to your roll" },
@@ -81,22 +82,73 @@ function isSkillOwned(skillId) {
 
 function normalizeProgression() {
     progression.totalRolls = Math.max(0, Number(progression.totalRolls) || 0);
+    progression.skillPoints = Math.max(0, Number(progression.skillPoints) || 0);
     progression.spentSkillPoints = Math.max(0, Number(progression.spentSkillPoints) || 0);
-
-    var earnedSkillPoints = Math.floor(progression.totalRolls / SKILL_POINT_ROLL_INTERVAL);
-    if (progression.spentSkillPoints > earnedSkillPoints) {
-        progression.spentSkillPoints = earnedSkillPoints;
-    }
-
-    progression.skillPoints = Math.max(0, earnedSkillPoints - progression.spentSkillPoints);
 
     progression.ownedSkills = (Array.isArray(progression.ownedSkills) ? progression.ownedSkills : []).filter(function (skillId, index, list) {
         return !!getSkillById(skillId) && list.indexOf(skillId) === index;
     });
 
+    var minimumSpentFromOwned = progression.ownedSkills.reduce(function (total, skillId) {
+        var skill = getSkillById(skillId);
+        return total + (skill ? skill.cost : 0);
+    }, 0);
+
+    if (progression.spentSkillPoints < minimumSpentFromOwned) {
+        progression.spentSkillPoints = minimumSpentFromOwned;
+    }
+
     if (progression.selectedSkill && !isSkillOwned(progression.selectedSkill)) {
         progression.selectedSkill = "";
     }
+}
+
+function getSkillPointRateForMode(gameMode) {
+    return gameMode === "normal" ? NORMAL_MODE_SKILL_POINT_SCORE_RATE : EASY_MODE_SKILL_POINT_SCORE_RATE;
+}
+
+function getSkillPointsForScore(finalScore, gameMode) {
+    var safeScore = Math.max(0, Number(finalScore) || 0);
+    return Math.floor(safeScore / getSkillPointRateForMode(gameMode));
+}
+
+function setRunCompleteMessage(message) {
+    var runCompleteMessage = document.getElementById("run-complete-message");
+    if (runCompleteMessage) {
+        runCompleteMessage.innerHTML = message;
+    }
+}
+
+function completeRun() {
+    var finalScore = score;
+    var skillPointsEarned = getSkillPointsForScore(finalScore, mode);
+
+    wins += 1;
+    progression.skillPoints += skillPointsEarned;
+    normalizeProgression();
+    saveProgression();
+
+    setRunCompleteMessage("Run complete! You earned " + skillPointsEarned + " skill point" + (skillPointsEarned === 1 ? "" : "s") + ".");
+
+    alert("Congratulations! You completed the run with a score of " + finalScore + " and earned " + skillPointsEarned + " skill point" + (skillPointsEarned === 1 ? "" : "s") + "!");
+    submitScore(finalScore);
+
+    currentDie = 0;
+    rolls = 0;
+    session = 0;
+    losses = 0;
+    high = 0;
+    score = 0;
+
+    document.getElementById("roll").innerHTML = "Required roll: " + dice[currentDie];
+    document.getElementById("score").innerHTML = "Score: " + score;
+    document.getElementById("total").innerHTML = "Rolls: " + rolls;
+    document.getElementById("session").innerHTML = "Session Rolls: " + session;
+    document.getElementById("wins").innerHTML = "wins: " + wins;
+    document.getElementById("losses").innerHTML = mode === "normal" ? "losses: " + losses : "";
+    document.getElementById("high").innerHTML = mode === "normal" ? "Highest Die rolled: " + dice[high] : "";
+
+    updateSkillTreeUI();
 }
 
 function canBuySkill(skillId) {
@@ -115,6 +167,7 @@ function buySkill(skillId) {
     }
 
     progression.ownedSkills.push(skillId);
+    progression.skillPoints = Math.max(0, progression.skillPoints - skill.cost);
     progression.spentSkillPoints += skill.cost;
     normalizeProgression();
     saveProgression();
@@ -308,25 +361,6 @@ function resetPlayerProgress(skipConfirm) {
 }
 
 function rollDice() {
-    if (currentDie >= dice.length) {
-        alert("Congratulations! You have rolled all of the dice in " + rolls + " rolls!");
-        currentDie = 0;
-        if (mode == "easy") {
-            score = 0;
-        }
-        rolls = 0;
-        wins += 1;
-        high = dice.indexOf(dice[currentDie]);
-        document.getElementById("roll").innerHTML = "";
-        document.getElementById("total").innerHTML = "Rolls: " + rolls;
-        document.getElementById("session").innerHTML = "Session Rolls: " + session;
-        document.getElementById("wins").innerHTML = "wins: " + wins;
-        document.getElementById("high").innerHTML = "Highest Die rolled: " + dice[high];
-        document.getElementById("score").innerHTML = score;
-        submitScore(score);
-        return;
-    }
-
     var requiredRoll = dice[currentDie];
     var initialRoll = getBaseRoll(requiredRoll);
     var finalRoll = initialRoll;
@@ -393,11 +427,10 @@ function rollDice() {
         }
 
         if (currentDie >= dice.length) {
-            document.getElementById("roll").innerHTML = "congrats";
-            document.getElementById("total").innerHTML = "Rolls: " + rolls;
-            document.getElementById("session").innerHTML = "Session Rolls: " + session;
-            document.getElementById("wins").innerHTML = "Wins: " + wins;
-            document.getElementById("high").innerHTML = "Highest Die rolled: " + dice[high];
+            completeRun();
+            updateSkillStatusMessage(skillActivationMessage);
+            setDevStatus("Run complete. Final roll: " + finalRoll + ".");
+            return;
         }
     } else {
         if (mode == "normal") {
@@ -425,6 +458,7 @@ function rollDice() {
 function setEasyMode() {
     mode = "easy";
     document.getElementById("mode").innerHTML = "Current mode: Easy";
+    setRunCompleteMessage("Easy mode: safer runs, but skill points are earned at 1 per 250 score.");
     currentDie = 0;
     score = 0;
     rolls = 0;
@@ -445,6 +479,7 @@ function setEasyMode() {
 function setNormalMode() {
     mode = "normal";
     document.getElementById("mode").innerHTML = "Current mode: Normal";
+    setRunCompleteMessage("Normal mode: harder runs that reset progress on failed rolls, but skill points are earned at 1 per 100 score.");
     currentDie = 0;
     score = 0;
     rolls = 0;
@@ -533,7 +568,7 @@ function devAddSkillPoints() {
         return;
     }
 
-    progression.totalRolls += pointsToAdd * SKILL_POINT_ROLL_INTERVAL;
+    progression.skillPoints += pointsToAdd;
     normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
@@ -545,7 +580,7 @@ function devSetSkillPoints() {
     var targetPoints = Number(document.getElementById("dev-set-skill-points-input").value);
     targetPoints = Math.max(0, targetPoints || 0);
 
-    progression.totalRolls = progression.spentSkillPoints * SKILL_POINT_ROLL_INTERVAL + (targetPoints * SKILL_POINT_ROLL_INTERVAL);
+    progression.skillPoints = targetPoints;
     normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
@@ -564,7 +599,7 @@ function devUnlockAllSkills() {
         var skill = getSkillById(skillId);
         return total + (skill ? skill.cost : 0);
     }, 0);
-    progression.totalRolls = Math.max(progression.totalRolls, progression.spentSkillPoints * SKILL_POINT_ROLL_INTERVAL);
+    progression.skillPoints = Math.max(progression.skillPoints, 0);
     normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
@@ -652,6 +687,7 @@ window.onload = function () {
     document.getElementById("wins").innerHTML = "wins: " + wins;
     document.getElementById("losses").innerHTML = mode === "normal" ? "losses: " + losses : "";
     document.getElementById("high").innerHTML = mode === "normal" ? "Highest Die rolled: " + dice[high] : "";
+    setRunCompleteMessage("Easy mode: safer runs, but skill points are earned at 1 per 250 score.");
     updateSkillTreeUI();
     updateSkillStatusMessage("No skill effect this roll.");
 };
