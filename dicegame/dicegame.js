@@ -12,9 +12,15 @@ var SKILL_TREE_UNLOCK_ROLLS = 25;
 var EASY_MODE_SKILL_POINT_SCORE_RATE = 250;
 var NORMAL_MODE_SKILL_POINT_SCORE_RATE = 100;
 var SKILLS = [
-    { id: "luckyEdge", name: "Lucky Edge", cost: 1, description: "15% chance to add +1 to your roll" },
-    { id: "momentum", name: "Momentum", cost: 2, description: "+10% score from rolls" },
-    { id: "secondChance", name: "Second Chance", cost: 3, description: "10% chance to reroll once after a failed roll" }
+    { id: "luckyEdge", name: "Lucky Edge", cost: 1, description: "15% chance to add +1 to your roll", type: "root" },
+    { id: "sharperEdge", name: "Sharper Edge", cost: 1, description: "Lucky Edge trigger chance +5% (20% chance for +1)", type: "branch", parentSkill: "luckyEdge", branchGroup: "luckyEdgeBranch" },
+    { id: "heavyEdge", name: "Heavy Edge", cost: 1, description: "Lucky Edge adds +2 instead of +1 (15% chance)", type: "branch", parentSkill: "luckyEdge", branchGroup: "luckyEdgeBranch" },
+    { id: "momentum", name: "Momentum", cost: 2, description: "+10% score from rolls", type: "root" },
+    { id: "greaterMomentum", name: "Greater Momentum", cost: 1, description: "Momentum bonus +5% (total +15% score)", type: "branch", parentSkill: "momentum", branchGroup: "momentumBranch" },
+    { id: "criticalMomentum", name: "Critical Momentum", cost: 1, description: "1% chance to double roll score (keeps Momentum +10%)", type: "branch", parentSkill: "momentum", branchGroup: "momentumBranch" },
+    { id: "secondChance", name: "Second Chance", cost: 3, description: "10% chance to reroll once after a failed roll", type: "root" },
+    { id: "saferChance", name: "Safer Chance", cost: 1, description: "Second Chance trigger chance +5% (15% total)", type: "branch", parentSkill: "secondChance", branchGroup: "secondChanceBranch" },
+    { id: "echoChance", name: "Echo Chance", cost: 1, description: "1% chance for one extra reroll if Second Chance reroll also fails", type: "branch", parentSkill: "secondChance", branchGroup: "secondChanceBranch" }
 ];
 
 var ROLL_COOLDOWN_MS = 320;
@@ -91,6 +97,23 @@ function isSkillOwned(skillId) {
     return progression.ownedSkills.indexOf(skillId) !== -1;
 }
 
+function getOwnedSkillInBranchGroup(branchGroup) {
+    return progression.ownedSkills.find(function (ownedSkillId) {
+        var skill = getSkillById(ownedSkillId);
+        return skill && skill.branchGroup === branchGroup;
+    }) || null;
+}
+
+function isSkillLockedByBranchChoice(skillId) {
+    var skill = getSkillById(skillId);
+    if (!skill || !skill.branchGroup) {
+        return false;
+    }
+
+    var ownedBranchSkillId = getOwnedSkillInBranchGroup(skill.branchGroup);
+    return !!ownedBranchSkillId && ownedBranchSkillId !== skillId;
+}
+
 function normalizeProgression() {
     progression.totalRolls = Math.max(0, Number(progression.totalRolls) || 0);
     progression.lifetimeScoreForSkillPoints = Math.max(0, Number(progression.lifetimeScoreForSkillPoints) || 0);
@@ -99,6 +122,30 @@ function normalizeProgression() {
 
     progression.ownedSkills = (Array.isArray(progression.ownedSkills) ? progression.ownedSkills : []).filter(function (skillId, index, list) {
         return !!getSkillById(skillId) && list.indexOf(skillId) === index;
+    });
+
+    progression.ownedSkills = progression.ownedSkills.filter(function (skillId) {
+        var skill = getSkillById(skillId);
+        if (!skill || !skill.parentSkill) {
+            return true;
+        }
+
+        return progression.ownedSkills.indexOf(skill.parentSkill) !== -1;
+    });
+
+    var ownedBranchByGroup = {};
+    progression.ownedSkills = progression.ownedSkills.filter(function (skillId) {
+        var skill = getSkillById(skillId);
+        if (!skill || !skill.branchGroup) {
+            return true;
+        }
+
+        if (ownedBranchByGroup[skill.branchGroup]) {
+            return false;
+        }
+
+        ownedBranchByGroup[skill.branchGroup] = skillId;
+        return true;
     });
 
     var minimumSpentFromOwned = progression.ownedSkills.reduce(function (total, skillId) {
@@ -227,6 +274,14 @@ function canBuySkill(skillId) {
         return false;
     }
 
+    if (skill.parentSkill && !isSkillOwned(skill.parentSkill)) {
+        return false;
+    }
+
+    if (isSkillLockedByBranchChoice(skillId)) {
+        return false;
+    }
+
     return progression.skillPoints >= skill.cost;
 }
 
@@ -259,18 +314,55 @@ function renderSkills() {
     var skillsContainer = document.getElementById("skills-container");
     skillsContainer.innerHTML = "";
 
-    SKILLS.forEach(function (skill) {
+    var rootSkills = SKILLS.filter(function (skill) {
+        return skill.type === "root";
+    });
+
+    rootSkills.forEach(function (rootSkill) {
+        var rootNode = document.createElement("div");
+        rootNode.className = "skill-root-node";
+        var rootCard = renderSingleSkillCard(rootSkill, false);
+        rootNode.appendChild(rootCard);
+
+        var branches = SKILLS.filter(function (skill) {
+            return skill.parentSkill === rootSkill.id;
+        });
+
+        if (branches.length) {
+            var branchContainer = document.createElement("div");
+            branchContainer.className = "skill-branches";
+            branches.forEach(function (branchSkill) {
+                branchContainer.appendChild(renderSingleSkillCard(branchSkill, true));
+            });
+            rootNode.appendChild(branchContainer);
+        }
+
+        skillsContainer.appendChild(rootNode);
+    });
+}
+
+function renderSingleSkillCard(skill, isBranch) {
         var skillCard = document.createElement("div");
-        skillCard.className = "skill-card";
+        skillCard.className = "skill-card" + (isBranch ? " skill-card-branch" : "");
         var owned = isSkillOwned(skill.id);
+        var lockedByBranchChoice = isSkillLockedByBranchChoice(skill.id);
+        var parentMissing = !!skill.parentSkill && !isSkillOwned(skill.parentSkill);
         var canBuy = canBuySkill(skill.id);
 
         skillCard.classList.add(owned ? "owned" : "locked");
         if (owned) {
             skillCard.classList.add("active");
         }
+        if (lockedByBranchChoice) {
+            skillCard.classList.add("branch-locked");
+        }
 
         var stateText = owned ? "Owned / Active" : "Not owned";
+        if (lockedByBranchChoice) {
+            stateText = "Locked by branch choice";
+        } else if (parentMissing) {
+            stateText = "Requires parent skill";
+        }
 
         skillCard.innerHTML = "<h4>" + skill.name + "</h4>" +
             "<p>" + skill.description + "</p>" +
@@ -279,19 +371,26 @@ function renderSkills() {
 
         var actionButton = document.createElement("button");
         if (!owned) {
-            actionButton.textContent = canBuy ? "Buy" : "Need " + skill.cost + " SP";
-            actionButton.disabled = !canBuy;
-            actionButton.onclick = function () {
-                buySkill(skill.id);
-            };
+            if (lockedByBranchChoice) {
+                actionButton.textContent = "Locked by branch choice";
+                actionButton.disabled = true;
+            } else if (parentMissing) {
+                actionButton.textContent = "Buy parent first";
+                actionButton.disabled = true;
+            } else {
+                actionButton.textContent = canBuy ? "Buy" : "Need " + skill.cost + " SP";
+                actionButton.disabled = !canBuy;
+                actionButton.onclick = function () {
+                    buySkill(skill.id);
+                };
+            }
         } else {
             actionButton.textContent = "Owned / Active";
             actionButton.disabled = true;
         }
 
         skillCard.appendChild(actionButton);
-        skillsContainer.appendChild(skillCard);
-    });
+        return skillCard;
 }
 
 function updateSkillTreeUI() {
@@ -458,20 +557,32 @@ function rollDice() {
     var hasMomentum = isSkillOwned("momentum");
 
     if (hasLuckyEdge) {
-        if (shouldActivateSkill(0.15, true)) {
-            finalRoll += 1;
-            skillActivationMessages.push("Lucky Edge +1");
-            showFloatingText("Lucky Edge +1", document.getElementById("roll-button"), "skill");
+        var luckyEdgeBonus = isSkillOwned("heavyEdge") ? 2 : 1;
+        var luckyEdgeChance = isSkillOwned("sharperEdge") ? 0.20 : 0.15;
+
+        if (shouldActivateSkill(luckyEdgeChance, true)) {
+            finalRoll += luckyEdgeBonus;
+            skillActivationMessages.push("Lucky Edge +" + luckyEdgeBonus);
+            showFloatingText("Lucky Edge +" + luckyEdgeBonus, document.getElementById("roll-button"), "skill");
         }
     }
 
     var failedRoll = finalRoll < requiredRoll;
     if (hasSecondChance && failedRoll) {
-        if (shouldActivateSkill(0.10, true)) {
+        var secondChanceChance = isSkillOwned("saferChance") ? 0.15 : 0.10;
+
+        if (shouldActivateSkill(secondChanceChance, true)) {
             skillActivationMessages.push("Second Chance!");
             showFloatingText("Second Chance!", document.getElementById("roll-button"), "skill");
             finalRoll = getRandomRollForDie(requiredRoll);
             failedRoll = finalRoll < requiredRoll;
+
+            if (failedRoll && isSkillOwned("echoChance") && shouldActivateSkill(0.01, true)) {
+                skillActivationMessages.push("Echo Chance!");
+                showFloatingText("Echo Chance!", document.getElementById("roll-button"), "skill");
+                finalRoll = getRandomRollForDie(requiredRoll);
+                failedRoll = finalRoll < requiredRoll;
+            }
         }
     }
 
@@ -506,11 +617,21 @@ function rollDice() {
     if (hasMomentum) {
         var baseScoreGained = score - scoreBeforeRoll;
         if (baseScoreGained > 0) {
-            var momentumBonus = Math.round(baseScoreGained * 0.10);
+            var momentumRate = isSkillOwned("greaterMomentum") ? 0.15 : 0.10;
+            var momentumBonus = Math.round(baseScoreGained * momentumRate);
             if (momentumBonus > 0) {
                 score += momentumBonus;
-                skillActivationMessages.push("Momentum +10% Score");
-                showFloatingText("Momentum +10% Score", document.getElementById("roll-button"), "skill");
+                skillActivationMessages.push("Momentum +" + Math.round(momentumRate * 100) + "% Score");
+                showFloatingText("Momentum +" + Math.round(momentumRate * 100) + "% Score", document.getElementById("roll-button"), "skill");
+            }
+
+            if (isSkillOwned("criticalMomentum") && shouldActivateSkill(0.01, true)) {
+                var criticalMomentumBonus = score - scoreBeforeRoll;
+                if (criticalMomentumBonus > 0) {
+                    score += criticalMomentumBonus;
+                    skillActivationMessages.push("Critical Momentum x2!");
+                    showFloatingText("Critical Momentum x2!", document.getElementById("roll-button"), "skill");
+                }
             }
         }
     }
@@ -678,7 +799,7 @@ function devResetProgression() {
 }
 
 function devUnlockAllSkills() {
-    progression.ownedSkills = SKILLS.map(function (skill) { return skill.id; });
+    progression.ownedSkills = ["luckyEdge", "sharperEdge", "momentum", "greaterMomentum", "secondChance", "saferChance"];
     progression.spentSkillPoints = progression.ownedSkills.reduce(function (total, skillId) {
         var skill = getSkillById(skillId);
         return total + (skill ? skill.cost : 0);
