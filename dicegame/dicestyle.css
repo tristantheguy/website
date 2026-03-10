@@ -274,15 +274,16 @@ select {
   border: 1px solid #4a5d74;
   border-radius: 10px;
   background: radial-gradient(circle at center, rgba(37, 52, 72, 0.9), rgba(8, 16, 28, 0.98));
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
 #skill-tree-canvas {
   position: relative;
   width: 1600px;
-  height: 680px;
+  height: 1100px;
   max-width: none;
-  margin: 18px auto;
+  margin: 18px;
   background:
     radial-gradient(circle at center, rgba(118, 158, 205, 0.12), rgba(118, 158, 205, 0) 62%),
     radial-gradient(circle, rgba(146, 182, 224, 0.07) 1px, rgba(0, 0, 0, 0) 1.8px);

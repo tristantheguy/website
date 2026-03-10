@@ -35,10 +35,10 @@ var SKILLS = [
 var ROLL_COOLDOWN_MS = 320;
 var isRollCoolingDown = false;
 var SKILL_GRAPH_NODE_SIZE = 86;
-var SKILL_GRAPH_MIN_WIDTH = 960;
-var SKILL_GRAPH_MAX_WIDTH = 1320;
-var SKILL_GRAPH_DEFAULT_WIDTH = 1200;
-var SKILL_GRAPH_HEIGHT = 680;
+var SKILL_GRAPH_MIN_WIDTH = 1500;
+var SKILL_GRAPH_MAX_WIDTH = 1700;
+var SKILL_GRAPH_DEFAULT_WIDTH = 1600;
+var SKILL_GRAPH_HEIGHT = 1100;
 var selectedSkillId = null;
 var SKILL_GRAPH_LAYOUT = {};
 
@@ -55,25 +55,25 @@ function buildSkillGraphLayout(graphWidth) {
 
     return {
         luckyEdge: { x: centerX.luckyEdge - halfNode, y: 120 },
-        sharperEdge: { x: centerX.luckyEdge - tierTwoBranchOffset - halfNode, y: 320 },
-        heavyEdge: { x: centerX.luckyEdge + tierTwoBranchOffset - halfNode, y: 320 },
-        keenEdge: { x: centerX.luckyEdge - tierThreeWideOffset - halfNode, y: 540 },
-        brutalEdge: { x: centerX.luckyEdge - tierThreeMidOffset + tierTwoBranchOffset - halfNode, y: 540 },
-        reliableEdge: { x: centerX.luckyEdge + tierThreeMidOffset + tierTwoBranchOffset - halfNode, y: 540 },
+        sharperEdge: { x: centerX.luckyEdge - tierTwoBranchOffset - halfNode, y: 450 },
+        heavyEdge: { x: centerX.luckyEdge + tierTwoBranchOffset - halfNode, y: 450 },
+        keenEdge: { x: centerX.luckyEdge - tierThreeWideOffset - halfNode, y: 800 },
+        brutalEdge: { x: centerX.luckyEdge - tierThreeMidOffset + tierTwoBranchOffset - halfNode, y: 800 },
+        reliableEdge: { x: centerX.luckyEdge + tierThreeMidOffset + tierTwoBranchOffset - halfNode, y: 800 },
 
         momentum: { x: centerX.momentum - halfNode, y: 120 },
-        greaterMomentum: { x: centerX.momentum - tierTwoBranchOffset - halfNode, y: 320 },
-        criticalMomentum: { x: centerX.momentum + tierTwoBranchOffset - halfNode, y: 320 },
-        overflowMomentum: { x: centerX.momentum - tierTwoBranchOffset - halfNode, y: 540 },
-        burstMomentum: { x: centerX.momentum + tierTwoBranchOffset - tierThreeMidOffset - halfNode, y: 540 },
-        deadlyMomentum: { x: centerX.momentum + tierTwoBranchOffset + tierThreeMidOffset - halfNode, y: 540 },
+        greaterMomentum: { x: centerX.momentum - tierTwoBranchOffset - halfNode, y: 450 },
+        criticalMomentum: { x: centerX.momentum + tierTwoBranchOffset - halfNode, y: 450 },
+        overflowMomentum: { x: centerX.momentum - tierTwoBranchOffset - halfNode, y: 800 },
+        burstMomentum: { x: centerX.momentum + tierTwoBranchOffset - tierThreeMidOffset - halfNode, y: 800 },
+        deadlyMomentum: { x: centerX.momentum + tierTwoBranchOffset + tierThreeMidOffset - halfNode, y: 800 },
 
         secondChance: { x: centerX.secondChance - halfNode, y: 120 },
-        saferChance: { x: centerX.secondChance - tierTwoBranchOffset - halfNode, y: 320 },
-        echoChance: { x: centerX.secondChance + tierTwoBranchOffset - halfNode, y: 320 },
-        steadierChance: { x: centerX.secondChance - tierTwoBranchOffset - halfNode, y: 540 },
-        tripleEcho: { x: centerX.secondChance + tierTwoBranchOffset - tierThreeMidOffset - halfNode, y: 540 },
-        doubleRoll: { x: centerX.secondChance + tierTwoBranchOffset + tierThreeMidOffset - halfNode, y: 540 }
+        saferChance: { x: centerX.secondChance - tierTwoBranchOffset - halfNode, y: 450 },
+        echoChance: { x: centerX.secondChance + tierTwoBranchOffset - halfNode, y: 450 },
+        steadierChance: { x: centerX.secondChance - tierTwoBranchOffset - halfNode, y: 800 },
+        tripleEcho: { x: centerX.secondChance + tierTwoBranchOffset - tierThreeMidOffset - halfNode, y: 800 },
+        doubleRoll: { x: centerX.secondChance + tierTwoBranchOffset + tierThreeMidOffset - halfNode, y: 800 }
     };
 }
 
@@ -432,7 +432,7 @@ function renderSkills() {
     }
 
     var viewportWidth = viewport.clientWidth || SKILL_GRAPH_DEFAULT_WIDTH;
-    var graphWidth = Math.max(SKILL_GRAPH_MIN_WIDTH, Math.min(SKILL_GRAPH_MAX_WIDTH, viewportWidth - 36));
+    var graphWidth = Math.max(SKILL_GRAPH_MIN_WIDTH, Math.min(SKILL_GRAPH_MAX_WIDTH, Math.max(SKILL_GRAPH_DEFAULT_WIDTH, viewportWidth - 36)));
     SKILL_GRAPH_LAYOUT = buildSkillGraphLayout(graphWidth);
 
     var visibleSkills = getVisibleSkills();
@@ -468,6 +468,11 @@ function renderSkills() {
             renderConnectorLine(connectionLayer, skill.parentSkill, skill.id, renderedNodeElements[skill.parentSkill], renderedNodeElements[skill.id]);
         }
     });
+
+    if (selectedSkillId && renderedNodeElements[selectedSkillId]) {
+        renderedNodeElements[selectedSkillId].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+    }
+
     renderSkillDetailPanel();
 }
 
