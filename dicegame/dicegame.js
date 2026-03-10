@@ -26,20 +26,23 @@ var SKILLS = [
 var ROLL_COOLDOWN_MS = 320;
 var isRollCoolingDown = false;
 var SKILL_GRAPH_NODE_SIZE = 86;
+var SKILL_GRAPH_WORLD_WIDTH = 3200;
+var SKILL_GRAPH_WORLD_HEIGHT = 2400;
+var SKILL_GRAPH_PAN_PADDING = 240;
 var SKILL_GRAPH_MIN_SCALE = 0.6;
 var SKILL_GRAPH_MAX_SCALE = 2.0;
-var skillGraphPan = { x: -200, y: -120, scale: 1, initialized: false, dragging: false, startX: 0, startY: 0, startPanX: 0, startPanY: 0 };
+var skillGraphPan = { x: 0, y: 0, scale: 1, initialized: false, dragging: false, startX: 0, startY: 0, startPanX: 0, startPanY: 0 };
 var selectedSkillId = null;
 var SKILL_GRAPH_LAYOUT = {
-    luckyEdge: { x: 300, y: 180 },
-    sharperEdge: { x: 170, y: 340 },
-    heavyEdge: { x: 430, y: 340 },
-    momentum: { x: 800, y: 180 },
-    greaterMomentum: { x: 670, y: 340 },
-    criticalMomentum: { x: 930, y: 340 },
-    secondChance: { x: 1300, y: 180 },
-    saferChance: { x: 1170, y: 340 },
-    echoChance: { x: 1430, y: 340 }
+    luckyEdge: { x: 900, y: 860 },
+    sharperEdge: { x: 760, y: 1060 },
+    heavyEdge: { x: 1040, y: 1060 },
+    momentum: { x: 1550, y: 860 },
+    greaterMomentum: { x: 1410, y: 1060 },
+    criticalMomentum: { x: 1690, y: 1060 },
+    secondChance: { x: 2200, y: 860 },
+    saferChance: { x: 2060, y: 1060 },
+    echoChance: { x: 2340, y: 1060 }
 };
 
 var progression = loadProgression();
@@ -402,17 +405,32 @@ function renderSkills() {
 
     nodeLayer.innerHTML = "";
     connectionLayer.innerHTML = "";
-    connectionLayer.setAttribute("width", String(canvas.offsetWidth));
-    connectionLayer.setAttribute("height", String(canvas.offsetHeight));
-    connectionLayer.setAttribute("viewBox", "0 0 " + canvas.offsetWidth + " " + canvas.offsetHeight);
+    canvas.style.width = SKILL_GRAPH_WORLD_WIDTH + "px";
+    canvas.style.height = SKILL_GRAPH_WORLD_HEIGHT + "px";
+
+    connectionLayer.setAttribute("width", String(SKILL_GRAPH_WORLD_WIDTH));
+    connectionLayer.setAttribute("height", String(SKILL_GRAPH_WORLD_HEIGHT));
+    connectionLayer.setAttribute("viewBox", "0 0 " + SKILL_GRAPH_WORLD_WIDTH + " " + SKILL_GRAPH_WORLD_HEIGHT);
     connectionLayer.setAttribute("preserveAspectRatio", "none");
 
+    var renderedNodeElements = {};
+
     visibleSkills.forEach(function (skill) {
-        nodeLayer.appendChild(renderSingleSkillNode(skill));
+        var renderedNode = renderSingleSkillNode(skill);
+        nodeLayer.appendChild(renderedNode);
+        renderedNodeElements[skill.id] = renderedNode;
+    });
+
+    visibleSkills.forEach(function (skill) {
         if (skill.parentSkill && visibleSkillMap[skill.parentSkill]) {
-            renderConnectorLine(connectionLayer, skill.parentSkill, skill.id);
+            renderConnectorLine(connectionLayer, skill.parentSkill, skill.id, renderedNodeElements[skill.parentSkill], renderedNodeElements[skill.id]);
         }
     });
+
+    if (!skillGraphPan.initialized) {
+        centerSkillGraphViewport();
+        skillGraphPan.initialized = true;
+    }
 
     updateSkillGraphPanBounds();
     applySkillGraphPan();
@@ -531,10 +549,8 @@ function hideSkillTooltip() {
     tooltip.setAttribute("aria-hidden", "true");
 }
 
-function renderConnectorLine(svgElement, parentSkillId, childSkillId) {
-    var parentPosition = SKILL_GRAPH_LAYOUT[parentSkillId];
-    var childPosition = SKILL_GRAPH_LAYOUT[childSkillId];
-    if (!parentPosition || !childPosition) {
+function renderConnectorLine(svgElement, parentSkillId, childSkillId, parentNode, childNode) {
+    if (!parentNode || !childNode) {
         return;
     }
 
@@ -543,10 +559,10 @@ function renderConnectorLine(svgElement, parentSkillId, childSkillId) {
     var childUnavailable = isSkillLockedByBranchChoice(childSkillId);
     var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
 
-    line.setAttribute("x1", String(parentPosition.x + (SKILL_GRAPH_NODE_SIZE / 2)));
-    line.setAttribute("y1", String(parentPosition.y + (SKILL_GRAPH_NODE_SIZE / 2)));
-    line.setAttribute("x2", String(childPosition.x + (SKILL_GRAPH_NODE_SIZE / 2)));
-    line.setAttribute("y2", String(childPosition.y + (SKILL_GRAPH_NODE_SIZE / 2)));
+    line.setAttribute("x1", String(parentNode.offsetLeft + (parentNode.offsetWidth / 2)));
+    line.setAttribute("y1", String(parentNode.offsetTop + (parentNode.offsetHeight / 2)));
+    line.setAttribute("x2", String(childNode.offsetLeft + (childNode.offsetWidth / 2)));
+    line.setAttribute("y2", String(childNode.offsetTop + (childNode.offsetHeight / 2)));
 
     if (parentOwned && childOwned) {
         line.classList.add("path-active");
@@ -555,6 +571,16 @@ function renderConnectorLine(svgElement, parentSkillId, childSkillId) {
     }
 
     svgElement.appendChild(line);
+}
+
+function centerSkillGraphViewport() {
+    var viewport = document.getElementById("skill-tree-viewport");
+    if (!viewport) {
+        return;
+    }
+
+    skillGraphPan.x = (viewport.clientWidth - SKILL_GRAPH_WORLD_WIDTH) / 2;
+    skillGraphPan.y = (viewport.clientHeight - SKILL_GRAPH_WORLD_HEIGHT) / 2;
 }
 
 function applySkillGraphPan() {
@@ -573,7 +599,7 @@ function updateSkillGraphPanBounds() {
         return;
     }
 
-    var padding = 80;
+    var padding = SKILL_GRAPH_PAN_PADDING;
     var scaledCanvasWidth = canvas.offsetWidth * skillGraphPan.scale;
     var scaledCanvasHeight = canvas.offsetHeight * skillGraphPan.scale;
     var minX = viewport.clientWidth - scaledCanvasWidth - padding;
