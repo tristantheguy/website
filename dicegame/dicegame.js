@@ -26,7 +26,9 @@ var SKILLS = [
 var ROLL_COOLDOWN_MS = 320;
 var isRollCoolingDown = false;
 var SKILL_GRAPH_NODE_SIZE = 86;
-var skillGraphPan = { x: -200, y: -120, initialized: false, dragging: false, startX: 0, startY: 0, startPanX: 0, startPanY: 0 };
+var SKILL_GRAPH_MIN_SCALE = 0.6;
+var SKILL_GRAPH_MAX_SCALE = 2.0;
+var skillGraphPan = { x: -200, y: -120, scale: 1, initialized: false, dragging: false, startX: 0, startY: 0, startPanX: 0, startPanY: 0 };
 var selectedSkillId = null;
 var SKILL_GRAPH_LAYOUT = {
     luckyEdge: { x: 150, y: 250 },
@@ -557,7 +559,7 @@ function applySkillGraphPan() {
         return;
     }
 
-    canvas.style.transform = "translate(" + skillGraphPan.x + "px, " + skillGraphPan.y + "px)";
+    canvas.style.transform = "translate(" + skillGraphPan.x + "px, " + skillGraphPan.y + "px) scale(" + skillGraphPan.scale + ")";
 }
 
 function updateSkillGraphPanBounds() {
@@ -568,10 +570,22 @@ function updateSkillGraphPanBounds() {
     }
 
     var padding = 80;
-    var minX = viewport.clientWidth - canvas.offsetWidth - padding;
-    var minY = viewport.clientHeight - canvas.offsetHeight - padding;
+    var scaledCanvasWidth = canvas.offsetWidth * skillGraphPan.scale;
+    var scaledCanvasHeight = canvas.offsetHeight * skillGraphPan.scale;
+    var minX = viewport.clientWidth - scaledCanvasWidth - padding;
+    var minY = viewport.clientHeight - scaledCanvasHeight - padding;
     var maxX = padding;
     var maxY = padding;
+
+    if (minX > maxX) {
+        minX = (viewport.clientWidth - scaledCanvasWidth) / 2;
+        maxX = minX;
+    }
+
+    if (minY > maxY) {
+        minY = (viewport.clientHeight - scaledCanvasHeight) / 2;
+        maxY = minY;
+    }
 
     skillGraphPan.x = Math.min(maxX, Math.max(minX, skillGraphPan.x));
     skillGraphPan.y = Math.min(maxY, Math.max(minY, skillGraphPan.y));
@@ -619,6 +633,31 @@ function initSkillTreeGraphInteraction() {
         viewport.classList.remove("dragging");
         viewport.releasePointerCapture(event.pointerId);
     });
+
+    viewport.addEventListener("wheel", function (event) {
+        event.preventDefault();
+
+        var viewportRect = viewport.getBoundingClientRect();
+        var pointerX = event.clientX - viewportRect.left;
+        var pointerY = event.clientY - viewportRect.top;
+        var currentScale = skillGraphPan.scale;
+        var zoomFactor = Math.pow(1.0015, -event.deltaY);
+        var nextScale = Math.min(SKILL_GRAPH_MAX_SCALE, Math.max(SKILL_GRAPH_MIN_SCALE, currentScale * zoomFactor));
+
+        if (nextScale === currentScale) {
+            return;
+        }
+
+        var worldX = (pointerX - skillGraphPan.x) / currentScale;
+        var worldY = (pointerY - skillGraphPan.y) / currentScale;
+
+        skillGraphPan.scale = nextScale;
+        skillGraphPan.x = pointerX - (worldX * nextScale);
+        skillGraphPan.y = pointerY - (worldY * nextScale);
+
+        updateSkillGraphPanBounds();
+        applySkillGraphPan();
+    }, { passive: false });
 
     window.addEventListener("resize", function () {
         updateSkillGraphPanBounds();

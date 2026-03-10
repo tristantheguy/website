@@ -245,9 +245,10 @@ select {
 
 #skill-tree-panel {
   position: fixed;
-  right: -620px;
-  top: 190px;
-  width: 580px;
+  right: -95vw;
+  top: 8vh;
+  width: 88vw;
+  height: 80vh;
   background: rgba(9, 16, 28, 0.94);
   color: #ecf1f8;
   border: 1px solid #435369;
@@ -255,18 +256,21 @@ select {
   padding: 12px;
   transition: right 0.25s ease-in-out;
   z-index: 999;
-  max-height: 78vh;
+  max-width: 1500px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 #skill-tree-panel.open {
-  right: 20px;
+  right: 6vw;
 }
 
 
 #skill-tree-viewport {
   position: relative;
-  height: 420px;
+  height: 100%;
+  min-height: 520px;
   border: 1px solid #4a5d74;
   border-radius: 10px;
   background: radial-gradient(circle at center, rgba(37, 52, 72, 0.9), rgba(8, 16, 28, 0.98));
@@ -280,10 +284,11 @@ select {
 
 #skill-tree-canvas {
   position: relative;
-  width: 980px;
-  height: 700px;
+  width: 1280px;
+  height: 900px;
   transform: translate(-200px, -120px);
   will-change: transform;
+  transform-origin: top left;
 }
 
 #skill-tree-connections,
@@ -293,8 +298,8 @@ select {
 }
 
 #skill-tree-connections line {
-  stroke: rgba(130, 158, 192, 0.38);
-  stroke-width: 3;
+  stroke: rgba(150, 182, 220, 0.6);
+  stroke-width: 4;
 }
 
 #skill-tree-connections line.path-active {
@@ -322,9 +327,11 @@ select {
 #skills-container {
   margin-top: 10px;
   display: grid;
-  grid-template-columns: 1fr 210px;
+  grid-template-columns: minmax(0, 1fr) 280px;
   gap: 10px;
   align-items: start;
+  flex: 1;
+  min-height: 0;
 }
 
 .skill-node {
