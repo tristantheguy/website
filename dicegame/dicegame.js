@@ -325,8 +325,13 @@ function toggleSkillTree() {
     }
 
     var panel = document.getElementById("skill-tree-panel");
+    var opening = !panel.classList.contains("open");
     panel.classList.toggle("open");
     updateSkillTreeUI();
+
+    if (opening) {
+        refreshSkillGraphViewport(true);
+    }
 }
 
 function getVisibleSkills() {
@@ -427,14 +432,41 @@ function renderSkills() {
         }
     });
 
-    if (!skillGraphPan.initialized) {
-        centerSkillGraphViewport();
-        skillGraphPan.initialized = true;
+    if (!skillGraphPan.initialized && hasSkillGraphViewportDimensions()) {
+        if (centerSkillGraphOnVisibleNodes()) {
+            skillGraphPan.initialized = true;
+        }
     }
 
     updateSkillGraphPanBounds();
     applySkillGraphPan();
     renderSkillDetailPanel();
+}
+
+function getVisibleSkillNodesBounds(nodeElements) {
+    var nodes = nodeElements || Array.prototype.slice.call(document.querySelectorAll("#skill-tree-node-layer .skill-node"));
+    if (!nodes.length) {
+        return null;
+    }
+
+    var minX = Infinity;
+    var minY = Infinity;
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+
+    nodes.forEach(function (node) {
+        var nodeX = node.offsetLeft;
+        var nodeY = node.offsetTop;
+        var nodeWidth = node.offsetWidth || SKILL_GRAPH_NODE_SIZE;
+        var nodeHeight = node.offsetHeight || SKILL_GRAPH_NODE_SIZE;
+
+        minX = Math.min(minX, nodeX);
+        minY = Math.min(minY, nodeY);
+        maxX = Math.max(maxX, nodeX + nodeWidth);
+        maxY = Math.max(maxY, nodeY + nodeHeight);
+    });
+
+    return { minX: minX, minY: minY, maxX: maxX, maxY: maxY };
 }
 
 function renderSingleSkillNode(skill) {
@@ -583,6 +615,35 @@ function centerSkillGraphViewport() {
     skillGraphPan.y = (viewport.clientHeight - SKILL_GRAPH_WORLD_HEIGHT) / 2;
 }
 
+function hasSkillGraphViewportDimensions() {
+    var viewport = document.getElementById("skill-tree-viewport");
+    return !!viewport && viewport.clientWidth > 0 && viewport.clientHeight > 0;
+}
+
+function centerSkillGraphOnVisibleNodes() {
+    var viewport = document.getElementById("skill-tree-viewport");
+    if (!viewport || viewport.clientWidth <= 0 || viewport.clientHeight <= 0) {
+        return false;
+    }
+
+    var visibleBounds = getVisibleSkillNodesBounds();
+    if (!visibleBounds) {
+        centerSkillGraphViewport();
+        updateSkillGraphPanBounds();
+        applySkillGraphPan();
+        return true;
+    }
+
+    var centerX = (visibleBounds.minX + visibleBounds.maxX) / 2;
+    var centerY = (visibleBounds.minY + visibleBounds.maxY) / 2;
+
+    skillGraphPan.x = (viewport.clientWidth / 2) - (centerX * skillGraphPan.scale);
+    skillGraphPan.y = (viewport.clientHeight / 2) - (centerY * skillGraphPan.scale);
+    updateSkillGraphPanBounds();
+    applySkillGraphPan();
+    return true;
+}
+
 function applySkillGraphPan() {
     var canvas = document.getElementById("skill-tree-canvas");
     if (!canvas) {
@@ -600,25 +661,61 @@ function updateSkillGraphPanBounds() {
     }
 
     var padding = SKILL_GRAPH_PAN_PADDING;
-    var scaledCanvasWidth = canvas.offsetWidth * skillGraphPan.scale;
-    var scaledCanvasHeight = canvas.offsetHeight * skillGraphPan.scale;
-    var minX = viewport.clientWidth - scaledCanvasWidth - padding;
-    var minY = viewport.clientHeight - scaledCanvasHeight - padding;
-    var maxX = padding;
-    var maxY = padding;
+    var visibleBounds = getVisibleSkillNodesBounds();
+    var worldMinX = visibleBounds ? visibleBounds.minX : 0;
+    var worldMinY = visibleBounds ? visibleBounds.minY : 0;
+    var worldMaxX = visibleBounds ? visibleBounds.maxX : canvas.offsetWidth;
+    var worldMaxY = visibleBounds ? visibleBounds.maxY : canvas.offsetHeight;
+
+    var scaledBoundsLeft = worldMinX * skillGraphPan.scale;
+    var scaledBoundsTop = worldMinY * skillGraphPan.scale;
+    var scaledBoundsRight = worldMaxX * skillGraphPan.scale;
+    var scaledBoundsBottom = worldMaxY * skillGraphPan.scale;
+    var scaledBoundsWidth = scaledBoundsRight - scaledBoundsLeft;
+    var scaledBoundsHeight = scaledBoundsBottom - scaledBoundsTop;
+
+    var minX = viewport.clientWidth - scaledBoundsRight - padding;
+    var minY = viewport.clientHeight - scaledBoundsBottom - padding;
+    var maxX = padding - scaledBoundsLeft;
+    var maxY = padding - scaledBoundsTop;
 
     if (minX > maxX) {
-        minX = (viewport.clientWidth - scaledCanvasWidth) / 2;
+        minX = ((viewport.clientWidth - scaledBoundsWidth) / 2) - scaledBoundsLeft;
         maxX = minX;
     }
 
     if (minY > maxY) {
-        minY = (viewport.clientHeight - scaledCanvasHeight) / 2;
+        minY = ((viewport.clientHeight - scaledBoundsHeight) / 2) - scaledBoundsTop;
         maxY = minY;
     }
 
     skillGraphPan.x = Math.min(maxX, Math.max(minX, skillGraphPan.x));
     skillGraphPan.y = Math.min(maxY, Math.max(minY, skillGraphPan.y));
+}
+
+function refreshSkillGraphViewport(centerOnVisibleNodes) {
+    var retries = 0;
+
+    function reflowSkillGraph() {
+        if (!hasSkillGraphViewportDimensions()) {
+            retries += 1;
+            if (retries < 8) {
+                window.setTimeout(reflowSkillGraph, 40);
+            }
+            return;
+        }
+
+        if (centerOnVisibleNodes) {
+            if (centerSkillGraphOnVisibleNodes()) {
+                skillGraphPan.initialized = true;
+            }
+        } else {
+            updateSkillGraphPanBounds();
+            applySkillGraphPan();
+        }
+    }
+
+    window.requestAnimationFrame(reflowSkillGraph);
 }
 
 function initSkillTreeGraphInteraction() {
@@ -690,8 +787,7 @@ function initSkillTreeGraphInteraction() {
     }, { passive: false });
 
     window.addEventListener("resize", function () {
-        updateSkillGraphPanBounds();
-        applySkillGraphPan();
+        refreshSkillGraphViewport(false);
     });
 }
 
