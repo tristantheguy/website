@@ -29,18 +29,29 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
     </div>
 
     <!-- display buttons that the player can click to roll the dice and set the mode -->
-    <button onclick="setEasyMode()">Easy</button>
-    <button onclick="setNormalMode()">Normal</button>
+    <div class="top-controls">
+        <button onclick="setEasyMode()">Easy</button>
+        <button onclick="setNormalMode()">Normal</button>
+        <button id="info-toggle" onclick="toggleInfoPanel()" aria-expanded="false">Info / Rules</button>
+    </div>
 
-    <div id="mode-details">
-        <p><strong>Easy Mode:</strong> safer, lower skill point rewards (1 per 250 score).</p>
-        <p><strong>Normal Mode:</strong> harder, resets progress on failed rolls, better skill point rewards (1 per 100 score).</p>
+    <div id="info-panel" style="display: none;">
+        <h3>How to Play</h3>
+        <ul>
+            <li><strong>Dice progression:</strong> clear each die in order: d4, d6, d8, d10, d12, then d20.</li>
+            <li><strong>Easy mode:</strong> safer runs, failed rolls do not reset progression. Earn 1 skill point per 250 score.</li>
+            <li><strong>Normal mode:</strong> harder runs, failed rolls reset the die progression to the beginning. Earn 1 skill point per 100 score.</li>
+            <li><strong>Skill points:</strong> awarded when you complete a run based on your final score and mode.</li>
+            <li><strong>Failed rolls:</strong> if your roll is below the required value, you fail that step (and reset to start in normal mode).</li>
+            <li><strong>Dev mode:</strong> enter <code>devmode</code> as the player name to open developer tools.</li>
+        </ul>
     </div>
 
     <!-- display the player's roll, score and the required number for the current die -->
     <p id="mode"></p>
     <p id="roll"></p>
     <p id="score"></p>
+    <p id="status-message" aria-live="polite">Choose a mode and roll to begin.</p>
     <p id="total"></p>
     <p id="session"></p>
     <p id="wins"></p>

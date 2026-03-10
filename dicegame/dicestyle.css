@@ -68,17 +68,33 @@ select {
   margin-bottom: 0;
 }
 
-#mode-details {
+.top-controls {
+  display: flex;
+  gap: 10px;
   margin-top: 12px;
-  max-width: 780px;
-  background: rgba(10, 18, 30, 0.82);
-  border: 1px solid #44556d;
-  border-radius: 8px;
-  padding: 10px;
+  flex-wrap: wrap;
 }
 
-#mode-details p {
-  margin: 6px 0;
+#info-panel {
+  margin-top: 12px;
+  max-width: 780px;
+  background: rgba(10, 18, 30, 0.86);
+  border: 1px solid #44556d;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+#info-panel h3 {
+  margin-top: 0;
+}
+
+#info-panel ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+#info-panel li {
+  margin-bottom: 6px;
   color: #d9e3ef;
 }
 
@@ -96,6 +112,33 @@ select {
 
 #score {
   color: #cfe5ff;
+  font-size: 2.2em;
+  font-weight: 700;
+}
+
+#status-message {
+  margin-top: 10px;
+  max-width: 780px;
+  background: rgba(8, 16, 28, 0.86);
+  border: 1px solid #42546a;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 1.1em;
+}
+
+#status-message.status-success {
+  border-color: #4ca06f;
+  color: #b8ffd2;
+}
+
+#status-message.status-warning {
+  border-color: #b08a41;
+  color: #ffe2a8;
+}
+
+#status-message.status-info {
+  border-color: #4a7aa7;
+  color: #d4e9ff;
 }
 
 #leaderboard {

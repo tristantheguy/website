@@ -17,6 +17,9 @@ var SKILLS = [
     { id: "secondChance", name: "Second Chance", cost: 3, description: "10% chance to reroll once after a failed roll" }
 ];
 
+var ROLL_COOLDOWN_MS = 320;
+var isRollCoolingDown = false;
+
 var progression = loadProgression();
 var debugState = {
     enabled: false,
@@ -119,6 +122,61 @@ function setRunCompleteMessage(message) {
     }
 }
 
+function getModeLabel() {
+    return mode === "normal" ? "Normal" : "Easy";
+}
+
+function setStatusMessage(message, tone) {
+    var statusMessage = document.getElementById("status-message");
+    if (!statusMessage) {
+        return;
+    }
+
+    statusMessage.innerHTML = message;
+    statusMessage.className = "";
+    if (tone) {
+        statusMessage.classList.add("status-" + tone);
+    }
+}
+
+function updateGameDisplay(rollMessage) {
+    document.getElementById("mode").innerHTML = "Current mode: " + getModeLabel();
+    document.getElementById("roll").innerHTML = rollMessage || "Required roll: " + dice[currentDie];
+    document.getElementById("score").innerHTML = "Score: " + score;
+    document.getElementById("total").innerHTML = "Rolls: " + rolls;
+    document.getElementById("session").innerHTML = "Session Rolls: " + session;
+    document.getElementById("wins").innerHTML = "wins: " + wins;
+    document.getElementById("losses").innerHTML = mode === "normal" ? "losses: " + losses : "";
+    document.getElementById("high").innerHTML = mode === "normal" ? "Highest Die rolled: " + dice[high] : "";
+}
+
+function toggleInfoPanel() {
+    var infoPanel = document.getElementById("info-panel");
+    var infoButton = document.getElementById("info-toggle");
+    if (!infoPanel || !infoButton) {
+        return;
+    }
+
+    var opening = infoPanel.style.display === "none";
+    infoPanel.style.display = opening ? "block" : "none";
+    infoButton.setAttribute("aria-expanded", opening ? "true" : "false");
+}
+
+function triggerRollCooldown() {
+    var rollButton = document.getElementById("roll-button");
+    isRollCoolingDown = true;
+    if (rollButton) {
+        rollButton.disabled = true;
+    }
+
+    window.setTimeout(function () {
+        isRollCoolingDown = false;
+        if (rollButton) {
+            rollButton.disabled = false;
+        }
+    }, ROLL_COOLDOWN_MS);
+}
+
 function completeRun() {
     var finalScore = score;
     var skillPointsEarned = getSkillPointsForScore(finalScore, mode);
@@ -129,8 +187,7 @@ function completeRun() {
     saveProgression();
 
     setRunCompleteMessage("Run complete! You earned " + skillPointsEarned + " skill point" + (skillPointsEarned === 1 ? "" : "s") + ".");
-
-    alert("Congratulations! You completed the run with a score of " + finalScore + " and earned " + skillPointsEarned + " skill point" + (skillPointsEarned === 1 ? "" : "s") + "!");
+    setStatusMessage("Run complete! You earned " + skillPointsEarned + " skill point" + (skillPointsEarned === 1 ? "" : "s") + ".", "success");
     submitScore(finalScore);
 
     currentDie = 0;
@@ -140,14 +197,7 @@ function completeRun() {
     high = 0;
     score = 0;
 
-    document.getElementById("roll").innerHTML = "Required roll: " + dice[currentDie];
-    document.getElementById("score").innerHTML = "Score: " + score;
-    document.getElementById("total").innerHTML = "Rolls: " + rolls;
-    document.getElementById("session").innerHTML = "Session Rolls: " + session;
-    document.getElementById("wins").innerHTML = "wins: " + wins;
-    document.getElementById("losses").innerHTML = mode === "normal" ? "losses: " + losses : "";
-    document.getElementById("high").innerHTML = mode === "normal" ? "Highest Die rolled: " + dice[high] : "";
-
+    updateGameDisplay();
     updateSkillTreeUI();
 }
 
@@ -345,15 +395,8 @@ function resetPlayerProgress(skipConfirm) {
     debugState.forcedNextRoll = null;
     debugState.forcedSkillTrigger = false;
 
-    document.getElementById("mode").innerHTML = "Current mode: " + mode;
-    document.getElementById("roll").innerHTML = "Required roll: " + dice[currentDie];
-    document.getElementById("score").innerHTML = "Score: " + score;
-    document.getElementById("total").innerHTML = "Rolls: " + rolls;
-    document.getElementById("session").innerHTML = "Session Rolls: " + session;
-    document.getElementById("wins").innerHTML = "wins: " + wins;
-    document.getElementById("losses").innerHTML = "";
-    document.getElementById("high").innerHTML = "";
-
+    updateGameDisplay();
+    setStatusMessage("Progress reset. Choose a mode and roll to begin.", "info");
     updateSkillStatusMessage("No skill effect this roll.");
     updateSkillTreeUI();
     syncDevInputs();
@@ -361,6 +404,12 @@ function resetPlayerProgress(skipConfirm) {
 }
 
 function rollDice() {
+    if (isRollCoolingDown) {
+        return;
+    }
+
+    triggerRollCooldown();
+
     var requiredRoll = dice[currentDie];
     var initialRoll = getBaseRoll(requiredRoll);
     var finalRoll = initialRoll;
@@ -432,23 +481,20 @@ function rollDice() {
             setDevStatus("Run complete. Final roll: " + finalRoll + ".");
             return;
         }
+
+        updateGameDisplay("You rolled a " + finalRoll + " (required: " + requiredRoll + ")");
+        setStatusMessage("Great roll! Keep climbing.", "success");
     } else {
         if (mode == "normal") {
-            alert("You rolled a " + finalRoll + ", which is not high enough. You have been sent back to the beginning.");
             currentDie = 0;
             losses += 1;
-            document.getElementById("losses").innerHTML = "losses: " + losses;
+            updateGameDisplay("You rolled a " + finalRoll + " (required: " + requiredRoll + ")");
+            setStatusMessage("You rolled a " + finalRoll + ". Not high enough. Back to the beginning.", "warning");
         } else {
-            alert("You rolled a " + finalRoll + ", which is not high enough. Roll again.");
+            updateGameDisplay("You rolled a " + finalRoll + " (required: " + requiredRoll + ")");
+            setStatusMessage("You rolled a " + finalRoll + ". Not high enough. Roll again.", "warning");
         }
     }
-
-    document.getElementById("roll").innerHTML = "You rolled a " + finalRoll + " (required: " + requiredRoll + ")";
-    document.getElementById("score").innerHTML = "Score: " + score;
-    document.getElementById("total").innerHTML = "Rolls: " + rolls;
-    document.getElementById("session").innerHTML = "Session Rolls: " + session;
-    document.getElementById("wins").innerHTML = "wins: " + wins;
-    document.getElementById("high").innerHTML = "Highest Die rolled: " + dice[high];
 
     updateSkillTreeUI();
     updateSkillStatusMessage(skillActivationMessage);
@@ -457,28 +503,21 @@ function rollDice() {
 
 function setEasyMode() {
     mode = "easy";
-    document.getElementById("mode").innerHTML = "Current mode: Easy";
     setRunCompleteMessage("Easy mode: safer runs, but skill points are earned at 1 per 250 score.");
     currentDie = 0;
     score = 0;
     rolls = 0;
     session = 0;
     wins = 0;
-    high = dice.indexOf(dice[currentDie]);
-    document.getElementById("roll").innerHTML = "";
-    document.getElementById("score").innerHTML = "Score: " + score;
-    document.getElementById("total").innerHTML = "Rolls: " + rolls;
-    document.getElementById("session").innerHTML = "Session Rolls: " + session;
-    document.getElementById("wins").innerHTML = "wins: " + wins;
-    document.getElementById("losses").innerHTML = "";
-    document.getElementById("high").innerHTML = "";
+    high = 0;
+    updateGameDisplay();
+    setStatusMessage("Easy mode enabled. Failed rolls let you try the same die again.", "info");
     updateSkillStatusMessage("No skill effect this roll.");
     return;
 }
 
 function setNormalMode() {
     mode = "normal";
-    document.getElementById("mode").innerHTML = "Current mode: Normal";
     setRunCompleteMessage("Normal mode: harder runs that reset progress on failed rolls, but skill points are earned at 1 per 100 score.");
     currentDie = 0;
     score = 0;
@@ -486,14 +525,9 @@ function setNormalMode() {
     session = 0;
     wins = 0;
     losses = 0;
-    high = dice.indexOf(dice[currentDie]);
-    document.getElementById("roll").innerHTML = "";
-    document.getElementById("score").innerHTML = "Score: " + score;
-    document.getElementById("total").innerHTML = "Rolls: " + rolls;
-    document.getElementById("session").innerHTML = "Session Rolls: " + session;
-    document.getElementById("wins").innerHTML = "wins: " + wins;
-    document.getElementById("losses").innerHTML = "losses: " + losses;
-    document.getElementById("high").innerHTML = "Highest Die rolled: " + dice[high];
+    high = 0;
+    updateGameDisplay();
+    setStatusMessage("Normal mode enabled. Failed rolls send you back to the first die.", "info");
     updateSkillStatusMessage("No skill effect this roll.");
     return;
 }
@@ -660,33 +694,22 @@ function devClearForcedTrigger() {
 function devSetScore() {
     var value = Number(document.getElementById("dev-score-input").value);
     score = value || 0;
-    document.getElementById("score").innerHTML = "Score: " + score;
+    updateGameDisplay();
     setDevStatus("Score set to " + score + ".");
 }
 
 function devResetRunStats() {
     resetCurrentRunState(true);
-    document.getElementById("roll").innerHTML = "Required roll: " + dice[currentDie];
-    document.getElementById("total").innerHTML = "Rolls: " + rolls;
-    document.getElementById("session").innerHTML = "Session Rolls: " + session;
-    document.getElementById("wins").innerHTML = "wins: " + wins;
-    document.getElementById("score").innerHTML = "Score: " + score;
-    document.getElementById("losses").innerHTML = mode === "normal" ? "losses: " + losses : "";
-    document.getElementById("high").innerHTML = mode === "normal" ? "Highest Die rolled: " + dice[high] : "";
+    updateGameDisplay();
+    setStatusMessage("Run stats reset.", "info");
     setDevStatus("Current run stats reset.");
 }
 
 window.onload = function () {
     normalizeProgression();
     saveProgression();
-    document.getElementById("mode").innerHTML = "Current mode: " + mode;
-    document.getElementById("roll").innerHTML = "Required roll: " + dice[currentDie];
-    document.getElementById("score").innerHTML = "Score: " + score;
-    document.getElementById("total").innerHTML = "Rolls: " + rolls;
-    document.getElementById("session").innerHTML = "Session Rolls: " + session;
-    document.getElementById("wins").innerHTML = "wins: " + wins;
-    document.getElementById("losses").innerHTML = mode === "normal" ? "losses: " + losses : "";
-    document.getElementById("high").innerHTML = mode === "normal" ? "Highest Die rolled: " + dice[high] : "";
+    updateGameDisplay();
+    setStatusMessage("Choose a mode and roll to begin.", "info");
     setRunCompleteMessage("Easy mode: safer runs, but skill points are earned at 1 per 250 score.");
     updateSkillTreeUI();
     updateSkillStatusMessage("No skill effect this roll.");
