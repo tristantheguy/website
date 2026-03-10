@@ -35,45 +35,33 @@ var SKILLS = [
 var ROLL_COOLDOWN_MS = 320;
 var isRollCoolingDown = false;
 var SKILL_GRAPH_NODE_SIZE = 86;
-var SKILL_GRAPH_MIN_WIDTH = 1500;
-var SKILL_GRAPH_MAX_WIDTH = 1700;
-var SKILL_GRAPH_DEFAULT_WIDTH = 1600;
-var SKILL_GRAPH_HEIGHT = 1100;
+var SKILL_GRAPH_WIDTH = 1800;
+var SKILL_GRAPH_HEIGHT = 1400;
 var selectedSkillId = null;
 var SKILL_GRAPH_LAYOUT = {};
 
-function buildSkillGraphLayout(graphWidth) {
-    var centerX = {
-        luckyEdge: Math.round(graphWidth * 0.25),
-        momentum: Math.round(graphWidth * 0.5),
-        secondChance: Math.round(graphWidth * 0.75)
-    };
-    var tierTwoBranchOffset = Math.round(graphWidth * 0.065);
-    var tierThreeWideOffset = Math.round(graphWidth * 0.13);
-    var tierThreeMidOffset = Math.round(graphWidth * 0.065);
-    var halfNode = SKILL_GRAPH_NODE_SIZE / 2;
-
+function buildSkillGraphLayout() {
     return {
-        luckyEdge: { x: centerX.luckyEdge - halfNode, y: 120 },
-        sharperEdge: { x: centerX.luckyEdge - tierTwoBranchOffset - halfNode, y: 450 },
-        heavyEdge: { x: centerX.luckyEdge + tierTwoBranchOffset - halfNode, y: 450 },
-        keenEdge: { x: centerX.luckyEdge - tierThreeWideOffset - halfNode, y: 800 },
-        brutalEdge: { x: centerX.luckyEdge - tierThreeMidOffset + tierTwoBranchOffset - halfNode, y: 800 },
-        reliableEdge: { x: centerX.luckyEdge + tierThreeMidOffset + tierTwoBranchOffset - halfNode, y: 800 },
+        luckyEdge: { x: 240, y: 160 },
+        sharperEdge: { x: 120, y: 560 },
+        heavyEdge: { x: 360, y: 560 },
+        keenEdge: { x: 30, y: 980 },
+        brutalEdge: { x: 280, y: 980 },
+        reliableEdge: { x: 510, y: 980 },
 
-        momentum: { x: centerX.momentum - halfNode, y: 120 },
-        greaterMomentum: { x: centerX.momentum - tierTwoBranchOffset - halfNode, y: 450 },
-        criticalMomentum: { x: centerX.momentum + tierTwoBranchOffset - halfNode, y: 450 },
-        overflowMomentum: { x: centerX.momentum - tierTwoBranchOffset - halfNode, y: 800 },
-        burstMomentum: { x: centerX.momentum + tierTwoBranchOffset - tierThreeMidOffset - halfNode, y: 800 },
-        deadlyMomentum: { x: centerX.momentum + tierTwoBranchOffset + tierThreeMidOffset - halfNode, y: 800 },
+        momentum: { x: 870, y: 160 },
+        greaterMomentum: { x: 740, y: 560 },
+        criticalMomentum: { x: 1000, y: 560 },
+        overflowMomentum: { x: 740, y: 980 },
+        burstMomentum: { x: 930, y: 980 },
+        deadlyMomentum: { x: 1130, y: 980 },
 
-        secondChance: { x: centerX.secondChance - halfNode, y: 120 },
-        saferChance: { x: centerX.secondChance - tierTwoBranchOffset - halfNode, y: 450 },
-        echoChance: { x: centerX.secondChance + tierTwoBranchOffset - halfNode, y: 450 },
-        steadierChance: { x: centerX.secondChance - tierTwoBranchOffset - halfNode, y: 800 },
-        tripleEcho: { x: centerX.secondChance + tierTwoBranchOffset - tierThreeMidOffset - halfNode, y: 800 },
-        doubleRoll: { x: centerX.secondChance + tierTwoBranchOffset + tierThreeMidOffset - halfNode, y: 800 }
+        secondChance: { x: 1490, y: 160 },
+        saferChance: { x: 1340, y: 560 },
+        echoChance: { x: 1620, y: 560 },
+        steadierChance: { x: 1320, y: 980 },
+        tripleEcho: { x: 1530, y: 980 },
+        doubleRoll: { x: 1710, y: 980 }
     };
 }
 
@@ -431,9 +419,7 @@ function renderSkills() {
         return;
     }
 
-    var viewportWidth = viewport.clientWidth || SKILL_GRAPH_DEFAULT_WIDTH;
-    var graphWidth = Math.max(SKILL_GRAPH_MIN_WIDTH, Math.min(SKILL_GRAPH_MAX_WIDTH, Math.max(SKILL_GRAPH_DEFAULT_WIDTH, viewportWidth - 36)));
-    SKILL_GRAPH_LAYOUT = buildSkillGraphLayout(graphWidth);
+    SKILL_GRAPH_LAYOUT = buildSkillGraphLayout();
 
     var visibleSkills = getVisibleSkills();
     var visibleSkillMap = {};
@@ -447,12 +433,12 @@ function renderSkills() {
 
     nodeLayer.innerHTML = "";
     connectionLayer.innerHTML = "";
-    canvas.style.width = graphWidth + "px";
+    canvas.style.width = SKILL_GRAPH_WIDTH + "px";
     canvas.style.height = SKILL_GRAPH_HEIGHT + "px";
 
-    connectionLayer.setAttribute("width", String(graphWidth));
+    connectionLayer.setAttribute("width", String(SKILL_GRAPH_WIDTH));
     connectionLayer.setAttribute("height", String(SKILL_GRAPH_HEIGHT));
-    connectionLayer.setAttribute("viewBox", "0 0 " + graphWidth + " " + SKILL_GRAPH_HEIGHT);
+    connectionLayer.setAttribute("viewBox", "0 0 " + SKILL_GRAPH_WIDTH + " " + SKILL_GRAPH_HEIGHT);
     connectionLayer.setAttribute("preserveAspectRatio", "none");
 
     var renderedNodeElements = {};

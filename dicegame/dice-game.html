@@ -19,7 +19,10 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
 
     <button id="skill-tree-toggle" onclick="toggleSkillTree()" style="display: none;">Skill Tree</button>
     <div id="skill-tree-panel" style="display: none;">
-        <h3>Skill Tree</h3>
+        <div id="skill-tree-header-row">
+            <h3>Skill Tree</h3>
+            <button id="skill-tree-close" type="button" onclick="toggleSkillTree()">Close</button>
+        </div>
         <p id="skill-tree-total-rolls"></p>
         <p id="skill-tree-skill-points"></p>
         <p id="skill-tree-lifetime-score"></p>
