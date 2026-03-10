@@ -13,8 +13,8 @@ var EASY_MODE_SKILL_POINT_SCORE_RATE = 250;
 var NORMAL_MODE_SKILL_POINT_SCORE_RATE = 100;
 var SKILLS = [
     { id: "luckyEdge", name: "Lucky Edge", cost: 1, description: "15% chance to add +1 to your roll" },
-    { id: "secondChance", name: "Second Chance", cost: 3, description: "10% chance to reroll once after a failed roll" },
-    { id: "momentum", name: "Momentum", cost: 2, description: "+10% score from rolls" }
+    { id: "momentum", name: "Momentum", cost: 2, description: "+10% score from rolls" },
+    { id: "secondChance", name: "Second Chance", cost: 3, description: "10% chance to reroll once after a failed roll" }
 ];
 
 var ROLL_COOLDOWN_MS = 320;
