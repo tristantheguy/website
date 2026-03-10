@@ -291,7 +291,7 @@ select {
   cursor: not-allowed;
 }
 
-.skill-card.selected {
+.skill-card.active {
   border-color: #57d49a;
   box-shadow: 0 0 8px rgba(87, 212, 154, 0.4);
 }

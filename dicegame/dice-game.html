@@ -24,7 +24,6 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
         <p id="skill-tree-skill-points"></p>
         <p id="skill-tree-lifetime-score"></p>
         <p id="skill-tree-owned-skills"></p>
-        <p id="skill-tree-selected-skill"></p>
         <div id="skills-container"></div>
         <button id="skill-tree-reset-button" onclick="resetPlayerProgress()">Reset Player Progress</button>
     </div>
@@ -61,7 +60,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
     <p id="run-complete-message">Run complete messages will appear here.</p>
 
     <div id="skill-status-area">
-        <p id="active-skill">Active Skill: None</p>
+        <p id="active-skill">Active Skills: None</p>
         <p id="skill-activation-message">Last Skill Effect: No skill effect this roll.</p>
     </div>
 
@@ -94,10 +93,6 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
             <button onclick="devResetProgression()">Reset progression</button>
             <button onclick="devUnlockAllSkills()">Buy/unlock all skills</button>
             <button onclick="devClearUnlockedSkills()">Clear owned skills</button>
-            <label>Active skill:
-                <select id="dev-active-skill-select"></select>
-            </label>
-            <button onclick="devSetActiveSkill()">Set active skill</button>
         </div>
 
         <div class="dev-section">
