@@ -347,6 +347,20 @@ function updateSkillStatusMessage(lastEffectMessage) {
     }
 }
 
+function showFloatingSkillEffect(message) {
+    var floatingSkillEffect = document.getElementById("floating-skill-effect");
+    if (!floatingSkillEffect || !message) {
+        return;
+    }
+
+    floatingSkillEffect.textContent = message;
+    floatingSkillEffect.classList.remove("animate");
+
+    window.requestAnimationFrame(function () {
+        floatingSkillEffect.classList.add("animate");
+    });
+}
+
 function shouldActivateSkill(chance, eligibleForForcedTrigger) {
     if (eligibleForForcedTrigger && debugState.forcedSkillTrigger) {
         debugState.forcedSkillTrigger = false;
@@ -440,14 +454,16 @@ function rollDice() {
     if (selectedSkillIsUnlocked && selectedSkillId === "luckyEdge") {
         if (shouldActivateSkill(0.15, true)) {
             finalRoll += 1;
-            skillActivationMessage = "Lucky Edge activated! +1 roll";
+            skillActivationMessage = "Lucky Edge activated! +1";
+            showFloatingSkillEffect(skillActivationMessage);
         }
     }
 
     if (selectedSkillIsUnlocked && selectedSkillId === "weightedToss") {
         if (shouldActivateSkill(0.10, true)) {
             finalRoll += 2;
-            skillActivationMessage = "Weighted Toss activated! +2 roll";
+            skillActivationMessage = "Weighted Toss activated! +2";
+            showFloatingSkillEffect(skillActivationMessage);
         }
     }
 
@@ -455,6 +471,7 @@ function rollDice() {
     if (selectedSkillIsUnlocked && selectedSkillId === "secondChance" && failedRoll) {
         if (shouldActivateSkill(0.10, true)) {
             skillActivationMessage = "Second Chance activated! Rerolling...";
+            showFloatingSkillEffect(skillActivationMessage);
             finalRoll = getRandomRollForDie(requiredRoll);
             failedRoll = finalRoll < requiredRoll;
         }

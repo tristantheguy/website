@@ -65,8 +65,11 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
         <p id="skill-activation-message">Last Skill Effect: No skill effect this roll.</p>
     </div>
 
-    <!--unique roll button id-->
-    <button id="roll-button" onclick="rollDice()">Roll</button>
+    <div id="roll-button-area">
+        <div id="floating-skill-effect" aria-live="polite"></div>
+        <!--unique roll button id-->
+        <button id="roll-button" onclick="rollDice()">Roll</button>
+    </div>
     <form id="submit-form">
         <label for="playerName">Enter your name:</label>
         <input type="text" id="playerName" name="name">
