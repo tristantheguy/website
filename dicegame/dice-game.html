@@ -25,6 +25,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
         <p id="skill-tree-owned-skills"></p>
         <p id="skill-tree-selected-skill"></p>
         <div id="skills-container"></div>
+        <button id="skill-tree-reset-button" onclick="resetPlayerProgress()">Reset Player Progress</button>
     </div>
 
     <!-- display buttons that the player can click to roll the dice and set the mode -->
@@ -93,6 +94,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
             <label>Set score: <input type="number" id="dev-score-input"></label>
             <button onclick="devSetScore()">Set score manually</button>
             <button onclick="devResetRunStats()">Reset current run stats</button>
+            <button onclick="resetPlayerProgress()">Reset Player Progress</button>
         </div>
 
         <p id="dev-status-message"></p>
