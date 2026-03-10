@@ -274,13 +274,13 @@ select {
   border: 1px solid #4a5d74;
   border-radius: 10px;
   background: radial-gradient(circle at center, rgba(37, 52, 72, 0.9), rgba(8, 16, 28, 0.98));
-  overflow: hidden;
+  overflow: auto;
 }
 
 #skill-tree-canvas {
   position: relative;
   width: 920px;
-  height: 420px;
+  height: 560px;
   max-width: 100%;
   margin: 18px auto;
   background:

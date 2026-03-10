@@ -15,30 +15,48 @@ var SKILLS = [
     { id: "luckyEdge", name: "Lucky Edge", cost: 1, description: "15% chance to add +1 to your roll", type: "root" },
     { id: "sharperEdge", name: "Sharper Edge", cost: 1, description: "Lucky Edge trigger chance +5% (20% chance for +1)", type: "branch", parentSkill: "luckyEdge", branchGroup: "luckyEdgeBranch" },
     { id: "heavyEdge", name: "Heavy Edge", cost: 1, description: "Lucky Edge adds +2 instead of +1 (15% chance)", type: "branch", parentSkill: "luckyEdge", branchGroup: "luckyEdgeBranch" },
+    { id: "keenEdge", name: "Keen Edge", cost: 1, description: "Sharper Edge improves Lucky Edge to 30% chance for +1", type: "branch", parentSkill: "sharperEdge" },
+    { id: "brutalEdge", name: "Brutal Edge", cost: 1, description: "Heavy Edge becomes 15% chance for +3", type: "branch", parentSkill: "heavyEdge", branchGroup: "heavyEdgeTier3" },
+    { id: "reliableEdge", name: "Reliable Edge", cost: 1, description: "Heavy Edge becomes 20% chance for +2", type: "branch", parentSkill: "heavyEdge", branchGroup: "heavyEdgeTier3" },
     { id: "momentum", name: "Momentum", cost: 2, description: "+10% score from rolls", type: "root" },
     { id: "greaterMomentum", name: "Greater Momentum", cost: 1, description: "Momentum bonus +5% (total +15% score)", type: "branch", parentSkill: "momentum", branchGroup: "momentumBranch" },
     { id: "criticalMomentum", name: "Critical Momentum", cost: 1, description: "1% chance to double roll score (keeps Momentum +10%)", type: "branch", parentSkill: "momentum", branchGroup: "momentumBranch" },
+    { id: "overflowMomentum", name: "Overflow Momentum", cost: 1, description: "Greater Momentum adds +5% more score (total +20%)", type: "branch", parentSkill: "greaterMomentum" },
+    { id: "burstMomentum", name: "Burst Momentum", cost: 1, description: "5% chance to add +3 to your roll", type: "branch", parentSkill: "criticalMomentum", branchGroup: "criticalMomentumTier3" },
+    { id: "deadlyMomentum", name: "Deadly Momentum", cost: 1, description: "Critical Momentum multiplier increases to 2.2x", type: "branch", parentSkill: "criticalMomentum", branchGroup: "criticalMomentumTier3" },
     { id: "secondChance", name: "Second Chance", cost: 3, description: "10% chance to reroll once after a failed roll", type: "root" },
     { id: "saferChance", name: "Safer Chance", cost: 1, description: "Second Chance trigger chance +5% (15% total)", type: "branch", parentSkill: "secondChance", branchGroup: "secondChanceBranch" },
-    { id: "echoChance", name: "Echo Chance", cost: 1, description: "1% chance for one extra reroll if Second Chance reroll also fails", type: "branch", parentSkill: "secondChance", branchGroup: "secondChanceBranch" }
+    { id: "echoChance", name: "Echo Chance", cost: 1, description: "1% chance for one extra reroll if Second Chance reroll also fails", type: "branch", parentSkill: "secondChance", branchGroup: "secondChanceBranch" },
+    { id: "steadierChance", name: "Steadier Chance", cost: 1, description: "Safer Chance improves Second Chance to 25% reroll chance", type: "branch", parentSkill: "saferChance" },
+    { id: "tripleEcho", name: "Triple Echo", cost: 1, description: "After Echo Chance reroll fails, 5% chance for one final reroll", type: "branch", parentSkill: "echoChance", branchGroup: "echoChanceTier3" },
+    { id: "doubleRoll", name: "Double Roll", cost: 1, description: "15% chance to roll two rerolls and keep the better result", type: "branch", parentSkill: "echoChance", branchGroup: "echoChanceTier3" }
 ];
 
 var ROLL_COOLDOWN_MS = 320;
 var isRollCoolingDown = false;
 var SKILL_GRAPH_NODE_SIZE = 86;
 var SKILL_GRAPH_WIDTH = 920;
-var SKILL_GRAPH_HEIGHT = 420;
+var SKILL_GRAPH_HEIGHT = 560;
 var selectedSkillId = null;
 var SKILL_GRAPH_LAYOUT = {
     luckyEdge: { x: 120, y: 50 },
     sharperEdge: { x: 40, y: 250 },
     heavyEdge: { x: 200, y: 250 },
+    keenEdge: { x: 40, y: 430 },
+    brutalEdge: { x: 160, y: 430 },
+    reliableEdge: { x: 280, y: 430 },
     momentum: { x: 420, y: 50 },
     greaterMomentum: { x: 340, y: 250 },
     criticalMomentum: { x: 500, y: 250 },
+    overflowMomentum: { x: 340, y: 430 },
+    burstMomentum: { x: 460, y: 430 },
+    deadlyMomentum: { x: 580, y: 430 },
     secondChance: { x: 720, y: 50 },
     saferChance: { x: 640, y: 250 },
-    echoChance: { x: 800, y: 250 }
+    echoChance: { x: 800, y: 250 },
+    steadierChance: { x: 640, y: 430 },
+    tripleEcho: { x: 760, y: 430 },
+    doubleRoll: { x: 880, y: 430 }
 };
 
 var progression = loadProgression();
@@ -662,6 +680,17 @@ function getBaseRoll(dieSize) {
     return getRandomRollForDie(dieSize);
 }
 
+function getRerollForFailedCheck(requiredRoll) {
+    var firstReroll = getRandomRollForDie(requiredRoll);
+    if (isSkillOwned("doubleRoll") && shouldActivateSkill(0.15, false)) {
+        var secondReroll = getRandomRollForDie(requiredRoll);
+        showFloatingText("Double Roll!", document.getElementById("roll-button"), "skill");
+        return Math.max(firstReroll, secondReroll);
+    }
+
+    return firstReroll;
+}
+
 function resetCurrentRunState(keepMode) {
     currentDie = 0;
     wins = 0;
@@ -731,8 +760,15 @@ function rollDice() {
     var hasMomentum = isSkillOwned("momentum");
 
     if (hasLuckyEdge) {
-        var luckyEdgeBonus = isSkillOwned("heavyEdge") ? 2 : 1;
-        var luckyEdgeChance = isSkillOwned("sharperEdge") ? 0.20 : 0.15;
+        var luckyEdgeBonus = 1;
+        var luckyEdgeChance = 0.15;
+
+        if (isSkillOwned("heavyEdge")) {
+            luckyEdgeBonus = isSkillOwned("brutalEdge") ? 3 : 2;
+            luckyEdgeChance = isSkillOwned("reliableEdge") ? 0.20 : 0.15;
+        } else if (isSkillOwned("sharperEdge")) {
+            luckyEdgeChance = isSkillOwned("keenEdge") ? 0.30 : 0.20;
+        }
 
         if (shouldActivateSkill(luckyEdgeChance, true)) {
             finalRoll += luckyEdgeBonus;
@@ -743,21 +779,34 @@ function rollDice() {
 
     var failedRoll = finalRoll < requiredRoll;
     if (hasSecondChance && failedRoll) {
-        var secondChanceChance = isSkillOwned("saferChance") ? 0.15 : 0.10;
+        var secondChanceChance = isSkillOwned("steadierChance") ? 0.25 : (isSkillOwned("saferChance") ? 0.15 : 0.10);
 
         if (shouldActivateSkill(secondChanceChance, true)) {
             skillActivationMessages.push("Second Chance!");
             showFloatingText("Second Chance!", document.getElementById("roll-button"), "skill");
-            finalRoll = getRandomRollForDie(requiredRoll);
+            finalRoll = getRerollForFailedCheck(requiredRoll);
             failedRoll = finalRoll < requiredRoll;
 
             if (failedRoll && isSkillOwned("echoChance") && shouldActivateSkill(0.01, true)) {
                 skillActivationMessages.push("Echo Chance!");
                 showFloatingText("Echo Chance!", document.getElementById("roll-button"), "skill");
-                finalRoll = getRandomRollForDie(requiredRoll);
+                finalRoll = getRerollForFailedCheck(requiredRoll);
                 failedRoll = finalRoll < requiredRoll;
+
+                if (failedRoll && isSkillOwned("tripleEcho") && shouldActivateSkill(0.05, false)) {
+                    skillActivationMessages.push("Triple Echo!");
+                    showFloatingText("Triple Echo!", document.getElementById("roll-button"), "skill");
+                    finalRoll = getRandomRollForDie(requiredRoll);
+                    failedRoll = finalRoll < requiredRoll;
+                }
             }
         }
+    }
+
+    if (hasMomentum && isSkillOwned("burstMomentum") && shouldActivateSkill(0.05, true)) {
+        finalRoll += 3;
+        skillActivationMessages.push("Burst Momentum +3");
+        showFloatingText("Burst Momentum +3", document.getElementById("roll-button"), "skill");
     }
 
     rolls += 1;
@@ -792,6 +841,9 @@ function rollDice() {
         var baseScoreGained = score - scoreBeforeRoll;
         if (baseScoreGained > 0) {
             var momentumRate = isSkillOwned("greaterMomentum") ? 0.15 : 0.10;
+            if (isSkillOwned("overflowMomentum")) {
+                momentumRate = 0.20;
+            }
             var momentumBonus = Math.round(baseScoreGained * momentumRate);
             if (momentumBonus > 0) {
                 score += momentumBonus;
@@ -800,11 +852,11 @@ function rollDice() {
             }
 
             if (isSkillOwned("criticalMomentum") && shouldActivateSkill(0.01, true)) {
-                var criticalMomentumBonus = score - scoreBeforeRoll;
+                var criticalMomentumBonus = Math.round((score - scoreBeforeRoll) * (isSkillOwned("deadlyMomentum") ? 1.2 : 1));
                 if (criticalMomentumBonus > 0) {
                     score += criticalMomentumBonus;
-                    skillActivationMessages.push("Critical Momentum x2!");
-                    showFloatingText("Critical Momentum x2!", document.getElementById("roll-button"), "skill");
+                    skillActivationMessages.push("Critical Momentum x" + (isSkillOwned("deadlyMomentum") ? "2.2" : "2") + "!");
+                    showFloatingText("Critical Momentum x" + (isSkillOwned("deadlyMomentum") ? "2.2" : "2") + "!", document.getElementById("roll-button"), "skill");
                 }
             }
         }
@@ -973,7 +1025,9 @@ function devResetProgression() {
 }
 
 function devUnlockAllSkills() {
-    progression.ownedSkills = ["luckyEdge", "sharperEdge", "momentum", "greaterMomentum", "secondChance", "saferChance"];
+    progression.ownedSkills = SKILLS.map(function (skill) {
+        return skill.id;
+    });
     progression.spentSkillPoints = progression.ownedSkills.reduce(function (total, skillId) {
         var skill = getSkillById(skillId);
         return total + (skill ? skill.cost : 0);
