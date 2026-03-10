@@ -25,9 +25,9 @@ var SKILLS = [
 
 var ROLL_COOLDOWN_MS = 320;
 var isRollCoolingDown = false;
-var SKILL_GRAPH_NODE_WIDTH = 182;
-var SKILL_GRAPH_NODE_HEIGHT = 122;
+var SKILL_GRAPH_NODE_SIZE = 86;
 var skillGraphPan = { x: -200, y: -120, initialized: false, dragging: false, startX: 0, startY: 0, startPanX: 0, startPanY: 0 };
+var selectedSkillId = null;
 var SKILL_GRAPH_LAYOUT = {
     luckyEdge: { x: 150, y: 250 },
     sharperEdge: { x: 40, y: 470 },
@@ -324,6 +324,62 @@ function toggleSkillTree() {
     updateSkillTreeUI();
 }
 
+function getVisibleSkills() {
+    return SKILLS.filter(function (skill) {
+        return skill.type === "root" || isSkillOwned(skill.parentSkill);
+    });
+}
+
+function getSkillStatusInfo(skill) {
+    var owned = isSkillOwned(skill.id);
+    var lockedByBranchChoice = isSkillLockedByBranchChoice(skill.id);
+    var parentMissing = !!skill.parentSkill && !isSkillOwned(skill.parentSkill);
+    var canBuy = canBuySkill(skill.id);
+
+    if (owned) {
+        return {
+            label: "Owned",
+            stateClass: "owned",
+            message: "This skill is active and already owned.",
+            canBuy: false
+        };
+    }
+
+    if (lockedByBranchChoice) {
+        return {
+            label: "Unavailable (Branch Locked)",
+            stateClass: "branch-locked",
+            message: "Another skill in this branch path is already owned.",
+            canBuy: false
+        };
+    }
+
+    if (parentMissing) {
+        return {
+            label: "Locked",
+            stateClass: "locked",
+            message: "Buy the parent skill to reveal and unlock this branch.",
+            canBuy: false
+        };
+    }
+
+    if (canBuy) {
+        return {
+            label: "Available",
+            stateClass: "available",
+            message: "This skill is available to buy.",
+            canBuy: true
+        };
+    }
+
+    return {
+        label: "Locked",
+        stateClass: "locked",
+        message: "Not enough skill points to buy this skill.",
+        canBuy: false
+    };
+}
+
 function renderSkills() {
     var canvas = document.getElementById("skill-tree-canvas");
     var connectionLayer = document.getElementById("skill-tree-connections");
@@ -332,84 +388,141 @@ function renderSkills() {
         return;
     }
 
-    var rootSkills = SKILLS.filter(function (skill) {
-        return skill.type === "root";
+    var visibleSkills = getVisibleSkills();
+    var visibleSkillMap = {};
+    visibleSkills.forEach(function (skill) {
+        visibleSkillMap[skill.id] = true;
     });
+
+    if (selectedSkillId && !visibleSkillMap[selectedSkillId]) {
+        selectedSkillId = null;
+    }
 
     nodeLayer.innerHTML = "";
     connectionLayer.innerHTML = "";
 
-    rootSkills.forEach(function (rootSkill) {
-        nodeLayer.appendChild(renderSingleSkillCard(rootSkill));
-
-        var branches = SKILLS.filter(function (skill) {
-            return skill.parentSkill === rootSkill.id;
-        });
-
-        branches.forEach(function (branchSkill) {
-            nodeLayer.appendChild(renderSingleSkillCard(branchSkill));
-            renderConnectorLine(connectionLayer, rootSkill.id, branchSkill.id);
-        });
+    visibleSkills.forEach(function (skill) {
+        nodeLayer.appendChild(renderSingleSkillNode(skill));
+        if (skill.parentSkill && visibleSkillMap[skill.parentSkill]) {
+            renderConnectorLine(connectionLayer, skill.parentSkill, skill.id);
+        }
     });
 
     updateSkillGraphPanBounds();
     applySkillGraphPan();
+    renderSkillDetailPanel();
 }
 
-function renderSingleSkillCard(skill) {
-        var skillCard = document.createElement("div");
-        skillCard.className = "skill-card";
-        var owned = isSkillOwned(skill.id);
-        var lockedByBranchChoice = isSkillLockedByBranchChoice(skill.id);
-        var parentMissing = !!skill.parentSkill && !isSkillOwned(skill.parentSkill);
-        var canBuy = canBuySkill(skill.id);
+function renderSingleSkillNode(skill) {
+        var skillNode = document.createElement("button");
+        skillNode.type = "button";
+        skillNode.className = "skill-node";
+        var status = getSkillStatusInfo(skill);
         var nodePosition = SKILL_GRAPH_LAYOUT[skill.id] || { x: 0, y: 0 };
 
-        skillCard.style.left = nodePosition.x + "px";
-        skillCard.style.top = nodePosition.y + "px";
-
-        skillCard.classList.add(owned ? "owned" : "locked");
-        if (owned) {
-            skillCard.classList.add("active");
-        }
-        if (lockedByBranchChoice) {
-            skillCard.classList.add("branch-locked");
+        skillNode.style.left = nodePosition.x + "px";
+        skillNode.style.top = nodePosition.y + "px";
+        skillNode.classList.add(status.stateClass);
+        if (selectedSkillId === skill.id) {
+            skillNode.classList.add("selected");
         }
 
-        var stateText = owned ? "Owned / Active" : "Not owned";
-        if (lockedByBranchChoice) {
-            stateText = "Locked by branch choice";
-        } else if (parentMissing) {
-            stateText = "Requires parent skill";
-        }
+        skillNode.textContent = skill.name;
+        skillNode.setAttribute("aria-label", skill.name + " - " + status.label);
+        skillNode.dataset.skillId = skill.id;
+        skillNode.dataset.tooltip = skill.name + "\n" + skill.description + "\nStatus: " + status.label;
 
-        skillCard.innerHTML = "<h4>" + skill.name + "</h4>" +
-            "<p>" + skill.description + "</p>" +
-            "<p><strong>Cost:</strong> " + skill.cost + " skill point(s)</p>" +
-            "<p><strong>Status:</strong> " + stateText + "</p>";
+        skillNode.addEventListener("mouseenter", function (event) {
+            showSkillTooltip(event.currentTarget);
+        });
+        skillNode.addEventListener("mousemove", function (event) {
+            updateSkillTooltipPosition(event.clientX, event.clientY);
+        });
+        skillNode.addEventListener("mouseleave", hideSkillTooltip);
+        skillNode.addEventListener("focus", function (event) {
+            showSkillTooltip(event.currentTarget);
+        });
+        skillNode.addEventListener("blur", hideSkillTooltip);
+        skillNode.addEventListener("click", function () {
+            selectedSkillId = skill.id;
+            renderSkills();
+        });
 
-        var actionButton = document.createElement("button");
-        if (!owned) {
-            if (lockedByBranchChoice) {
-                actionButton.textContent = "Locked by branch choice";
-                actionButton.disabled = true;
-            } else if (parentMissing) {
-                actionButton.textContent = "Buy parent first";
-                actionButton.disabled = true;
-            } else {
-                actionButton.textContent = canBuy ? "Buy" : "Need " + skill.cost + " SP";
-                actionButton.disabled = !canBuy;
-                actionButton.onclick = function () {
-                    buySkill(skill.id);
-                };
-            }
-        } else {
-            actionButton.textContent = "Owned / Active";
-            actionButton.disabled = true;
-        }
+        return skillNode;
+}
 
-        skillCard.appendChild(actionButton);
-        return skillCard;
+function renderSkillDetailPanel() {
+    var detailPanel = document.getElementById("skill-detail-panel");
+    if (!detailPanel) {
+        return;
+    }
+
+    if (!selectedSkillId) {
+        detailPanel.innerHTML = '<p class="skill-detail-empty">Click a skill node to view details.</p>';
+        return;
+    }
+
+    var skill = getSkillById(selectedSkillId);
+    if (!skill) {
+        detailPanel.innerHTML = '<p class="skill-detail-empty">Click a skill node to view details.</p>';
+        return;
+    }
+
+    var status = getSkillStatusInfo(skill);
+    var html = "<h4>" + skill.name + "</h4>" +
+        "<p>" + skill.description + "</p>" +
+        "<p><strong>Cost:</strong> " + skill.cost + " skill point(s)</p>" +
+        "<p><strong>Status:</strong> " + status.label + "</p>";
+
+    if (status.canBuy) {
+        html += '<button id="skill-detail-buy-button" type="button">Buy Skill</button>';
+    } else {
+        html += "<p class=\"skill-detail-message\">" + status.message + "</p>";
+    }
+
+    detailPanel.innerHTML = html;
+
+    var buyButton = document.getElementById("skill-detail-buy-button");
+    if (buyButton) {
+        buyButton.addEventListener("click", function () {
+            buySkill(skill.id);
+        });
+    }
+}
+
+function showSkillTooltip(skillNode) {
+    var tooltip = document.getElementById("skill-node-tooltip");
+    if (!tooltip || !skillNode) {
+        return;
+    }
+
+    tooltip.textContent = skillNode.dataset.tooltip || "";
+    tooltip.setAttribute("aria-hidden", "false");
+    tooltip.classList.add("visible");
+
+    var rect = skillNode.getBoundingClientRect();
+    updateSkillTooltipPosition(rect.right, rect.top);
+}
+
+function updateSkillTooltipPosition(clientX, clientY) {
+    var tooltip = document.getElementById("skill-node-tooltip");
+    if (!tooltip || !tooltip.classList.contains("visible")) {
+        return;
+    }
+
+    var offset = 14;
+    tooltip.style.left = clientX + offset + "px";
+    tooltip.style.top = clientY + offset + "px";
+}
+
+function hideSkillTooltip() {
+    var tooltip = document.getElementById("skill-node-tooltip");
+    if (!tooltip) {
+        return;
+    }
+
+    tooltip.classList.remove("visible");
+    tooltip.setAttribute("aria-hidden", "true");
 }
 
 function renderConnectorLine(svgElement, parentSkillId, childSkillId) {
@@ -424,10 +537,10 @@ function renderConnectorLine(svgElement, parentSkillId, childSkillId) {
     var childUnavailable = isSkillLockedByBranchChoice(childSkillId);
     var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
 
-    line.setAttribute("x1", String(parentPosition.x + (SKILL_GRAPH_NODE_WIDTH / 2)));
-    line.setAttribute("y1", String(parentPosition.y + SKILL_GRAPH_NODE_HEIGHT));
-    line.setAttribute("x2", String(childPosition.x + (SKILL_GRAPH_NODE_WIDTH / 2)));
-    line.setAttribute("y2", String(childPosition.y));
+    line.setAttribute("x1", String(parentPosition.x + (SKILL_GRAPH_NODE_SIZE / 2)));
+    line.setAttribute("y1", String(parentPosition.y + (SKILL_GRAPH_NODE_SIZE / 2)));
+    line.setAttribute("x2", String(childPosition.x + (SKILL_GRAPH_NODE_SIZE / 2)));
+    line.setAttribute("y2", String(childPosition.y + (SKILL_GRAPH_NODE_SIZE / 2)));
 
     if (parentOwned && childOwned) {
         line.classList.add("path-active");
@@ -471,7 +584,7 @@ function initSkillTreeGraphInteraction() {
     }
 
     viewport.addEventListener("pointerdown", function (event) {
-        if (event.target.closest("button")) {
+        if (event.target.closest(".skill-node")) {
             return;
         }
 
