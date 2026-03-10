@@ -31,7 +31,7 @@ var SKILL_GRAPH_WORLD_HEIGHT = 2400;
 var SKILL_GRAPH_PAN_PADDING = 240;
 var SKILL_GRAPH_MIN_SCALE = 0.6;
 var SKILL_GRAPH_MAX_SCALE = 2.0;
-var skillGraphPan = { x: 0, y: 0, scale: 1, initialized: false, dragging: false, startX: 0, startY: 0, startPanX: 0, startPanY: 0 };
+var skillGraphPan = { x: 0, y: 0, scale: 1, dragging: false, startX: 0, startY: 0, startPanX: 0, startPanY: 0 };
 var selectedSkillId = null;
 var SKILL_GRAPH_LAYOUT = {
     luckyEdge: { x: 900, y: 860 },
@@ -334,6 +334,11 @@ function toggleSkillTree() {
     }
 }
 
+function isSkillTreePanelOpen() {
+    var panel = document.getElementById("skill-tree-panel");
+    return !!panel && panel.classList.contains("open");
+}
+
 function getVisibleSkills() {
     return SKILLS.filter(function (skill) {
         return skill.type === "root" || isSkillOwned(skill.parentSkill);
@@ -431,12 +436,6 @@ function renderSkills() {
             renderConnectorLine(connectionLayer, skill.parentSkill, skill.id, renderedNodeElements[skill.parentSkill], renderedNodeElements[skill.id]);
         }
     });
-
-    if (!skillGraphPan.initialized && hasSkillGraphViewportDimensions()) {
-        if (centerSkillGraphOnVisibleNodes()) {
-            skillGraphPan.initialized = true;
-        }
-    }
 
     updateSkillGraphPanBounds();
     applySkillGraphPan();
@@ -620,7 +619,7 @@ function hasSkillGraphViewportDimensions() {
     return !!viewport && viewport.clientWidth > 0 && viewport.clientHeight > 0;
 }
 
-function centerSkillGraphOnVisibleNodes() {
+function centerSkillTreeOnVisibleNodes() {
     var viewport = document.getElementById("skill-tree-viewport");
     if (!viewport || viewport.clientWidth <= 0 || viewport.clientHeight <= 0) {
         return false;
@@ -642,6 +641,11 @@ function centerSkillGraphOnVisibleNodes() {
     updateSkillGraphPanBounds();
     applySkillGraphPan();
     return true;
+}
+
+function resetSkillTreeView() {
+    skillGraphPan.scale = 1;
+    centerSkillTreeOnVisibleNodes();
 }
 
 function applySkillGraphPan() {
@@ -706,9 +710,8 @@ function refreshSkillGraphViewport(centerOnVisibleNodes) {
         }
 
         if (centerOnVisibleNodes) {
-            if (centerSkillGraphOnVisibleNodes()) {
-                skillGraphPan.initialized = true;
-            }
+            skillGraphPan.scale = 1;
+            centerSkillTreeOnVisibleNodes();
         } else {
             updateSkillGraphPanBounds();
             applySkillGraphPan();
@@ -815,6 +818,11 @@ function updateSkillTreeUI() {
     ownedSkillsText.innerHTML = "Owned skills: " + (progression.ownedSkills.length ? progression.ownedSkills.map(function (skillId) { return getSkillById(skillId).name; }).join(", ") : "None");
 
     renderSkills();
+
+    if (isSkillTreePanelOpen()) {
+        refreshSkillGraphViewport(true);
+    }
+
     updateSkillStatusMessage();
 }
 
