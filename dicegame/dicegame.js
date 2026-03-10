@@ -13,8 +13,8 @@ var EASY_MODE_SKILL_POINT_SCORE_RATE = 250;
 var NORMAL_MODE_SKILL_POINT_SCORE_RATE = 100;
 var SKILLS = [
     { id: "luckyEdge", name: "Lucky Edge", cost: 1, description: "15% chance to add +1 to your roll" },
-    { id: "weightedToss", name: "Weighted Toss", cost: 2, description: "10% chance to add +2 to your roll" },
-    { id: "secondChance", name: "Second Chance", cost: 3, description: "10% chance to reroll once after a failed roll" }
+    { id: "secondChance", name: "Second Chance", cost: 3, description: "10% chance to reroll once after a failed roll" },
+    { id: "momentum", name: "Momentum", cost: 2, description: "+10% score from rolls" }
 ];
 
 var ROLL_COOLDOWN_MS = 320;
@@ -33,9 +33,16 @@ function getDefaultProgression() {
         lifetimeScoreForSkillPoints: 0,
         skillPoints: 0,
         spentSkillPoints: 0,
-        ownedSkills: [],
-        selectedSkill: ""
+        ownedSkills: []
     };
+}
+
+function migrateLegacySkillId(skillId) {
+    if (skillId === "weightedToss") {
+        return "momentum";
+    }
+
+    return skillId;
 }
 
 function loadProgression() {
@@ -51,12 +58,11 @@ function loadProgression() {
             lifetimeScoreForSkillPoints: typeof parsed.lifetimeScoreForSkillPoints === "number" ? parsed.lifetimeScoreForSkillPoints : 0,
             skillPoints: typeof parsed.skillPoints === "number" ? parsed.skillPoints : 0,
             spentSkillPoints: typeof parsed.spentSkillPoints === "number" ? parsed.spentSkillPoints : 0,
-            ownedSkills: Array.isArray(parsed.ownedSkills) ? parsed.ownedSkills : [],
-            selectedSkill: typeof parsed.selectedSkill === "string" ? parsed.selectedSkill : ""
+            ownedSkills: Array.isArray(parsed.ownedSkills) ? parsed.ownedSkills.map(migrateLegacySkillId) : []
         };
 
         if ((!parsed.ownedSkills || parsed.ownedSkills.length === 0) && Array.isArray(parsed.unlockedSkills) && parsed.unlockedSkills.length > 0) {
-            progressionState.ownedSkills = parsed.unlockedSkills.filter(function (skillId) {
+            progressionState.ownedSkills = parsed.unlockedSkills.map(migrateLegacySkillId).filter(function (skillId) {
                 return !!getSkillById(skillId);
             });
             progressionState.spentSkillPoints = progressionState.ownedSkills.reduce(function (total, skillId) {
@@ -104,9 +110,6 @@ function normalizeProgression() {
         progression.spentSkillPoints = minimumSpentFromOwned;
     }
 
-    if (progression.selectedSkill && !isSkillOwned(progression.selectedSkill)) {
-        progression.selectedSkill = "";
-    }
 }
 
 function getSkillPointRateForMode(gameMode) {
@@ -252,17 +255,6 @@ function toggleSkillTree() {
     updateSkillTreeUI();
 }
 
-function selectSkill(skillId) {
-    if (!isSkillOwned(skillId)) {
-        return;
-    }
-
-    progression.selectedSkill = progression.selectedSkill === skillId ? "" : skillId;
-    saveProgression();
-    updateSkillTreeUI();
-    updateSkillStatusMessage("No skill effect this roll.");
-}
-
 function renderSkills() {
     var skillsContainer = document.getElementById("skills-container");
     skillsContainer.innerHTML = "";
@@ -271,15 +263,14 @@ function renderSkills() {
         var skillCard = document.createElement("div");
         skillCard.className = "skill-card";
         var owned = isSkillOwned(skill.id);
-        var selected = progression.selectedSkill === skill.id && owned;
         var canBuy = canBuySkill(skill.id);
 
         skillCard.classList.add(owned ? "owned" : "locked");
-        if (selected) {
-            skillCard.classList.add("selected");
+        if (owned) {
+            skillCard.classList.add("active");
         }
 
-        var stateText = owned ? (selected ? "Selected" : "Owned") : "Not owned";
+        var stateText = owned ? "Owned / Active" : "Not owned";
 
         skillCard.innerHTML = "<h4>" + skill.name + "</h4>" +
             "<p>" + skill.description + "</p>" +
@@ -294,11 +285,8 @@ function renderSkills() {
                 buySkill(skill.id);
             };
         } else {
-            actionButton.textContent = selected ? "Selected" : "Select";
-            actionButton.disabled = selected;
-            actionButton.onclick = function () {
-                selectSkill(skill.id);
-            };
+            actionButton.textContent = "Owned / Active";
+            actionButton.disabled = true;
         }
 
         skillCard.appendChild(actionButton);
@@ -315,7 +303,6 @@ function updateSkillTreeUI() {
     var skillPointsText = document.getElementById("skill-tree-skill-points");
     var lifetimeScoreText = document.getElementById("skill-tree-lifetime-score");
     var ownedSkillsText = document.getElementById("skill-tree-owned-skills");
-    var selectedSkillText = document.getElementById("skill-tree-selected-skill");
 
     var shouldShowSkillTree = progression.totalRolls >= SKILL_TREE_UNLOCK_ROLLS;
     skillTreeToggle.style.display = shouldShowSkillTree ? "block" : "none";
@@ -329,19 +316,20 @@ function updateSkillTreeUI() {
     skillPointsText.innerHTML = "Available Skill Points: " + progression.skillPoints + " (Spent: " + progression.spentSkillPoints + ")";
     lifetimeScoreText.innerHTML = "Lifetime score for skill point progression: " + progression.lifetimeScoreForSkillPoints;
     ownedSkillsText.innerHTML = "Owned skills: " + (progression.ownedSkills.length ? progression.ownedSkills.map(function (skillId) { return getSkillById(skillId).name; }).join(", ") : "None");
-    selectedSkillText.innerHTML = "Selected skill: " + (progression.selectedSkill ? getSkillById(progression.selectedSkill).name : "None");
 
     renderSkills();
     updateSkillStatusMessage();
-    populateDevSkillSelect();
 }
 
 function updateSkillStatusMessage(lastEffectMessage) {
     var activeSkillElement = document.getElementById("active-skill");
     var activationMessageElement = document.getElementById("skill-activation-message");
-    var selectedSkill = getSkillById(progression.selectedSkill);
+    var activeSkills = progression.ownedSkills.map(function (skillId) {
+        var skill = getSkillById(skillId);
+        return skill ? skill.name : "";
+    }).filter(Boolean);
 
-    activeSkillElement.innerHTML = "Active Skill: " + (selectedSkill ? selectedSkill.name : "None");
+    activeSkillElement.innerHTML = "Active Skills: " + (activeSkills.length ? activeSkills.join(", ") : "None");
     if (typeof lastEffectMessage === "string") {
         activationMessageElement.innerHTML = "Last Skill Effect: " + lastEffectMessage;
     }
@@ -463,32 +451,25 @@ function rollDice() {
     var requiredRoll = dice[currentDie];
     var initialRoll = getBaseRoll(requiredRoll);
     var finalRoll = initialRoll;
-    var skillActivationMessage = "No skill effect this roll.";
+    var skillActivationMessages = [];
     normalizeProgression();
-    var selectedSkillId = progression.selectedSkill;
-    var selectedSkillIsUnlocked = isSkillOwned(selectedSkillId);
+    var hasLuckyEdge = isSkillOwned("luckyEdge");
+    var hasSecondChance = isSkillOwned("secondChance");
+    var hasMomentum = isSkillOwned("momentum");
 
-    if (selectedSkillIsUnlocked && selectedSkillId === "luckyEdge") {
+    if (hasLuckyEdge) {
         if (shouldActivateSkill(0.15, true)) {
             finalRoll += 1;
-            skillActivationMessage = "Lucky Edge +1";
-            showFloatingText(skillActivationMessage, document.getElementById("roll-button"), "skill");
-        }
-    }
-
-    if (selectedSkillIsUnlocked && selectedSkillId === "weightedToss") {
-        if (shouldActivateSkill(0.10, true)) {
-            finalRoll += 2;
-            skillActivationMessage = "Weighted Toss +2";
-            showFloatingText(skillActivationMessage, document.getElementById("roll-button"), "skill");
+            skillActivationMessages.push("Lucky Edge +1");
+            showFloatingText("Lucky Edge +1", document.getElementById("roll-button"), "skill");
         }
     }
 
     var failedRoll = finalRoll < requiredRoll;
-    if (selectedSkillIsUnlocked && selectedSkillId === "secondChance" && failedRoll) {
+    if (hasSecondChance && failedRoll) {
         if (shouldActivateSkill(0.10, true)) {
-            skillActivationMessage = "Second Chance!";
-            showFloatingText(skillActivationMessage, document.getElementById("roll-button"), "skill");
+            skillActivationMessages.push("Second Chance!");
+            showFloatingText("Second Chance!", document.getElementById("roll-button"), "skill");
             finalRoll = getRandomRollForDie(requiredRoll);
             failedRoll = finalRoll < requiredRoll;
         }
@@ -522,6 +503,18 @@ function rollDice() {
         score += finalRoll;
     }
 
+    if (hasMomentum) {
+        var baseScoreGained = score - scoreBeforeRoll;
+        if (baseScoreGained > 0) {
+            var momentumBonus = Math.round(baseScoreGained * 0.10);
+            if (momentumBonus > 0) {
+                score += momentumBonus;
+                skillActivationMessages.push("Momentum +10% Score");
+                showFloatingText("Momentum +10% Score", document.getElementById("roll-button"), "skill");
+            }
+        }
+    }
+
     var scoreGained = score - scoreBeforeRoll;
     if (scoreGained > 0) {
         showFloatingText("+" + scoreGained, document.getElementById("score") || document.getElementById("roll-button"), "score");
@@ -542,7 +535,7 @@ function rollDice() {
 
         if (currentDie >= dice.length) {
             completeRun();
-            updateSkillStatusMessage(skillActivationMessage);
+            updateSkillStatusMessage(skillActivationMessages.length ? skillActivationMessages.join(", ") : "No skill effect this roll.");
             setDevStatus("Run complete. Final roll: " + finalRoll + ".");
             return;
         }
@@ -577,7 +570,7 @@ function rollDice() {
     }
 
     updateSkillTreeUI();
-    updateSkillStatusMessage(skillActivationMessage);
+    updateSkillStatusMessage(skillActivationMessages.length ? skillActivationMessages.join(", ") : "No skill effect this roll.");
     setDevStatus("Roll complete. Final roll: " + finalRoll + ".");
 }
 
@@ -615,7 +608,6 @@ function setNormalMode() {
 function openDeveloperMenu() {
     debugState.enabled = true;
     document.getElementById("developer-menu").style.display = "block";
-    populateDevSkillSelect();
     syncDevInputs();
     setDevStatus("Developer menu opened.");
 }
@@ -630,28 +622,6 @@ function setDevStatus(message) {
     if (status) {
         status.innerHTML = message;
     }
-}
-
-function populateDevSkillSelect() {
-    var select = document.getElementById("dev-active-skill-select");
-    if (!select) {
-        return;
-    }
-
-    select.innerHTML = "";
-    var noneOption = document.createElement("option");
-    noneOption.value = "";
-    noneOption.textContent = "None";
-    select.appendChild(noneOption);
-
-    SKILLS.forEach(function (skill) {
-        var option = document.createElement("option");
-        option.value = skill.id;
-        option.textContent = skill.name;
-        select.appendChild(option);
-    });
-
-    select.value = progression.selectedSkill;
 }
 
 function devSetTotalRolls() {
@@ -724,25 +694,11 @@ function devUnlockAllSkills() {
 function devClearUnlockedSkills() {
     progression.spentSkillPoints = 0;
     progression.ownedSkills = [];
-    progression.selectedSkill = "";
     normalizeProgression();
     saveProgression();
     updateSkillTreeUI();
     syncDevInputs();
     setDevStatus("Owned skills cleared.");
-}
-
-function devSetActiveSkill() {
-    var selected = document.getElementById("dev-active-skill-select").value;
-    if (selected && !isSkillOwned(selected)) {
-        setDevStatus("Cannot select a locked skill.");
-        return;
-    }
-
-    progression.selectedSkill = selected;
-    saveProgression();
-    updateSkillTreeUI();
-    setDevStatus("Active skill updated.");
 }
 
 function devSetForcedRoll() {
