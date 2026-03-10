@@ -347,17 +347,34 @@ function updateSkillStatusMessage(lastEffectMessage) {
     }
 }
 
-function showFloatingSkillEffect(message) {
-    var floatingSkillEffect = document.getElementById("floating-skill-effect");
-    if (!floatingSkillEffect || !message) {
+function showFloatingText(message, anchorElement, type) {
+    if (!message || !anchorElement) {
         return;
     }
 
-    floatingSkillEffect.textContent = message;
-    floatingSkillEffect.classList.remove("animate");
+    var anchorRect = anchorElement.getBoundingClientRect();
+    var particle = document.createElement("span");
+    var randomAngle = (-130 + (Math.random() * 80)) * (Math.PI / 180);
+    var randomDistance = 70 + Math.random() * 130;
+    var randomDuration = 750 + Math.random() * 650;
+    var randomScale = 0.92 + Math.random() * 0.22;
+    var xTravel = Math.cos(randomAngle) * randomDistance;
+    var yTravel = Math.sin(randomAngle) * randomDistance;
 
-    window.requestAnimationFrame(function () {
-        floatingSkillEffect.classList.add("animate");
+    particle.className = "floating-text floating-text-" + (type || "skill");
+    particle.textContent = message;
+    particle.style.left = (anchorRect.left + (anchorRect.width / 2) + ((Math.random() * 24) - 12)) + "px";
+    particle.style.top = (anchorRect.top + (anchorRect.height * 0.35) + ((Math.random() * 18) - 9)) + "px";
+    particle.style.setProperty("--float-x", xTravel.toFixed(2) + "px");
+    particle.style.setProperty("--float-y", yTravel.toFixed(2) + "px");
+    particle.style.setProperty("--float-duration", randomDuration.toFixed(0) + "ms");
+    particle.style.setProperty("--float-scale", randomScale.toFixed(2));
+    document.body.appendChild(particle);
+
+    particle.addEventListener("animationend", function () {
+        if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+        }
     });
 }
 
@@ -454,24 +471,24 @@ function rollDice() {
     if (selectedSkillIsUnlocked && selectedSkillId === "luckyEdge") {
         if (shouldActivateSkill(0.15, true)) {
             finalRoll += 1;
-            skillActivationMessage = "Lucky Edge activated! +1";
-            showFloatingSkillEffect(skillActivationMessage);
+            skillActivationMessage = "Lucky Edge +1";
+            showFloatingText(skillActivationMessage, document.getElementById("roll-button"), "skill");
         }
     }
 
     if (selectedSkillIsUnlocked && selectedSkillId === "weightedToss") {
         if (shouldActivateSkill(0.10, true)) {
             finalRoll += 2;
-            skillActivationMessage = "Weighted Toss activated! +2";
-            showFloatingSkillEffect(skillActivationMessage);
+            skillActivationMessage = "Weighted Toss +2";
+            showFloatingText(skillActivationMessage, document.getElementById("roll-button"), "skill");
         }
     }
 
     var failedRoll = finalRoll < requiredRoll;
     if (selectedSkillIsUnlocked && selectedSkillId === "secondChance" && failedRoll) {
         if (shouldActivateSkill(0.10, true)) {
-            skillActivationMessage = "Second Chance activated! Rerolling...";
-            showFloatingSkillEffect(skillActivationMessage);
+            skillActivationMessage = "Second Chance!";
+            showFloatingText(skillActivationMessage, document.getElementById("roll-button"), "skill");
             finalRoll = getRandomRollForDie(requiredRoll);
             failedRoll = finalRoll < requiredRoll;
         }
@@ -506,6 +523,10 @@ function rollDice() {
     }
 
     var scoreGained = score - scoreBeforeRoll;
+    if (scoreGained > 0) {
+        showFloatingText("+" + scoreGained, document.getElementById("score") || document.getElementById("roll-button"), "score");
+    }
+
     var skillPointsEarnedFromRoll = awardSkillPointsFromScoreGain(scoreGained);
     var nextThreshold = getSkillPointRateForMode(mode) - (progression.lifetimeScoreForSkillPoints % getSkillPointRateForMode(mode));
     if (nextThreshold === getSkillPointRateForMode(mode)) {
