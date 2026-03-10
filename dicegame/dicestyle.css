@@ -68,6 +68,27 @@ select {
   margin-bottom: 0;
 }
 
+#mode-details {
+  margin-top: 12px;
+  max-width: 780px;
+  background: rgba(10, 18, 30, 0.82);
+  border: 1px solid #44556d;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+#mode-details p {
+  margin: 6px 0;
+  color: #d9e3ef;
+}
+
+#run-complete-message {
+  margin-top: 10px;
+  font-size: 1.2em;
+  color: #a8f4b7;
+  font-weight: 700;
+}
+
 #roll {
   color: #ffffff;
   font-weight: 700;
