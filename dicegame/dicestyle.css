@@ -105,9 +105,23 @@ body {
   cursor: not-allowed;
 }
 
-.skill-card.unlocked {
+.skill-card.owned {
   opacity: 1;
+}
+
+.skill-card button {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #666;
+  background: #1d2f4a;
+  color: #fff;
   cursor: pointer;
+}
+
+.skill-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .skill-card.selected {
