@@ -248,9 +248,8 @@ select {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: min(90vw, 1900px);
-  height: 90vh;
-  max-height: 90vh;
+  width: min(94vw, 1900px);
+  height: min(92vh, 1100px);
   background: rgba(9, 16, 28, 0.97);
   color: #ecf1f8;
   border: 1px solid #435369;
@@ -263,6 +262,7 @@ select {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease-in-out;
+  box-sizing: border-box;
 }
 
 #skill-tree-panel.open {
@@ -275,22 +275,32 @@ select {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex: 0 0 auto;
 }
 
 #skill-tree-header-row h3 {
   margin: 0;
 }
 
+#skill-tree-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.skill-nav-button {
+  min-width: 44px;
+  padding: 6px 10px;
+}
+
 #skill-tree-panel-body {
-  margin-top: 6px;
+  margin-top: 8px;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 4px;
-  padding-bottom: 92px;
+  overflow: hidden;
 }
 
 #skill-tree-close {
@@ -299,23 +309,32 @@ select {
   padding: 6px 10px;
 }
 
+#skill-tree-meta {
+  flex: 0 0 auto;
+  padding-bottom: 8px;
+}
+
+#skill-tree-meta p {
+  margin: 0 0 8px 0;
+}
+
 #skill-tree-viewport {
   position: relative;
   height: 100%;
-  min-height: 380px;
+  min-height: 0;
   border: 1px solid #4a5d74;
   border-radius: 10px;
   background: radial-gradient(circle at center, rgba(37, 52, 72, 0.9), rgba(8, 16, 28, 0.98));
-  overflow-x: auto;
-  overflow-y: auto;
+  overflow: auto;
+  scroll-behavior: smooth;
 }
 
 #skill-tree-canvas {
   position: relative;
-  width: 1600px;
-  height: 760px;
-  min-width: 1600px;
-  min-height: 760px;
+  width: 2000px;
+  height: 1100px;
+  min-width: 2000px;
+  min-height: 1100px;
   max-width: none;
   margin: 0;
   background:
@@ -358,14 +377,14 @@ select {
 }
 
 #skills-container {
-  margin-top: 10px;
+  margin-top: 4px;
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(260px, 1fr);
+  grid-template-columns: minmax(0, 3fr) minmax(280px, 1fr);
   gap: 10px;
   align-items: stretch;
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .skill-node {
@@ -414,7 +433,7 @@ select {
 }
 
 #skill-detail-panel {
-  min-height: 190px;
+  min-height: 0;
   height: 100%;
   overflow-y: auto;
   border: 1px solid #4c6079;
@@ -456,19 +475,34 @@ select {
 }
 
 #skill-tree-reset-button {
-  position: sticky;
-  bottom: 0;
   width: 100%;
-  margin-top: 0;
+  margin: 0;
   padding: 10px;
-  flex-shrink: 0;
-  z-index: 2;
   background: #6d1f2b;
   border-color: #a94c5a;
 }
 
 #skill-tree-reset-button:hover {
   background: #812735;
+}
+
+#skill-tree-footer {
+  flex: 0 0 auto;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #3f536b;
+  background: rgba(9, 16, 28, 0.98);
+}
+
+@media (max-width: 1100px) {
+  #skills-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(320px, 1fr) auto;
+  }
+
+  #skill-detail-panel {
+    max-height: 240px;
+  }
 }
 
 #skill-status-area {

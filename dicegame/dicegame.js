@@ -35,8 +35,8 @@ var SKILLS = [
 var ROLL_COOLDOWN_MS = 320;
 var isRollCoolingDown = false;
 var SKILL_GRAPH_NODE_SIZE = 86;
-var SKILL_GRAPH_WIDTH = 1600;
-var SKILL_GRAPH_HEIGHT = 760;
+var SKILL_GRAPH_WIDTH = 2000;
+var SKILL_GRAPH_HEIGHT = 1100;
 var selectedSkillId = null;
 var SKILL_GRAPH_LAYOUT = {};
 
@@ -352,6 +352,46 @@ function toggleSkillTree() {
 function isSkillTreePanelOpen() {
     var panel = document.getElementById("skill-tree-panel");
     return !!panel && panel.classList.contains("open");
+}
+
+function scrollSkillTreeBy(deltaX, deltaY) {
+    var viewport = document.getElementById("skill-tree-viewport");
+    if (!viewport) {
+        return;
+    }
+
+    viewport.scrollBy({
+        left: deltaX,
+        top: deltaY,
+        behavior: "smooth"
+    });
+}
+
+function setupSkillTreeKeyboardNavigation() {
+    var viewport = document.getElementById("skill-tree-viewport");
+    if (!viewport) {
+        return;
+    }
+
+    viewport.addEventListener("keydown", function (event) {
+        if (!isSkillTreePanelOpen()) {
+            return;
+        }
+
+        if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            scrollSkillTreeBy(-220, 0);
+        } else if (event.key === "ArrowRight") {
+            event.preventDefault();
+            scrollSkillTreeBy(220, 0);
+        } else if (event.key === "ArrowUp") {
+            event.preventDefault();
+            scrollSkillTreeBy(0, -180);
+        } else if (event.key === "ArrowDown") {
+            event.preventDefault();
+            scrollSkillTreeBy(0, 180);
+        }
+    });
 }
 
 function getVisibleSkills() {
@@ -1112,4 +1152,5 @@ window.onload = function () {
     setRunCompleteMessage("Easy mode: safer, slower progression (1 skill point per 250 score earned). Skill points are awarded during the run.");
     updateSkillTreeUI();
     updateSkillStatusMessage("No skill effect this roll.");
+    setupSkillTreeKeyboardNavigation();
 };
