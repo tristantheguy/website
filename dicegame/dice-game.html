@@ -17,32 +17,47 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
     <script src="dicegame.js"></script>
     <script src="submitscore.js"></script>
 
-    <button id="skill-tree-toggle" onclick="toggleSkillTree()" style="display: none;">Skill Tree</button>
-    <div id="skill-tree-panel" style="display: none;">
-        <div id="skill-tree-header-row">
-            <h3>Skill Tree</h3>
+<button id="skill-tree-toggle" onclick="toggleSkillTree()" style="display: none;">Skill Tree</button>
+<div id="skill-tree-panel" style="display: none;">
+    <div id="skill-tree-header-row">
+        <h3>Skill Tree</h3>
+        <div id="skill-tree-header-actions">
+            <button type="button" class="skill-nav-button" onclick="scrollSkillTreeBy(0, -220)">↑</button>
+            <button type="button" class="skill-nav-button" onclick="scrollSkillTreeBy(-260, 0)">←</button>
+            <button type="button" class="skill-nav-button" onclick="scrollSkillTreeBy(260, 0)">→</button>
+            <button type="button" class="skill-nav-button" onclick="scrollSkillTreeBy(0, 220)">↓</button>
             <button id="skill-tree-close" type="button" onclick="toggleSkillTree()">Close</button>
         </div>
-        <div id="skill-tree-panel-body">
+    </div>
+
+    <div id="skill-tree-panel-body">
+        <div id="skill-tree-meta">
             <p id="skill-tree-total-rolls"></p>
             <p id="skill-tree-skill-points"></p>
             <p id="skill-tree-lifetime-score"></p>
             <p id="skill-tree-owned-skills"></p>
-            <div id="skills-container">
-                <div id="skill-tree-viewport" aria-label="Skill tree graph">
-                    <div id="skill-tree-canvas">
-                        <svg id="skill-tree-connections" xmlns="http://www.w3.org/2000/svg"></svg>
-                        <div id="skill-tree-node-layer"></div>
-                    </div>
-                </div>
-                <div id="skill-detail-panel" aria-live="polite">
-                    <p class="skill-detail-empty">Click a skill node to view details.</p>
+        </div>
+
+        <div id="skills-container">
+            <div id="skill-tree-viewport" aria-label="Skill tree graph" tabindex="0">
+                <div id="skill-tree-canvas">
+                    <svg id="skill-tree-connections" xmlns="http://www.w3.org/2000/svg"></svg>
+                    <div id="skill-tree-node-layer"></div>
                 </div>
             </div>
+
+            <div id="skill-detail-panel" aria-live="polite">
+                <p class="skill-detail-empty">Click a skill node to view details.</p>
+            </div>
         </div>
-        <div id="skill-node-tooltip" role="tooltip" aria-hidden="true"></div>
-        <button id="skill-tree-reset-button" onclick="resetPlayerProgress()">Reset Player Progress</button>
     </div>
+
+    <div id="skill-tree-footer">
+        <button id="skill-tree-reset-button" type="button" onclick="resetPlayerProgress()">Reset Player Progress</button>
+    </div>
+
+    <div id="skill-node-tooltip" role="tooltip" aria-hidden="true"></div>
+</div>
 
     <!-- display buttons that the player can click to roll the dice and set the mode -->
     <div class="top-controls">
