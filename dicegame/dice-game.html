@@ -21,7 +21,11 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
 <div id="skill-tree-panel" style="display: none;">
     <div id="skill-tree-header-row">
         <h3>Skill Tree</h3>
+
         <div id="skill-tree-header-actions">
+            <button id="skill-tree-reset-button" type="button" onclick="resetPlayerProgress()">
+                Reset Progress
+            </button>
             <button type="button" class="skill-nav-button" onclick="scrollSkillTreeBy(0, -220)">↑</button>
             <button type="button" class="skill-nav-button" onclick="scrollSkillTreeBy(-260, 0)">←</button>
             <button type="button" class="skill-nav-button" onclick="scrollSkillTreeBy(260, 0)">→</button>
@@ -50,10 +54,6 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
                 <p class="skill-detail-empty">Click a skill node to view details.</p>
             </div>
         </div>
-    </div>
-
-    <div id="skill-tree-footer">
-        <button id="skill-tree-reset-button" type="button" onclick="resetPlayerProgress()">Reset Player Progress</button>
     </div>
 
     <div id="skill-node-tooltip" role="tooltip" aria-hidden="true"></div>

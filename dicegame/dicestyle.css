@@ -475,23 +475,15 @@ select {
 }
 
 #skill-tree-reset-button {
-  width: 100%;
-  margin: 0;
-  padding: 10px;
-  background: #6d1f2b;
-  border-color: #a94c5a;
+  background: #7c1f2c;
+  border: 1px solid #b45b67;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: bold;
 }
 
 #skill-tree-reset-button:hover {
-  background: #812735;
-}
-
-#skill-tree-footer {
-  flex: 0 0 auto;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #3f536b;
-  background: rgba(9, 16, 28, 0.98);
+  background: #9a2b3a;
 }
 
 @media (max-width: 1100px) {
