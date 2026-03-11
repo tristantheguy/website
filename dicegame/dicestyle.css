@@ -290,6 +290,7 @@ select {
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
+  padding-bottom: 92px;
 }
 
 #skill-tree-close {
@@ -458,7 +459,8 @@ select {
   position: sticky;
   bottom: 0;
   width: 100%;
-  margin-top: 10px;
+  margin-top: 0;
+  padding: 10px;
   flex-shrink: 0;
   z-index: 2;
   background: #6d1f2b;
