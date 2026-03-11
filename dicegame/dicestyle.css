@@ -249,6 +249,7 @@ select {
   top: 50%;
   transform: translate(-50%, -50%);
   width: min(90vw, 1900px);
+  height: 90vh;
   max-height: 90vh;
   background: rgba(9, 16, 28, 0.97);
   color: #ecf1f8;
@@ -284,7 +285,7 @@ select {
   margin-top: 6px;
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
@@ -300,7 +301,7 @@ select {
 #skill-tree-viewport {
   position: relative;
   height: 100%;
-  min-height: 520px;
+  min-height: 380px;
   border: 1px solid #4a5d74;
   border-radius: 10px;
   background: radial-gradient(circle at center, rgba(37, 52, 72, 0.9), rgba(8, 16, 28, 0.98));
@@ -454,9 +455,12 @@ select {
 }
 
 #skill-tree-reset-button {
+  position: sticky;
+  bottom: 0;
   width: 100%;
   margin-top: 10px;
   flex-shrink: 0;
+  z-index: 2;
   background: #6d1f2b;
   border-color: #a94c5a;
 }
