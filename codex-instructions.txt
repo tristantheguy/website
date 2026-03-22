@@ -1,0 +1,12 @@
+Add two public pages to the website:
+- /privacy-policy
+- /terms-and-conditions
+
+Use the provided markdown content exactly, replacing placeholders with the real domain, contact email, and today's date.
+
+Also:
+- add both links to the global footer
+- make both pages publicly accessible without login
+- keep the SMS compliance language unchanged
+- make styling match the rest of the site
+- return the final live URLs after implementation
