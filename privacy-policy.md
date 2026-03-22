@@ -3,7 +3,7 @@
 **Effective Date:** March 22, 2026  
 **Last Updated:** March 22, 2026
 
-This Privacy Policy describes how https://tristans-website.com collects, uses, stores, and protects information when you use our website, messaging services, and related tools.
+This Privacy Policy describes how Lyra, a personal assistant messaging service operated by Tristan Merson and available through https://tristans-website.com, collects, uses, stores, and protects information when you use the website, messaging services, and related tools.
 
 ## 1. Information We Collect
 
@@ -28,7 +28,7 @@ We use information to:
 
 ## 3. SMS and Messaging Privacy
 
-If you provide your mobile number or message this service, you consent to receive conversational text messages related to your interaction with us, including replies, reminders, and scheduling assistance.
+If you provide your mobile number or message Lyra, you consent to receive 1:1 conversational text messages related to your interaction with the service, including replies, reminders, and scheduling assistance.
 
 Message frequency varies.  
 Message and data rates may apply.  
@@ -39,7 +39,7 @@ We do **not** sell, rent, or share mobile opt-in data, SMS consent, or phone num
 
 ## 4. How Consent Works
 
-Users opt in by initiating contact themselves or by directly requesting SMS follow-up, reminders, or conversational assistance. We do not send unsolicited marketing text messages.
+Users opt in by initiating contact themselves or by directly requesting SMS follow-up, reminders, or conversational assistance from Lyra. We do not send unsolicited marketing text messages.
 
 ## 5. Sharing of Information
 
@@ -70,15 +70,15 @@ You may:
 
 ## 9. Cookies and Analytics
 
-Our website may use cookies or similar technologies to improve user experience, analyze traffic, and maintain site functionality. You can control cookies through your browser settings.
+The Lyra website may use cookies or similar technologies to improve user experience, analyze traffic, and maintain site functionality. You can control cookies through your browser settings.
 
 ## 10. Third-Party Services
 
-Our website or services may rely on third-party providers for hosting, analytics, communications, scheduling, or infrastructure. Use of those services may involve processing information consistent with their own policies and our agreements with them.
+Lyra may rely on third-party providers for hosting, analytics, communications, scheduling, or infrastructure. Use of those services may involve processing information consistent with their own policies and our agreements with them.
 
 ## 11. Children's Privacy
 
-This service is not directed to children under 13, and we do not knowingly collect personal information from children under 13 through the website.
+Lyra is not directed to children under 13, and we do not knowingly collect personal information from children under 13 through the website.
 
 ## 12. Changes to This Privacy Policy
 

@@ -3,17 +3,17 @@
 **Effective Date:** March 22, 2026  
 **Last Updated:** March 22, 2026
 
-These Terms and Conditions govern your use of https://tristans-website.com, including its website, messaging features, and related services.
+These Terms and Conditions govern your use of Lyra, a personal assistant messaging service operated by Tristan Merson and available through https://tristans-website.com, including its website, messaging features, and related services.
 
-By accessing the website or using the messaging service, you agree to these Terms and Conditions.
+By accessing the Lyra website or using the messaging service, you agree to these Terms and Conditions.
 
 ## 1. Service Description
 
-This service provides conversational messaging, reminders, scheduling assistance, and related support features. Messages are generally sent in response to user-initiated communication or direct requests for follow-up.
+Lyra provides 1:1 conversational messaging, reminders, scheduling assistance, and related support features. Messages are generally sent in response to user-initiated communication or direct requests for follow-up.
 
 ## 2. SMS Messaging Terms
 
-By providing your phone number or messaging this service, you agree to receive conversational SMS messages, reminders, and scheduling-related follow-up where applicable.
+By providing your phone number or messaging Lyra, you agree to receive conversational SMS messages, reminders, and scheduling-related follow-up where applicable.
 
 Message frequency varies.  
 Message and data rates may apply.  
@@ -21,6 +21,8 @@ Reply STOP to opt out.
 Reply HELP for help.
 
 Consent to receive messages is not a condition of purchase.
+
+We do **not** sell, rent, or share mobile opt-in data, SMS consent, or phone numbers with third parties or affiliates for marketing or promotional purposes.
 
 ## 3. User Responsibilities
 
@@ -41,7 +43,7 @@ You may reply HELP for assistance with the messaging service or contact us using
 
 ## 6. No Guarantee of Availability
 
-We aim to provide reliable service, but we do not guarantee uninterrupted availability, delivery, timeliness, or error-free operation of the website or messaging features.
+We aim to provide reliable service, but we do not guarantee uninterrupted availability, delivery, timeliness, or error-free operation of the Lyra website or messaging features.
 
 ## 7. Acceptable Use
 
@@ -56,15 +58,15 @@ We reserve the right to restrict or terminate access for misuse.
 
 ## 8. Intellectual Property
 
-All website content, branding, layout, text, and service materials are owned by or licensed to the operator of https://tristans-website.com, unless otherwise stated. You may not reproduce or distribute protected content without permission.
+All website content, branding, layout, text, and service materials for Lyra are owned by or licensed to Tristan Merson, unless otherwise stated. You may not reproduce or distribute protected content without permission.
 
 ## 9. Limitation of Liability
 
-To the fullest extent permitted by law, https://tristans-website.com and its operators are not liable for indirect, incidental, special, consequential, or punitive damages, or for loss of data, profits, business, or opportunities arising from use of the service.
+To the fullest extent permitted by law, Lyra, a personal assistant messaging service operated by Tristan Merson, is not liable for indirect, incidental, special, consequential, or punitive damages, or for loss of data, profits, business, or opportunities arising from use of the service.
 
 ## 10. Disclaimer
 
-The service is provided on an "as is" and "as available" basis without warranties of any kind, either express or implied, except as required by law.
+Lyra is provided on an "as is" and "as available" basis without warranties of any kind, either express or implied, except as required by law.
 
 ## 11. Privacy
 
