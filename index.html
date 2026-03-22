@@ -2,38 +2,89 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Home Page</title>
-  <link rel="stylesheet" type="text/css" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tristan Merson | Nurse, Tech Builder, Problem Solver</title>
+  <meta
+    name="description"
+    content="Personal homepage of Tristan Merson — registered nurse exploring pediatric and behavioral health, AI, automation, gaming, and practical system design."
+  />
+  <link rel="stylesheet" type="text/css" href="homepage.css" />
 </head>
 <body>
-  <div id="banner"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
 
- <div id="sidebar">
-  <ul>
-    <li><a href="10000_magical_effects.html">10,000 Magical Effects</a></li>
-    <li><a href="randomNPC.html">Random NPC</a></li>
-    <li><a href="dicegame/dice-game.html">Dice Game</a></li>
-    <li><a href="minecraft-status.html">Minecraft Server Status</a></li>
-  </ul>
-</div>
+  <header class="hero">
+    <p class="eyebrow">Personal Site • Tristan Merson</p>
+    <h1>Tristan Merson</h1>
+    <h2>Registered Nurse. Tech Builder. Problem Solver.</h2>
+    <p class="lead">
+      I’m Tristan Merson, a nurse with a strong interest in technology, AI, automation, gaming,
+      and building practical systems that solve real problems. My work sits at the intersection
+      of healthcare, creativity, and technical experimentation.
+    </p>
+  </header>
 
+  <main>
+    <section class="panel" id="about">
+      <h3>About Tristan</h3>
+      <p>
+        I work in nursing while also exploring projects in AI, game systems, automation,
+        self-hosting, and software tools. I enjoy building things that are useful, interactive,
+        and memorable — with a focus on outcomes that help people in practical ways.
+      </p>
+    </section>
 
-  <div id="content" style="margin-top: -2500px; margin-left: 250px;">
-    <h1 style="text-align: center; font-family: fantasy; font-size: 48px; font-weight: bold;">Welcome to Lyra,</h1> 
-    <h1 style="text-align: center; font-family: fantasy; font-size: 48px; font-weight: bold;">your personal assistant messaging service</h1>
-    <h2 style="text-align: center; font-family: fantasy; color: green; font-size: 30px;">Operated by Tristan Merson</h2>
+    <section class="panel" id="projects">
+      <div class="section-heading">
+        <h3>Featured Projects &amp; Tools</h3>
+        <p>Quick links to experiments and utilities currently live on this site.</p>
+      </div>
+      <div class="card-grid">
+        <a class="project-card" href="10000_magical_effects.html">
+          <h4>10,000 Magical Effects</h4>
+          <p>A fantasy/RPG utility for generating magical effects or chaotic outcomes.</p>
+        </a>
+        <a class="project-card" href="randomNPC.html">
+          <h4>Random NPC</h4>
+          <p>A tool for generating characters and ideas for stories, campaigns, and worlds.</p>
+        </a>
+        <a class="project-card" href="dicegame/dice-game.html">
+          <h4>Dice Game</h4>
+          <p>A small interactive game/tool built for quick play and experimentation.</p>
+        </a>
+        <a class="project-card" href="minecraft-status.html">
+          <h4>Minecraft Server Status</h4>
+          <p>A quick way to check server availability and see if it’s online.</p>
+        </a>
+      </div>
+    </section>
 
-    <p style="text-align: center; font-family: sans-serif; font-size: 24px;">Lyra helps with 1:1 conversational messaging, reminders, and scheduling support.</p>
-    <p style="text-align: center; font-family: sans-serif; font-size: 24px;">Use this site to learn about the service and connect through messaging.</p>
+    <section class="panel" id="focus">
+      <h3>Current Focus Areas</h3>
+      <ul class="focus-list">
+        <li>Nursing and behavioral health</li>
+        <li>AI and automation</li>
+        <li>Game design and RPG tools</li>
+        <li>Self-hosting and server projects</li>
+        <li>Creative problem solving</li>
+      </ul>
+    </section>
 
-    <div style="text-align: center;">
-      <img src="https://bestanimations.com/media/dragons/53106476WOW-RED-DRAGON-GIF.gif" alt="Red Dragon GIF">
-    </div>
-  </div>
+    <section class="panel" id="brand">
+      <h3>Professional, Technical, and Creative</h3>
+      <p>
+        This space reflects how I approach my work: part clinician, part builder, and always
+        curious. I care about systems that are dependable, experiences that feel intentional,
+        and ideas that can move from concept to something real.
+      </p>
+    </section>
+  </main>
 
-  <footer style="margin: 30px 0; text-align: center; font-family: Arial, sans-serif; color: #fff;">
-    <a href="/privacy-policy" style="color: #fff; margin: 0 10px; font-weight: bold;">Privacy Policy</a> |
-    <a href="/terms-and-conditions" style="color: #fff; margin: 0 10px; font-weight: bold;">Terms and Conditions</a>
+  <footer>
+    <a href="/privacy-policy">Privacy Policy</a>
+    <span aria-hidden="true">|</span>
+    <a href="/terms-and-conditions">Terms and Conditions</a>
   </footer>
 </body>
 </html>
