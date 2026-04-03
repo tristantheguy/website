@@ -345,8 +345,13 @@ function toggleSkillTree() {
     }
 
     var panel = document.getElementById("skill-tree-panel");
+    var opening = !panel.classList.contains("open");
     panel.classList.toggle("open");
     updateSkillTreeUI();
+
+    if (opening) {
+        centerSkillTreeOnActiveNode(true);
+    }
 }
 
 function isSkillTreePanelOpen() {
@@ -450,6 +455,75 @@ function getSkillStatusInfo(skill) {
     };
 }
 
+function getPreferredSkillFocusId() {
+    if (selectedSkillId && getSkillById(selectedSkillId)) {
+        return selectedSkillId;
+    }
+
+    if (isSkillOwned("secondChance")) {
+        return "secondChance";
+    }
+
+    if (isSkillOwned("momentum")) {
+        return "momentum";
+    }
+
+    if (isSkillOwned("luckyEdge")) {
+        return "luckyEdge";
+    }
+
+    return "momentum";
+}
+
+function centerSkillTreeOnActiveNode(forceCenter) {
+    var viewport = document.getElementById("skill-tree-viewport");
+    if (!viewport) {
+        return;
+    }
+
+    var focusSkillId = getPreferredSkillFocusId();
+    var focusNode = viewport.querySelector('[data-skill-id="' + focusSkillId + '"]');
+    if (!focusNode) {
+        return;
+    }
+
+    var targetLeft = focusNode.offsetLeft - ((viewport.clientWidth - focusNode.offsetWidth) / 2);
+    var targetTop = focusNode.offsetTop - ((viewport.clientHeight - focusNode.offsetHeight) / 2);
+    var maxLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    var maxTop = Math.max(0, viewport.scrollHeight - viewport.clientHeight);
+    targetLeft = Math.max(0, Math.min(maxLeft, targetLeft));
+    targetTop = Math.max(0, Math.min(maxTop, targetTop));
+
+    if (forceCenter) {
+        viewport.scrollLeft = targetLeft;
+        viewport.scrollTop = targetTop;
+        return;
+    }
+
+    var nodeLeft = focusNode.offsetLeft;
+    var nodeTop = focusNode.offsetTop;
+    var nodeRight = nodeLeft + focusNode.offsetWidth;
+    var nodeBottom = nodeTop + focusNode.offsetHeight;
+    var visibleLeft = viewport.scrollLeft;
+    var visibleTop = viewport.scrollTop;
+    var visibleRight = visibleLeft + viewport.clientWidth;
+    var visibleBottom = visibleTop + viewport.clientHeight;
+    var padding = 80;
+
+    var isOutOfView = nodeLeft < visibleLeft + padding ||
+        nodeRight > visibleRight - padding ||
+        nodeTop < visibleTop + padding ||
+        nodeBottom > visibleBottom - padding;
+
+    if (isOutOfView) {
+        viewport.scrollTo({
+            left: targetLeft,
+            top: targetTop,
+            behavior: "smooth"
+        });
+    }
+}
+
 function renderSkills() {
     var viewport = document.getElementById("skill-tree-viewport");
     var canvas = document.getElementById("skill-tree-canvas");
@@ -458,6 +532,9 @@ function renderSkills() {
     if (!viewport || !canvas || !connectionLayer || !nodeLayer) {
         return;
     }
+
+    var previousScrollLeft = viewport.scrollLeft;
+    var previousScrollTop = viewport.scrollTop;
 
     SKILL_GRAPH_LAYOUT = buildSkillGraphLayout();
 
@@ -495,11 +572,11 @@ function renderSkills() {
         }
     });
 
-    if (selectedSkillId && renderedNodeElements[selectedSkillId]) {
-        renderedNodeElements[selectedSkillId].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
-    }
+    viewport.scrollLeft = previousScrollLeft;
+    viewport.scrollTop = previousScrollTop;
 
     renderSkillDetailPanel();
+    centerSkillTreeOnActiveNode(false);
 }
 
 function renderSingleSkillNode(skill) {
