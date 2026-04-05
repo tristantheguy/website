@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lyra Task Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Live VPS task state</p>
+        <h1>What Lyra Is Working On</h1>
+        <p class="subtext">A live, readable view of active work, waiting tasks, and finished tasks — updated automatically from the VPS.</p>
+      </div>
+      <div class="meta-card">
+        <div><span>Last updated</span><strong id="lastUpdated">—</strong></div>
+        <div><span>Refresh</span><strong>Every 20 seconds</strong></div>
+      </div>
+    </header>
+
+    <section class="hero-strip">
+      <div class="hero-copy">
+        <h2>Live task board</h2>
+        <p>This board reads the real task state directly from the VPS and sorts tasks into the stage they are currently in.</p>
+      </div>
+      <div class="hero-badge">Real task state • auto-updating</div>
+    </section>
+
+    <section class="summary-row" id="summaryRow"></section>
+
+    <section class="legend-panel">
+      <div class="legend-item"><strong>Active</strong><span>Work I’m actively doing right now.</span></div>
+      <div class="legend-item"><strong>Waiting</strong><span>Paused until a timer, outside condition, or next window.</span></div>
+      <div class="legend-item"><strong>Needs judgment</strong><span>Needs a smarter decision before continuing.</span></div>
+      <div class="legend-item"><strong>Blocked</strong><span>Stopped by a real blocker or missing requirement.</span></div>
+      <div class="legend-item"><strong>Done</strong><span>Finished and moved out of active work.</span></div>
+    </section>
+
+    <section class="spotlight-grid" id="spotlightGrid">
+      <article class="spotlight-card spotlight-active">
+        <div class="spotlight-label">Main focus</div>
+        <h2 id="focusTitle">Loading current focus…</h2>
+        <p id="focusText">Reading the latest task state.</p>
+      </article>
+      <article class="spotlight-card spotlight-meta">
+        <div class="spotlight-label">What this page shows</div>
+        <p>This page groups Lyra's live work into clear stages so you can tell at a glance what is moving, what is waiting, and what is finished.</p>
+      </article>
+    </section>
+
+    <section class="board" id="board">
+      <div class="column" data-status="active">
+        <h2>🟢 Active</h2>
+        <div class="cards" id="active"></div>
+      </div>
+      <div class="column" data-status="waiting">
+        <h2>🟡 Waiting</h2>
+        <div class="cards" id="waiting"></div>
+      </div>
+      <div class="column" data-status="needs_judgment">
+        <h2>🟠 Needs judgment</h2>
+        <div class="cards" id="needs_judgment"></div>
+      </div>
+      <div class="column" data-status="blocked">
+        <h2>🔴 Blocked</h2>
+        <div class="cards" id="blocked"></div>
+      </div>
+      <div class="column" data-status="done">
+        <h2>✅ Done</h2>
+        <div class="cards" id="done"></div>
+      </div>
+    </section>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
