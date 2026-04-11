@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SMS Opt-In | Tristan Merson Personal Assistant</title>
+  <meta
+    name="description"
+    content="Public SMS opt-in page for Tristan Merson Personal Assistant, including compliant consent language, program terms, and policy links."
+  />
+  <link rel="stylesheet" type="text/css" href="homepage.css" />
+  <style>
+    .content-wrap {
+      position: relative;
+      z-index: 1;
+      width: min(1040px, 92vw);
+      margin: 0 auto;
+      padding-bottom: 2rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .form-grid .full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.45rem;
+      color: #e6edff;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid rgba(126, 155, 255, 0.4);
+      border-radius: 10px;
+      padding: 0.72rem 0.85rem;
+      background: rgba(9, 14, 24, 0.82);
+      color: #edf2ff;
+      font: inherit;
+    }
+
+    .consent-box {
+      border: 1px solid rgba(126, 155, 255, 0.3);
+      border-radius: 12px;
+      padding: 0.9rem;
+      background: rgba(9, 14, 24, 0.62);
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .consent-box label {
+      margin: 0;
+      font-weight: 500;
+      color: #d8e3ff;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      line-height: 1.5;
+    }
+
+    .consent-box input[type="checkbox"] {
+      margin-top: 0.2rem;
+      width: auto;
+      accent-color: #45d4ff;
+    }
+
+    .cta-button {
+      border: 1px solid rgba(69, 212, 255, 0.8);
+      background: linear-gradient(135deg, rgba(69, 212, 255, 0.2), rgba(126, 155, 255, 0.25));
+      color: #edf6ff;
+      padding: 0.7rem 1.1rem;
+      border-radius: 999px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      width: fit-content;
+    }
+
+    .inline-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 0.55rem;
+    }
+
+    .inline-links a {
+      color: #9fe7ff;
+    }
+
+    .note {
+      color: #b7c7eb;
+      font-size: 0.95rem;
+      margin-top: 0;
+    }
+
+    .panel ul {
+      margin: 0;
+      padding-left: 1.2rem;
+      color: #d4def8;
+    }
+
+    @media (max-width: 700px) {
+      .hero {
+        padding-top: 3rem;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <nav class="site-nav" aria-label="Primary">
+    <a href="index.html">Home</a>
+    <a href="sms-opt-in.html" aria-current="page">SMS Opt-In</a>
+    <a href="/privacy-policy">Privacy Policy</a>
+    <a href="/terms-and-conditions">Terms &amp; Conditions</a>
+  </nav>
+
+  <header class="hero">
+    <p class="eyebrow">Public SMS Program Disclosure</p>
+    <h1>SMS Opt-In</h1>
+    <h2>Tristan Merson Personal Assistant</h2>
+    <p class="lead">This page documents the SMS opt-in process for messaging compliance review.</p>
+  </header>
+
+  <main class="content-wrap">
+    <section class="panel">
+      <h3>Opt-In Form (Display / Documentation Sample)</h3>
+      <p class="note">This is a visual opt-in form example for campaign compliance documentation. It does not submit data to a backend from this public page.</p>
+      <form action="#" method="post" onsubmit="return false;" novalidate>
+        <div class="form-grid">
+          <div>
+            <label for="full-name">Full Name</label>
+            <input id="full-name" name="full-name" type="text" autocomplete="name" placeholder="Enter your full name" />
+          </div>
+          <div>
+            <label for="mobile-number">Mobile Number</label>
+            <input id="mobile-number" name="mobile-number" type="tel" autocomplete="tel" placeholder="(555) 555-5555" />
+          </div>
+          <div class="full-width">
+            <label for="contact-reason">Preferred Contact Reason</label>
+            <select id="contact-reason" name="contact-reason">
+              <option value="">Select a reason</option>
+              <option>General conversational assistance</option>
+              <option>Reminders</option>
+              <option>Scheduling follow-up</option>
+            </select>
+          </div>
+          <div class="full-width consent-box">
+            <label>
+              <input id="sms-consent" name="sms-consent" type="checkbox" />
+              <span>By checking this box, you agree to receive conversational SMS messages, reminders, and scheduling follow-ups from Tristan Merson Personal Assistant. Message frequency varies. Message and data rates may apply. Reply STOP to opt out and HELP for help.</span>
+            </label>
+            <div class="inline-links">
+              <a href="privacy-policy.html">Privacy Policy</a>
+              <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+            </div>
+          </div>
+          <div class="full-width">
+            <button class="cta-button" type="submit">Submit</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h3>How SMS Consent Works</h3>
+      <ul>
+        <li>The user enters their phone number in the website form.</li>
+        <li>The user manually checks the consent checkbox.</li>
+        <li>The user submits the form.</li>
+        <li>Only users who opt in are sent SMS messages.</li>
+        <li>Users can reply STOP to unsubscribe and HELP for help.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h3>Compliance Notes</h3>
+      <ul>
+        <li>Opt-in is collected through a public website form.</li>
+        <li>Consent checkbox is unchecked by default.</li>
+        <li>Privacy Policy and Terms &amp; Conditions are linked on the page.</li>
+        <li>Message frequency varies.</li>
+        <li>Message and data rates may apply.</li>
+        <li>Users can reply STOP to opt out and HELP for help.</li>
+        <li>Mobile opt-in data is not shared with third parties.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <a href="sms-opt-in.html">SMS Opt-In</a>
+    <span aria-hidden="true">|</span>
+    <a href="privacy-policy.html">Privacy Policy</a>
+    <span aria-hidden="true">|</span>
+    <a href="terms-and-conditions.html">Terms and Conditions</a>
+  </footer>
+</body>
+</html>

@@ -60,8 +60,39 @@ footer {
   margin-inline: auto;
 }
 
+.site-nav {
+  position: relative;
+  z-index: 2;
+  width: min(1040px, 92vw);
+  margin: 1rem auto 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(126, 155, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(10, 14, 24, 0.78);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.site-nav a {
+  color: #dce8ff;
+  text-decoration: none;
+  font-size: 0.94rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible,
+.site-nav a[aria-current="page"] {
+  color: var(--accent-2);
+  background: rgba(69, 212, 255, 0.12);
+}
+
 .hero {
-  padding: 6.25rem 0 3.5rem;
+  padding: 4.8rem 0 3.5rem;
 }
 
 .eyebrow {
@@ -186,6 +217,7 @@ footer {
   display: flex;
   justify-content: center;
   gap: 0.7rem;
+  flex-wrap: wrap;
   color: var(--muted);
   font-size: 0.95rem;
 }
