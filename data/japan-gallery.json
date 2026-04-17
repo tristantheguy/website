@@ -1,0 +1,1087 @@
+{
+  "title": "Japan Trip Memories",
+  "subtitle": "Tristan & Megan \u2022 Cherry Blossom Season",
+  "generatedAt": "2026-04-17T00:00:00Z",
+  "sourceFolder": "Photos/Japan",
+  "orderingStrategy": "Filename numeric fallback (EXIF date/time unavailable in source images).",
+  "placeStrategy": "Location metadata unavailable. Add place names manually per image.",
+  "editNotes": [
+    "Manual editing guide: Update items[].caption, items[].place, and items[].dayLabel to personalize the story.",
+    "Featured strip: Toggle items[].featured=true or false to control top rolling images.",
+    "Tabs: tabHints controls custom tab grouping (for example [\"Kyoto\", \"Day 2\", \"Favorites\"]).",
+    "When known, replace empty date/time with ISO-style values (YYYY-MM-DD and HH:MM) for precise chronological sorting."
+  ],
+  "items": [
+    {
+      "id": "jp-001",
+      "filePath": "Photos/Japan/Snapchat-56704952.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Favorites",
+      "featured": true,
+      "sortIndex": 1,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Favorites"
+      ]
+    },
+    {
+      "id": "jp-002",
+      "filePath": "Photos/Japan/Snapchat-87034330.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 2,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-003",
+      "filePath": "Photos/Japan/Snapchat-112811055.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 3,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-004",
+      "filePath": "Photos/Japan/Snapchat-136439895.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Favorites",
+      "featured": true,
+      "sortIndex": 4,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Favorites"
+      ]
+    },
+    {
+      "id": "jp-005",
+      "filePath": "Photos/Japan/Snapchat-201215699.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 5,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-006",
+      "filePath": "Photos/Japan/Snapchat-267403593.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 6,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-007",
+      "filePath": "Photos/Japan/Snapchat-325667452.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 7,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-008",
+      "filePath": "Photos/Japan/Snapchat-344628711.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Favorites",
+      "featured": true,
+      "sortIndex": 8,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Favorites"
+      ]
+    },
+    {
+      "id": "jp-009",
+      "filePath": "Photos/Japan/Snapchat-389183186.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 9,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-010",
+      "filePath": "Photos/Japan/Snapchat-393744839.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 10,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-011",
+      "filePath": "Photos/Japan/Snapchat-401732304.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 11,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-012",
+      "filePath": "Photos/Japan/Snapchat-402314391.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 12,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-013",
+      "filePath": "Photos/Japan/Snapchat-410324059.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Favorites",
+      "featured": true,
+      "sortIndex": 13,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Favorites"
+      ]
+    },
+    {
+      "id": "jp-014",
+      "filePath": "Photos/Japan/Snapchat-413218767.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 14,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-015",
+      "filePath": "Photos/Japan/Snapchat-449829185.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 15,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-016",
+      "filePath": "Photos/Japan/Snapchat-490049546.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 1",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 16,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 1",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-017",
+      "filePath": "Photos/Japan/Snapchat-497347133.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 17,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-018",
+      "filePath": "Photos/Japan/Snapchat-571754359.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 18,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-019",
+      "filePath": "Photos/Japan/Snapchat-609141050.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Favorites",
+      "featured": true,
+      "sortIndex": 19,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Favorites"
+      ]
+    },
+    {
+      "id": "jp-020",
+      "filePath": "Photos/Japan/Snapchat-630511688.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 20,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-021",
+      "filePath": "Photos/Japan/Snapchat-647949022.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 21,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-022",
+      "filePath": "Photos/Japan/Snapchat-693061321.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 22,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-023",
+      "filePath": "Photos/Japan/Snapchat-701770972.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 23,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-024",
+      "filePath": "Photos/Japan/Snapchat-702853254.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 24,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-025",
+      "filePath": "Photos/Japan/Snapchat-857194750.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 25,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-026",
+      "filePath": "Photos/Japan/Snapchat-870161521.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Favorites",
+      "featured": true,
+      "sortIndex": 26,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Favorites"
+      ]
+    },
+    {
+      "id": "jp-027",
+      "filePath": "Photos/Japan/Snapchat-964242056.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 27,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-028",
+      "filePath": "Photos/Japan/Snapchat-977384888.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 28,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-029",
+      "filePath": "Photos/Japan/Snapchat-977968147.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 29,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-030",
+      "filePath": "Photos/Japan/Snapchat-1024905179.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 30,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-031",
+      "filePath": "Photos/Japan/Snapchat-1049593132.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 31,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-032",
+      "filePath": "Photos/Japan/Snapchat-1049708255.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 2",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 32,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 2",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-033",
+      "filePath": "Photos/Japan/Snapchat-1076462590.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 33,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-034",
+      "filePath": "Photos/Japan/Snapchat-1084571316.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Favorites",
+      "featured": true,
+      "sortIndex": 34,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Favorites"
+      ]
+    },
+    {
+      "id": "jp-035",
+      "filePath": "Photos/Japan/Snapchat-1110979026.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 35,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-036",
+      "filePath": "Photos/Japan/Snapchat-1119837414.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 36,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-037",
+      "filePath": "Photos/Japan/Snapchat-1128880143.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 37,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-038",
+      "filePath": "Photos/Japan/Snapchat-1149800658.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 38,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-039",
+      "filePath": "Photos/Japan/Snapchat-1227826039.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 39,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-040",
+      "filePath": "Photos/Japan/Snapchat-1252562860.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 40,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-041",
+      "filePath": "Photos/Japan/Snapchat-1254952056.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 41,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-042",
+      "filePath": "Photos/Japan/Snapchat-1258517180.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Favorites",
+      "featured": true,
+      "sortIndex": 42,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Favorites"
+      ]
+    },
+    {
+      "id": "jp-043",
+      "filePath": "Photos/Japan/Snapchat-1265002717.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 43,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-044",
+      "filePath": "Photos/Japan/Snapchat-1286047978.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 44,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-045",
+      "filePath": "Photos/Japan/Snapchat-1295331213.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 45,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-046",
+      "filePath": "Photos/Japan/Snapchat-1350378778.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 46,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-047",
+      "filePath": "Photos/Japan/Snapchat-1431820357.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 47,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-048",
+      "filePath": "Photos/Japan/Snapchat-1461879260.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 3",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 48,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 3",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-049",
+      "filePath": "Photos/Japan/Snapchat-1525026045.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 49,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-050",
+      "filePath": "Photos/Japan/Snapchat-1530094404.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 50,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-051",
+      "filePath": "Photos/Japan/Snapchat-1532181355.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Favorites",
+      "featured": true,
+      "sortIndex": 51,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Favorites"
+      ]
+    },
+    {
+      "id": "jp-052",
+      "filePath": "Photos/Japan/Snapchat-1573736019.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 52,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-053",
+      "filePath": "Photos/Japan/Snapchat-1606542763.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 53,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-054",
+      "filePath": "Photos/Japan/Snapchat-1646452905.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 54,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-055",
+      "filePath": "Photos/Japan/Snapchat-1670026792.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 55,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-056",
+      "filePath": "Photos/Japan/Snapchat-1778325674.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 56,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-057",
+      "filePath": "Photos/Japan/Snapchat-1795342428.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 57,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-058",
+      "filePath": "Photos/Japan/Snapchat-1837799295.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 58,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-059",
+      "filePath": "Photos/Japan/Snapchat-1875364833.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 59,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-060",
+      "filePath": "Photos/Japan/Snapchat-2023394441.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Favorites",
+      "featured": true,
+      "sortIndex": 60,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Favorites"
+      ]
+    },
+    {
+      "id": "jp-061",
+      "filePath": "Photos/Japan/Snapchat-2043779921.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 61,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-062",
+      "filePath": "Photos/Japan/Snapchat-2051492143.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 62,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    },
+    {
+      "id": "jp-063",
+      "filePath": "Photos/Japan/Snapchat-2142060707.jpg",
+      "date": "",
+      "time": "",
+      "place": "",
+      "caption": "",
+      "dayLabel": "Day 4",
+      "groupLabel": "Other Moments",
+      "featured": false,
+      "sortIndex": 63,
+      "sortSource": "filename-fallback",
+      "tabHints": [
+        "Day 4",
+        "Other Moments"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Japan Trip Memories | Tristan & Megan</title>
+  <meta
+    name="description"
+    content="A cherry blossom themed gallery of Japan trip memories for Tristan and Megan."
+  />
+  <link rel="stylesheet" href="japan-gallery.css" />
+</head>
+<body>
+  <div class="petal-layer" aria-hidden="true"></div>
+
+  <nav class="site-nav" aria-label="Primary">
+    <a href="index.html">Home</a>
+    <a href="japan-memories.html" aria-current="page">Japan Memories</a>
+    <a href="sms-opt-in.html">SMS Opt-In</a>
+    <a href="/privacy-policy">Privacy Policy</a>
+    <a href="/terms-and-conditions">Terms &amp; Conditions</a>
+  </nav>
+
+  <header class="hero">
+    <p class="eyebrow">Tristan &amp; Megan • Japan Trip</p>
+    <h1>Japan Trip Memories</h1>
+    <p class="lead">
+      A soft, romantic scrapbook of cherry blossom moments — organized in a simple timeline so you
+      can keep adding captions, places, and favorite highlights over time.
+    </p>
+  </header>
+
+  <main class="gallery-shell" id="gallery-app">
+    <section class="card featured-card" aria-labelledby="featured-title">
+      <div class="section-head">
+        <h2 id="featured-title">Featured Moments</h2>
+        <p>Slow rolling favorites from your trip.</p>
+      </div>
+      <div class="featured-strip" id="featured-strip" aria-live="polite"></div>
+    </section>
+
+    <section class="card" aria-labelledby="tabs-title">
+      <div class="section-head">
+        <h2 id="tabs-title">Browse by Day, Place, or Favorites</h2>
+        <p>Tabs are generated from metadata and can be customized in one JSON file.</p>
+      </div>
+      <div class="tabs" id="gallery-tabs" role="tablist" aria-label="Gallery filters"></div>
+      <div class="gallery-grid" id="gallery-grid"></div>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close photo viewer">×</button>
+    <button class="lightbox-nav prev" id="lightbox-prev" aria-label="Previous photo">‹</button>
+    <figure class="lightbox-figure">
+      <img id="lightbox-image" alt="Japan trip memory" />
+      <figcaption id="lightbox-caption"></figcaption>
+    </figure>
+    <button class="lightbox-nav next" id="lightbox-next" aria-label="Next photo">›</button>
+  </div>
+
+  <script src="japan-gallery.js" defer></script>
+</body>
+</html>
