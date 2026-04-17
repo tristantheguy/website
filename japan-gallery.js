@@ -6,6 +6,7 @@ const state = {
   activeTab: 'All',
   lightboxIndex: 0,
   visibleCount: 0,
+  lightboxFallback: null,
 };
 
 const MOBILE_QUERY = '(max-width: 700px)';
@@ -140,14 +141,17 @@ function renderGrid() {
 
   const visibleItems = state.filteredItems.slice(0, state.visibleCount);
 
-  visibleItems.forEach((item, index) => {
+  visibleItems.forEach((item) => {
     const card = document.createElement('article');
     card.className = 'photo-card';
 
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'photo-button';
-    button.addEventListener('click', () => openLightbox(index));
+    button.addEventListener('click', () => {
+      const absoluteIndex = state.filteredItems.indexOf(item);
+      openLightbox(absoluteIndex, image.currentSrc || image.src, image.alt);
+    });
 
     const image = document.createElement('img');
     image.src = item.filePath;
@@ -181,6 +185,16 @@ function formatMeta(item) {
 
 function wireLightboxEvents() {
   document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+  lightboxImageEl.addEventListener('error', () => {
+    if (state.lightboxFallback?.src && lightboxImageEl.src !== state.lightboxFallback.src) {
+      lightboxImageEl.src = state.lightboxFallback.src;
+      lightboxImageEl.alt = state.lightboxFallback.alt || lightboxImageEl.alt;
+      return;
+    }
+
+    lightboxImageEl.removeAttribute('src');
+    lightboxCaptionEl.textContent = 'Image unavailable for this photo.';
+  });
   document.getElementById('lightbox-prev').addEventListener('click', () => stepLightbox(-1));
   document.getElementById('lightbox-next').addEventListener('click', () => stepLightbox(1));
   lightboxEl.addEventListener('click', (event) => {
@@ -196,14 +210,16 @@ function wireLightboxEvents() {
   });
 }
 
-function openLightbox(index) {
-  state.lightboxIndex = index;
+function openLightbox(index, fallbackSrc = '', fallbackAlt = 'Japan trip memory') {
+  state.lightboxIndex = Number.isInteger(index) && index >= 0 ? index : 0;
+  state.lightboxFallback = { src: fallbackSrc, alt: fallbackAlt };
   renderLightbox();
   lightboxEl.removeAttribute('hidden');
 }
 
 function closeLightbox() {
   lightboxEl.setAttribute('hidden', '');
+  state.lightboxFallback = null;
 }
 
 function stepLightbox(direction) {
@@ -215,10 +231,14 @@ function stepLightbox(direction) {
 
 function renderLightbox() {
   const item = state.filteredItems[state.lightboxIndex];
-  if (!item) return;
-  lightboxImageEl.src = item.filePath;
-  lightboxImageEl.alt = item.caption || item.place || item.dayLabel || 'Japan trip memory';
-  lightboxCaptionEl.textContent = formatMeta(item);
+  const fallback = state.lightboxFallback || {};
+
+  const source = item?.filePath || fallback.src || '';
+  const altText = item?.caption || item?.place || item?.dayLabel || fallback.alt || 'Japan trip memory';
+
+  lightboxImageEl.src = source;
+  lightboxImageEl.alt = altText;
+  lightboxCaptionEl.textContent = item ? formatMeta(item) : '';
 }
 
 function escapeHtml(value) {
