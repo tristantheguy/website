@@ -5,11 +5,19 @@ const state = {
   filteredItems: [],
   activeTab: 'All',
   lightboxIndex: 0,
+  visibleCount: 0,
 };
+
+const MOBILE_QUERY = '(max-width: 700px)';
+const INITIAL_COUNT_DESKTOP = 12;
+const INITIAL_COUNT_MOBILE = 6;
+const LOAD_MORE_STEP_DESKTOP = 8;
+const LOAD_MORE_STEP_MOBILE = 4;
 
 const featuredStripEl = document.getElementById('featured-strip');
 const tabsEl = document.getElementById('gallery-tabs');
 const gridEl = document.getElementById('gallery-grid');
+const loadMoreBtnEl = document.getElementById('load-more-btn');
 const lightboxEl = document.getElementById('lightbox');
 const lightboxImageEl = document.getElementById('lightbox-image');
 const lightboxCaptionEl = document.getElementById('lightbox-caption');
@@ -32,6 +40,7 @@ async function init() {
   renderFeatured(ordered.filter((item) => item.featured));
   renderTabs(buildTabs(ordered));
   applyTab('All');
+  wireLoadMoreEvents();
   wireLightboxEvents();
 }
 
@@ -79,6 +88,7 @@ function renderTabs(tabs) {
 
 function applyTab(tabName) {
   state.activeTab = tabName;
+  state.visibleCount = getInitialVisibleCount();
   const match = (item) => {
     if (tabName === 'All') {
       return true;
@@ -124,10 +134,13 @@ function renderGrid() {
 
   if (!state.filteredItems.length) {
     gridEl.innerHTML = '<p>No photos found for this tab yet.</p>';
+    updateLoadMoreButton();
     return;
   }
 
-  state.filteredItems.forEach((item, index) => {
+  const visibleItems = state.filteredItems.slice(0, state.visibleCount);
+
+  visibleItems.forEach((item, index) => {
     const card = document.createElement('article');
     card.className = 'photo-card';
 
@@ -152,6 +165,8 @@ function renderGrid() {
     card.append(button, meta);
     gridEl.appendChild(card);
   });
+
+  updateLoadMoreButton();
 }
 
 function formatMeta(item) {
@@ -213,4 +228,40 @@ function escapeHtml(value) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
+}
+
+function getInitialVisibleCount() {
+  return window.matchMedia(MOBILE_QUERY).matches ? INITIAL_COUNT_MOBILE : INITIAL_COUNT_DESKTOP;
+}
+
+function getLoadMoreStep() {
+  return window.matchMedia(MOBILE_QUERY).matches ? LOAD_MORE_STEP_MOBILE : LOAD_MORE_STEP_DESKTOP;
+}
+
+function wireLoadMoreEvents() {
+  loadMoreBtnEl.addEventListener('click', () => {
+    state.visibleCount = Math.min(state.visibleCount + getLoadMoreStep(), state.filteredItems.length);
+    renderGrid();
+  });
+
+  window.matchMedia(MOBILE_QUERY).addEventListener('change', () => {
+    state.visibleCount = Math.min(state.visibleCount, state.filteredItems.length);
+    if (!state.visibleCount) {
+      state.visibleCount = getInitialVisibleCount();
+    }
+    renderGrid();
+  });
+}
+
+function updateLoadMoreButton() {
+  if (!state.filteredItems.length) {
+    loadMoreBtnEl.hidden = true;
+    return;
+  }
+
+  const hiddenCount = Math.max(0, state.filteredItems.length - state.visibleCount);
+  loadMoreBtnEl.hidden = hiddenCount === 0;
+  if (!loadMoreBtnEl.hidden) {
+    loadMoreBtnEl.textContent = `Show ${Math.min(getLoadMoreStep(), hiddenCount)} more photo${hiddenCount === 1 ? '' : 's'}`;
+  }
 }
