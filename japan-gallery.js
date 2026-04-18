@@ -35,7 +35,7 @@ async function init() {
   const response = await fetch(DATA_PATH);
   const metadata = await response.json();
 
-  const ordered = [...metadata.items].sort(compareChronological);
+  const ordered = [...metadata.items].sort(compareByTypeThenChronological);
   state.allItems = ordered;
 
   renderFeatured(ordered.filter((item) => item.featured));
@@ -54,16 +54,56 @@ function compareChronological(a, b) {
   return (a.sortIndex ?? 0) - (b.sortIndex ?? 0);
 }
 
+
+function getMediaKind(item) {
+  const filePath = (item?.filePath || '').toLowerCase();
+  if (filePath.endsWith('.mp4') || filePath.endsWith('.mov') || filePath.endsWith('.webm')) {
+    return 'Videos';
+  }
+  return 'Photos';
+}
+
+function getPhotoType(item) {
+  const label = item?.groupLabel?.trim();
+  if (label) return label;
+  return getMediaKind(item);
+}
+
+function compareByTypeThenChronological(a, b) {
+  const typeOrder = ['Favorites', 'Other Moments', 'Photos', 'Videos'];
+  const aType = getPhotoType(a);
+  const bType = getPhotoType(b);
+
+  if (aType !== bType) {
+    const aIdx = typeOrder.indexOf(aType);
+    const bIdx = typeOrder.indexOf(bType);
+
+    if (aIdx !== -1 || bIdx !== -1) {
+      const normalizedA = aIdx === -1 ? Number.MAX_SAFE_INTEGER : aIdx;
+      const normalizedB = bIdx === -1 ? Number.MAX_SAFE_INTEGER : bIdx;
+      if (normalizedA !== normalizedB) return normalizedA - normalizedB;
+    }
+
+    const alpha = aType.localeCompare(bType);
+    if (alpha !== 0) return alpha;
+  }
+
+  return compareChronological(a, b);
+}
+
 function buildTabs(items) {
   const tabs = ['All'];
   const dynamic = new Set();
 
   items.forEach((item) => {
+    dynamic.add(getPhotoType(item));
+
     (item.tabHints || []).forEach((tab) => {
-      if (tab && tab.trim()) {
-        dynamic.add(tab.trim());
-      }
+      const normalized = tab?.trim();
+      if (!normalized || /^day\s+\d+/i.test(normalized)) return;
+      dynamic.add(normalized);
     });
+
     if (item.place && item.place.trim()) {
       dynamic.add(item.place.trim());
     }
@@ -94,7 +134,7 @@ function applyTab(tabName) {
     if (tabName === 'All') {
       return true;
     }
-    const hints = new Set([...(item.tabHints || []), item.place, item.dayLabel, item.groupLabel].filter(Boolean));
+    const hints = new Set([...(item.tabHints || []), item.place, item.groupLabel, getPhotoType(item), getMediaKind(item)].filter(Boolean));
     return hints.has(tabName);
   };
 
@@ -264,13 +304,20 @@ function wireLoadMoreEvents() {
     renderGrid();
   });
 
-  window.matchMedia(MOBILE_QUERY).addEventListener('change', () => {
+  const mediaQuery = window.matchMedia(MOBILE_QUERY);
+  const onViewportChange = () => {
     state.visibleCount = Math.min(state.visibleCount, state.filteredItems.length);
     if (!state.visibleCount) {
       state.visibleCount = getInitialVisibleCount();
     }
     renderGrid();
-  });
+  };
+
+  if (typeof mediaQuery.addEventListener === 'function') {
+    mediaQuery.addEventListener('change', onViewportChange);
+  } else if (typeof mediaQuery.addListener === 'function') {
+    mediaQuery.addListener(onViewportChange);
+  }
 }
 
 function updateLoadMoreButton() {
