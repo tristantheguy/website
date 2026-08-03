@@ -18,8 +18,10 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  background: radial-gradient(circle at 15% 20%, #162041 0%, var(--bg) 48%),
-    linear-gradient(165deg, #090d18 0%, #07090f 100%);
+  background-color: var(--bg);
+  background-image: radial-gradient(circle at 50% -20%, #203b76 0%, transparent 42%),
+    linear-gradient(145deg, #060811 0%, #090d1b 48%, #050711 100%);
+  background-attachment: fixed;
   color: var(--text);
   font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
@@ -32,23 +34,73 @@ body {
 
 .bg-glow {
   position: fixed;
-  inset: -20%;
+  inset: -30%;
   pointer-events: none;
-  background: radial-gradient(circle at 80% 10%, rgba(69, 212, 255, 0.17), transparent 35%),
-    radial-gradient(circle at 20% 85%, rgba(126, 155, 255, 0.18), transparent 33%);
-  filter: blur(4px);
+  background: radial-gradient(ellipse at 75% 20%, rgba(0, 224, 255, 0.3), transparent 30%),
+    radial-gradient(ellipse at 22% 65%, rgba(132, 80, 255, 0.32), transparent 28%),
+    radial-gradient(ellipse at 62% 85%, rgba(255, 64, 180, 0.18), transparent 25%);
+  filter: blur(34px) saturate(130%);
+  animation: aurora-drift 18s ease-in-out infinite alternate;
   z-index: 0;
+}
+
+.bg-glow::before,
+.bg-glow::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+}
+
+.bg-glow::before {
+  width: 42vw;
+  height: 18vw;
+  left: 28%;
+  top: 15%;
+  background: rgba(78, 255, 194, 0.2);
+  transform: rotate(-18deg);
+}
+
+.bg-glow::after {
+  width: 30vw;
+  height: 30vw;
+  right: 10%;
+  bottom: 8%;
+  background: rgba(74, 118, 255, 0.18);
 }
 
 .bg-grid {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: linear-gradient(rgba(126, 155, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(126, 155, 255, 0.06) 1px, transparent 1px);
-  background-size: 42px 42px;
-  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.1));
+  background-image: radial-gradient(circle, rgba(223, 239, 255, 0.7) 0 1px, transparent 1.5px),
+    linear-gradient(rgba(126, 155, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(126, 155, 255, 0.045) 1px, transparent 1px);
+  background-position: 0 0, center center, center center;
+  background-size: 91px 91px, 42px 42px, 42px 42px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.15));
+  opacity: 0.72;
   z-index: 0;
+}
+
+@keyframes aurora-drift {
+  0% {
+    transform: translate3d(-2%, -1%, 0) rotate(-2deg) scale(1);
+  }
+
+  50% {
+    transform: translate3d(3%, 2%, 0) rotate(2deg) scale(1.06);
+  }
+
+  100% {
+    transform: translate3d(-1%, 4%, 0) rotate(-1deg) scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-glow {
+    animation: none;
+  }
 }
 
 .hero,
