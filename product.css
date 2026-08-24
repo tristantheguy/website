@@ -153,7 +153,7 @@
   object-fit: contain;
   object-position: center;
   background: #ffffff;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 160ms ease;
 }
 
