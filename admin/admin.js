@@ -10,6 +10,44 @@
   let authorized = false;
   function status(id, text = "", state = "") { const el = $(id); el.textContent = text; state ? el.dataset.state = state : delete el.dataset.state; }
   const errorText = (error) => error?.message || "Something went wrong. Please try again.";
+  const normalizedCategory = (value) => String(value || "").trim().replace(/\s+/g, " ").toLocaleLowerCase();
+  function categoryDistance(a, b) {
+    const left = normalizedCategory(a), right = normalizedCategory(b);
+    if (left === right) return 0;
+    const row = Array.from({ length: right.length + 1 }, (_, index) => index);
+    for (let i = 1; i <= left.length; i += 1) {
+      let diagonal = row[0]; row[0] = i;
+      for (let j = 1; j <= right.length; j += 1) {
+        const above = row[j];
+        row[j] = Math.min(row[j] + 1, row[j - 1] + 1, diagonal + (left[i - 1] === right[j - 1] ? 0 : 1));
+        diagonal = above;
+      }
+    }
+    return row[right.length];
+  }
+  function updateCategoryOptions() {
+    const options = $("category-options");
+    if (!options) return;
+    const categories = [...new Map(products.map((product) => {
+      const value = String(product.category || "").trim().replace(/\s+/g, " ");
+      return [normalizedCategory(value), value];
+    }).filter(([key]) => key)).values()].sort((a, b) => a.localeCompare(b));
+    options.replaceChildren(...categories.map((category) => { const option = document.createElement("option"); option.value = category; return option; }));
+  }
+  function checkCategoryWarning() {
+    const field = $("product-category");
+    const warning = $("category-warning");
+    if (!field || !warning) return;
+    const value = field.value.trim();
+    const match = products.map((product) => String(product.category || "").trim().replace(/\s+/g, " ")).find((category) => category && normalizedCategory(category) !== normalizedCategory(value) && categoryDistance(category, value) <= Math.max(1, Math.floor(value.length / 5)));
+    if (value && match) {
+      warning.textContent = `Did you mean “${match}”? You can keep this as a new category if intentional.`;
+      warning.dataset.state = "warning";
+    } else {
+      warning.textContent = "";
+      delete warning.dataset.state;
+    }
+  }
   function setBusy(form, value) { [...form.elements].forEach((el) => { el.disabled = value; }); form.setAttribute("aria-busy", String(value)); }
   async function verify(user) {
     if (!user || user.email?.toLowerCase() !== ADMIN_EMAIL) return false;
@@ -58,11 +96,11 @@
     status("catalog-status", "Loading products…"); $("refresh-button").disabled = true;
     try {
       const { data, error } = await client.rpc("admin_list_products");
-      if (error) throw error; products = data || []; render(); status("catalog-status", `${products.length} product${products.length === 1 ? "" : "s"} loaded.`, "success");
+      if (error) throw error; products = data || []; updateCategoryOptions(); checkCategoryWarning(); render(); status("catalog-status", `${products.length} product${products.length === 1 ? "" : "s"} loaded.`, "success");
     } catch (error) { status("catalog-status", `Could not load products: ${errorText(error)}`, "error"); }
     finally { $("refresh-button").disabled = false; }
   }
-  function reset() { $("product-form").reset(); $("product-id").value = ""; $("product-sort-order").value = "0"; $("editor-title").textContent = "Add a product"; $("save-product-button").textContent = "Add product"; $("cancel-edit-button").hidden = true; }
+  function reset() { $("product-form").reset(); $("product-id").value = ""; $("product-sort-order").value = "0"; $("editor-title").textContent = "Add a product"; $("save-product-button").textContent = "Add product"; $("cancel-edit-button").hidden = true; checkCategoryWarning(); }
   function edit(p) {
     const values = { "product-id": p.id, "product-name": p.name, "product-description": p.description, "product-category": p.category, "product-price": ((p.price_cents || 0) / 100).toFixed(2), "product-price-label": p.price_label, "product-badge-label": p.badge_label, "product-art-style": p.art_style || "blue", "product-sort-order": p.sort_order, "product-image-url": p.image_url, "product-image-urls": Array.isArray(p.image_urls) ? p.image_urls.join("\n") : "", "product-item-specifics": JSON.stringify(p.item_specifics || {}, null, 2), "product-cost": p.cost_cents == null ? "" : (p.cost_cents / 100).toFixed(2) };
     Object.entries(values).forEach(([id, value]) => { $(id).value = value ?? ""; });
@@ -94,6 +132,7 @@
     finally { setBusy(event.currentTarget, false); }
   };
   $("cancel-edit-button").onclick = reset; $("refresh-button").onclick = load;
+  $("product-category").addEventListener("input", checkCategoryWarning);
   $("logout-button").onclick = async () => { await client.auth.signOut(); reset(); await showSession(null); };
   if (!client) { status("auth-status", "Supabase could not load. Check your connection and refresh.", "error"); setBusy($("login-form"), true); }
   else client.auth.getSession().then(({ data, error }) => error ? status("auth-status", errorText(error), "error") : showSession(data.session));

@@ -73,7 +73,10 @@
             </label>
             <label>
               <span>Category <b aria-hidden="true">*</b></span>
-              <input id="product-category" type="text" maxlength="80" placeholder="Digital tools" required />
+              <input id="product-category" type="text" maxlength="80" placeholder="Digital tools" list="category-options" autocomplete="off" required aria-describedby="category-help category-warning" />
+              <datalist id="category-options"></datalist>
+              <small id="category-help">Choose an existing category or type a new one.</small>
+              <small id="category-warning" class="status" role="status" aria-live="polite"></small>
             </label>
             <label>
               <span>Price (USD)</span>
