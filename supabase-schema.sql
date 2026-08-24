@@ -34,7 +34,54 @@ alter table public.products add column if not exists sort_order integer not null
 alter table public.products add column if not exists is_active boolean not null default false;
 
 alter table public.profiles enable row level security;
+alter table public.profiles add column if not exists display_name text;
 alter table public.products enable row level security;
+
+-- Backfill profiles created before this migration, if their Auth user still exists.
+update public.profiles as profile
+set email = auth_user.email,
+    display_name = coalesce(profile.display_name, auth_user.raw_user_meta_data ->> 'display_name')
+from auth.users as auth_user
+where profile.id = auth_user.id
+  and (profile.email is null or profile.display_name is null);
+
+-- Authenticated dice scores are private to their owner. The existing public
+-- leaderboard remains a separate legacy table used by the dice game's public view.
+create table if not exists public.player_dice_scores (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  display_name text not null,
+  score integer not null check (score >= 0),
+  mode text not null default 'easy' check (mode in ('easy', 'normal')),
+  created_at timestamptz not null default now()
+);
+alter table public.player_dice_scores enable row level security;
+revoke all on table public.player_dice_scores from anon;
+grant select, insert on table public.player_dice_scores to authenticated;
+drop policy if exists "Users can read own dice scores" on public.player_dice_scores;
+create policy "Users can read own dice scores" on public.player_dice_scores
+  for select to authenticated using (user_id = auth.uid());
+drop policy if exists "Users can insert own dice scores" on public.player_dice_scores;
+create policy "Users can insert own dice scores" on public.player_dice_scores
+  for insert to authenticated with check (user_id = auth.uid());
+
+-- Keep new accounts represented in profiles without exposing profile writes to browsers.
+create or replace function public.handle_new_user()
+returns trigger language plpgsql security definer set search_path = public
+as $$
+begin
+  insert into public.profiles (id, email, display_name)
+  values (new.id, new.email, new.raw_user_meta_data ->> 'display_name')
+  on conflict (id) do update set
+    email = excluded.email,
+    display_name = coalesce(excluded.display_name, public.profiles.display_name);
+  return new;
+end;
+$$;
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
 
 revoke all on table public.profiles from anon, authenticated;
 grant select on table public.profiles to authenticated;

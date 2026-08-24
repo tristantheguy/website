@@ -25,6 +25,7 @@ body {
 .bg-grid { background-image: linear-gradient(rgba(126,155,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(126,155,255,.06) 1px, transparent 1px); background-size: 42px 42px; mask-image: linear-gradient(to bottom, rgba(0,0,0,.75), rgba(0,0,0,.1)); }
 .site-header, main, footer { position: relative; z-index: 1; width: min(1120px, 92vw); margin-inline: auto; }
 .site-header { display: flex; align-items: center; gap: 2rem; padding: 1.4rem 0; border-bottom: 1px solid rgba(126,155,255,.16); }
+.site-header .site-auth-link { margin-left: auto; padding: .55rem .85rem; border-radius: 999px; background: #67dfff; color: #08101a; font-weight: 700; }
 .brand { display: inline-flex; align-items: center; gap: .65rem; color: var(--text); text-decoration: none; font-weight: 700; letter-spacing: -.02em; }
 .brand-mark, .orbit-core { display: grid; place-items: center; border: 1px solid rgba(69,212,255,.55); color: var(--cyan); background: rgba(69,212,255,.1); }
 .brand-mark { width: 2rem; height: 2rem; border-radius: 9px; font-size: .65rem; }

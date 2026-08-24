@@ -1,13 +1,22 @@
-<html>
+<!doctype html>
+<html lang="en">
 
 <head>
-    <title>Dice Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dice Game | Tristan Merson</title>
     <link rel="stylesheet" href="dicestyle.css">
-    <button onclick="location.href='../index.html'">Return to Homepage</button>
 </head>
 
 <body>
+<header class="dice-site-header">
+    <a href="../index.html">Tristan Merson</a>
+    <nav aria-label="Dice game navigation">
+        <a href="../index.html">Home</a>
+        <a id="site-auth-link" class="site-auth-link" href="../account.html">Log in</a>
+    </nav>
+</header>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../site-auth.js"></script>
 <script>
 const SUPABASE_URL = "https://ykfrfjtjfzthumypaxqi.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_4jG2VqKcKpGuGRqAYzNYjg_V5V-qN_W";
@@ -102,7 +111,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
     <form id="submit-form">
         <label for="playerName">Enter your name:</label>
         <input type="text" id="playerName" name="name">
-        <input type="button" value="Submit" onclick="submitScore(score);">
+        <input type="button" value="Save score" onclick="submitScore(score);">
     </form>
 
     <div id="developer-menu" style="display: none;">

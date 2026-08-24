@@ -564,3 +564,22 @@ select {
   color: #a8f4b7;
   font-weight: bold;
 }
+* { box-sizing: border-box; }
+
+.dice-site-header {
+  width: min(1100px, 94vw);
+  margin: 18px auto 8px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #435369;
+  border-radius: 999px;
+  background: rgba(9, 16, 28, .82);
+}
+
+.dice-site-header a { color: #ecf1f8; font-weight: 700; text-decoration: none; }
+.dice-site-header nav { display: flex; align-items: center; gap: .8rem; }
+.dice-site-header nav a { font-weight: 500; }
+.dice-site-header .site-auth-link { padding: .55rem .85rem; border-radius: 999px; background: #67dfff; color: #08101a; font-weight: 700; }

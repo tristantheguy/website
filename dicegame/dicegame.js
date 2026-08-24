@@ -294,7 +294,7 @@ function completeRun() {
     wins += 1;
     setRunCompleteMessage("Run complete! Skill points are now earned continuously from score during each run.");
     setStatusMessage("Run complete! Start another run to keep earning score-based skill points.", "success");
-    submitScore(finalScore);
+    submitScore(finalScore, { automatic: true });
 
     currentDie = 0;
     rolls = 0;
