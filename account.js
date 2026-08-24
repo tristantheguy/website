@@ -55,7 +55,7 @@
 
     const { data: profileData } = await db
       .from("profiles")
-      .select("email,display_name,bio,avatar_url,created_at")
+      .select("email,display_name,bio,avatar_url,is_admin,created_at")
       .eq("id", user.id)
       .maybeSingle();
     const profile = profileData || {};
@@ -71,6 +71,7 @@
     $("profile-name").textContent = name;
     $("profile-email").textContent = profile.email || user.email || "—";
     $("profile-created").textContent = profile.created_at ? new Date(profile.created_at).toLocaleDateString() : "—";
+    $("admin-link").hidden = profile.is_admin !== true;
     $("profile-display-name").value = name;
     $("profile-bio").value = profile.bio || "";
     $("profile-avatar-url").value = profile.avatar_url || "";
