@@ -429,6 +429,18 @@
   opacity: 1;
 }
 
+.purchase-button:not(:disabled) {
+  border-color: var(--accent-strong);
+  color: #ffffff;
+  background: var(--accent-strong);
+  font-weight: 850;
+}
+
+.purchase-button:not(:disabled):hover,
+.purchase-button:not(:disabled):focus-visible {
+  background: #30489f;
+}
+
 .checkout-note {
   margin: 0.75rem 0 0;
   color: var(--muted);

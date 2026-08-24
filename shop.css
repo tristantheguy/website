@@ -309,6 +309,13 @@ svg {
   opacity: 0.86;
 }
 
+.cart-summary:hover,
+.cart-summary:focus-visible {
+  border-color: rgba(69, 212, 255, 0.75);
+  color: var(--cyan);
+  opacity: 1;
+}
+
 .cart-copy {
   display: grid;
   justify-items: start;
@@ -335,6 +342,197 @@ svg {
   background: var(--cyan);
   font-size: 0.67rem;
   font-weight: 900;
+}
+
+body.cart-drawer-open {
+  overflow: hidden;
+}
+
+.cart-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: rgba(4, 7, 14, 0.58);
+  cursor: default;
+}
+
+.cart-drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 111;
+  display: grid;
+  width: min(92vw, 430px);
+  height: 100dvh;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: -18px 0 45px rgba(4, 7, 14, 0.24);
+}
+
+.cart-drawer-header,
+.cart-drawer-footer {
+  padding: 1.1rem 1.2rem;
+}
+
+.cart-drawer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.cart-drawer-header .eyebrow {
+  margin: 0 0 0.15rem;
+}
+
+.cart-drawer-header h2 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 1.35rem;
+}
+
+.cart-close {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  background: var(--surface-soft);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.cart-items {
+  overflow-y: auto;
+  padding: 0 1.2rem;
+}
+
+.cart-empty {
+  margin: 1.25rem 0;
+  padding: 1.2rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  color: var(--muted);
+  background: var(--surface-soft);
+  text-align: center;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.cart-item-copy {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.cart-item-copy a {
+  color: var(--text-strong);
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.cart-item-copy a:hover,
+.cart-item-copy a:focus-visible,
+.cart-remove:hover,
+.cart-remove:focus-visible {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
+.cart-item-copy span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.cart-item-controls {
+  display: inline-grid;
+  grid-template-columns: 2rem 2rem 2rem;
+  align-items: center;
+  align-self: center;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.cart-quantity-button {
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  color: var(--text-strong);
+  background: var(--surface-soft);
+  font-weight: 900;
+}
+
+.cart-quantity-button:hover:not(:disabled) {
+  background: var(--accent-soft);
+}
+
+.cart-item-quantity {
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.cart-item-total {
+  align-self: center;
+  color: var(--text-strong);
+  font-size: 0.9rem;
+}
+
+.cart-remove {
+  justify-self: end;
+  padding: 0;
+  border: 0;
+  color: var(--muted);
+  background: transparent;
+  font-size: 0.76rem;
+  font-weight: 750;
+}
+
+.cart-drawer-footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface-soft);
+}
+
+.cart-subtotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text-strong);
+  font-size: 1.05rem;
+}
+
+.cart-subtotal strong {
+  font-size: 1.25rem;
+}
+
+.cart-drawer-footer p {
+  margin: 0.55rem 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.cart-checkout {
+  width: 100%;
+  min-height: 48px;
+  border-color: var(--border-strong);
+  color: var(--muted);
+  background: #e7eaf0;
+  opacity: 1;
 }
 
 .shop-nav {
@@ -888,6 +1086,12 @@ a.product-card:focus-visible {
   padding: 0.5rem;
   object-fit: contain;
   background: #ffffff;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.product-art img.is-loaded {
+  opacity: 1;
 }
 
 .art-blue {
@@ -1200,8 +1404,10 @@ a.product-card:focus-visible {
   }
 
   .account-link {
-    width: 46px;
-    padding: 0;
+    width: auto;
+    min-width: 62px;
+    padding: 0 0.65rem;
+    white-space: nowrap;
   }
 
   .cart-summary {
@@ -1351,7 +1557,10 @@ a.product-card:focus-visible {
   }
 
   .account-link {
-    width: 41px;
+    width: auto;
+    min-width: 54px;
+    padding-inline: 0.45rem;
+    font-size: 0.72rem;
   }
 
   .cart-summary {

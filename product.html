@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="product.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="site-auth.js" defer></script>
+  <script src="shop-data.js" defer></script>
   <script src="product.js" defer></script>
 </head>
 <body class="product-view">
@@ -42,11 +43,11 @@
           </svg>
           <span>Log in</span>
         </a>
-        <button class="cart-summary" type="button" aria-label="Cart, 0 items. Coming soon." disabled>
+        <button class="cart-summary" type="button" data-cart-open aria-label="Cart, 0 items" aria-controls="storefront-cart">
           <svg aria-hidden="true" viewBox="0 0 24 24" width="23" height="23">
             <path d="M3 4h2l2.2 10.1a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 8H6m4 11.5h.01m7 0h.01"></path>
           </svg>
-          <span class="cart-copy">Cart <small>Coming soon</small></span>
+          <span class="cart-copy">Cart <small>Saved locally</small></span>
           <span class="cart-count" aria-hidden="true">0</span>
         </button>
       </div>
@@ -121,8 +122,8 @@
             <span>Availability</span>
             <strong id="purchase-availability"></strong>
           </div>
-          <button class="button purchase-button" type="button" disabled>Add to cart &mdash; coming soon</button>
-          <p class="checkout-note">Checkout is not available yet. This button will not place an order or take payment.</p>
+          <button id="add-to-cart" class="button purchase-button" type="button" disabled>Add to cart</button>
+          <p id="cart-feedback" class="checkout-note" role="status" aria-live="polite">Add this item to a cart stored only in this browser. Checkout and payment are not available yet.</p>
           <a class="continue-shopping" href="shop.html">Continue shopping <span aria-hidden="true">→</span></a>
         </aside>
       </div>

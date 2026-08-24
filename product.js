@@ -8,6 +8,7 @@
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
     : null;
   const byId = (id) => document.getElementById(id);
+  let currentProduct = null;
 
   function safeText(value, fallback = "") {
     return typeof value === "string" && value.trim() ? value.trim() : fallback;
@@ -38,13 +39,18 @@
     element.classList.add(`art-${style}`);
   }
 
-  function showGalleryPlaceholder(product) {
-    const main = byId("gallery-main");
-    if (!main) return;
+  function galleryPlaceholderLabel(product, hidden = false) {
     const label = document.createElement("span");
     label.className = "gallery-placeholder-label";
     label.textContent = safeText(product?.category, "Product").toUpperCase();
-    main.replaceChildren(label);
+    if (hidden) label.setAttribute("aria-hidden", "true");
+    return label;
+  }
+
+  function showGalleryPlaceholder(product) {
+    const main = byId("gallery-main");
+    if (!main) return;
+    main.replaceChildren(galleryPlaceholderLabel(product));
     main.classList.add("gallery-placeholder");
     applyArtStyle(main, product);
   }
@@ -68,10 +74,10 @@
     if (!main) return;
     const name = safeText(product?.name, "Product");
     const image = document.createElement("img");
-    image.src = url;
     image.alt = `${name}, image ${index + 1} of ${total}`;
     image.decoding = "async";
     image.referrerPolicy = "no-referrer";
+    image.addEventListener("load", () => image.classList.add("is-loaded"), { once: true });
     image.addEventListener("error", () => {
       button?.remove();
       syncThumbnailLayout();
@@ -79,9 +85,10 @@
       if (next) next.click();
       else showGalleryPlaceholder(product);
     }, { once: true });
+    image.src = url;
     main.classList.remove("gallery-placeholder");
     applyArtStyle(main, product);
-    main.replaceChildren(image);
+    main.replaceChildren(galleryPlaceholderLabel(product, true), image);
     setActiveThumbnail(button);
   }
 
@@ -104,11 +111,11 @@
       button.setAttribute("aria-pressed", "false");
 
       const image = document.createElement("img");
-      image.src = url;
       image.alt = "";
       image.loading = "lazy";
       image.decoding = "async";
       image.referrerPolicy = "no-referrer";
+      image.addEventListener("load", () => image.classList.add("is-loaded"), { once: true });
       image.addEventListener("error", () => {
         const wasActive = button.classList.contains("is-active");
         button.remove();
@@ -119,6 +126,7 @@
           else showGalleryPlaceholder(product);
         }
       }, { once: true });
+      image.src = url;
       button.append(image);
       button.addEventListener("click", () => showImage(url, product, index, urls.length, button));
       thumbs.append(button);
@@ -205,8 +213,25 @@
     byId("product-price").textContent = priceText(product);
     byId("product-description").textContent = description;
 
+    const addToCart = byId("add-to-cart");
+    const cartFeedback = byId("cart-feedback");
+    if (addToCart) {
+      addToCart.disabled = typeof window.storefrontCart?.addProduct !== "function";
+      addToCart.onclick = () => {
+        if (typeof window.storefrontCart?.addProduct !== "function") return;
+        const added = window.storefrontCart.addProduct(product);
+        if (added && cartFeedback) {
+          cartFeedback.textContent = `${name} was added to your local cart. Checkout and payment are not available yet.`;
+        }
+      };
+    }
+
     renderGallery(product);
     renderSpecifics(product?.item_specifics);
+
+    currentProduct = product;
+    const addButton = byId("add-to-cart");
+    if (addButton && window.storefrontCart?.addProduct) addButton.disabled = false;
 
     byId("product-status").hidden = true;
     byId("product-loading").hidden = true;
@@ -241,6 +266,15 @@
       showError("Product details could not load. Check your connection and try again.");
     }
   }
+
+  byId("add-to-cart")?.addEventListener("click", () => {
+    if (!currentProduct || !window.storefrontCart?.addProduct) return;
+    const added = window.storefrontCart.addProduct(currentProduct);
+    const feedback = byId("cart-feedback");
+    if (added && feedback) {
+      feedback.textContent = `${safeText(currentProduct.name, "Product")} was added. Checkout and payment remain unavailable.`;
+    }
+  });
 
   load();
 })();
