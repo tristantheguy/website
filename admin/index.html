@@ -104,6 +104,18 @@
               <span>Image URL (optional)</span>
               <input id="product-image-url" type="url" maxlength="2048" placeholder="https://…" />
             </label>
+            <label class="full-width">
+              <span>Gallery image URLs</span>
+              <textarea id="product-image-urls" rows="4" placeholder="One image URL per line"></textarea>
+            </label>
+            <label class="full-width">
+              <span>Item specifics</span>
+              <textarea id="product-item-specifics" rows="5" placeholder='{"Format":"PDF","Pages":"24"}'></textarea>
+            </label>
+            <label>
+              <span>Internal cost (USD)</span>
+              <input id="product-cost" type="number" min="0" max="999999.99" step="0.01" inputmode="decimal" placeholder="0.00" />
+            </label>
             <div class="check-row full-width">
               <label class="check-label"><input id="product-featured" type="checkbox" /><span>Featured card</span></label>
               <label class="check-label"><input id="product-is-active" type="checkbox" /><span>Publicly visible</span></label>

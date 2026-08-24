@@ -14,7 +14,10 @@ create table if not exists public.products (
   description text,
   category text not null default 'Collection',
   image_url text,
+  image_urls jsonb not null default '[]'::jsonb,
+  item_specifics jsonb not null default '{}'::jsonb,
   price_cents integer not null default 0 check (price_cents >= 0),
+  cost_cents integer check (cost_cents is null or cost_cents >= 0),
   price_label text,
   badge_label text not null default 'Available',
   art_style text not null default 'blue' check (art_style in ('blue', 'violet', 'teal', 'coral')),
@@ -32,6 +35,11 @@ alter table public.products add column if not exists art_style text not null def
 alter table public.products add column if not exists featured boolean not null default false;
 alter table public.products add column if not exists sort_order integer not null default 0;
 alter table public.products add column if not exists is_active boolean not null default false;
+alter table public.products add column if not exists image_urls jsonb not null default '[]'::jsonb;
+alter table public.products add column if not exists item_specifics jsonb not null default '{}'::jsonb;
+alter table public.products add column if not exists cost_cents integer;
+alter table public.products drop constraint if exists products_cost_cents_check;
+alter table public.products add constraint products_cost_cents_check check (cost_cents is null or cost_cents >= 0);
 
 alter table public.profiles enable row level security;
 alter table public.profiles add column if not exists display_name text;
@@ -104,8 +112,11 @@ create trigger on_auth_user_created
 revoke all on table public.profiles from anon, authenticated;
 grant select on table public.profiles to authenticated;
 grant update (display_name, bio, avatar_url) on table public.profiles to authenticated;
-grant select on table public.products to anon, authenticated;
-grant insert, update, delete on table public.products to authenticated;
+revoke all on table public.products from anon, authenticated;
+grant select (id, name, description, category, image_url, image_urls, item_specifics, price_cents, price_label, badge_label, art_style, featured, sort_order, is_active, created_at, updated_at) on table public.products to anon, authenticated;
+grant insert (name, description, category, image_url, image_urls, item_specifics, price_cents, price_label, badge_label, art_style, featured, sort_order, is_active, cost_cents) on table public.products to authenticated;
+grant update (name, description, category, image_url, image_urls, item_specifics, price_cents, price_label, badge_label, art_style, featured, sort_order, is_active, cost_cents) on table public.products to authenticated;
+grant delete on table public.products to authenticated;
 
 create or replace function public.is_admin()
 returns boolean
@@ -124,6 +135,21 @@ as $$
 $$;
 revoke all on function public.is_admin() from public;
 grant execute on function public.is_admin() to authenticated;
+
+-- Admin-only catalog read path. Public roles receive only the safe product columns above.
+create or replace function public.admin_list_products()
+returns setof public.products
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select products.*
+  from public.products
+  where public.is_admin();
+$$;
+revoke all on function public.admin_list_products() from public;
+grant execute on function public.admin_list_products() to authenticated;
 
 drop policy if exists "Public can read active products" on public.products;
 create policy "Public can read active products" on public.products

@@ -1,0 +1,24 @@
+.product-page { padding: 3.5rem 0 5rem; }
+.back-link { color: var(--cyan); font-weight: 700; text-decoration: none; }
+.product-status { color: var(--muted); }
+.product-detail { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 2rem; margin-top: 1.5rem; }
+.product-gallery, .product-copy { min-width: 0; }
+.gallery-main { display: grid; place-items: center; min-height: 420px; overflow: hidden; border: 1px solid var(--panel-border); border-radius: 18px; color: white; background: linear-gradient(135deg, #314c9c, #163642); font-weight: 800; letter-spacing: .16em; }
+.gallery-main img { width: 100%; height: 100%; min-height: 420px; max-height: 620px; object-fit: contain; background: rgba(0,0,0,.16); }
+.gallery-thumbs { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: .75rem; }
+.gallery-thumb { width: 72px; height: 72px; padding: 0; overflow: hidden; border: 1px solid var(--panel-border); border-radius: 10px; background: rgba(17,22,37,.85); cursor: pointer; }
+.gallery-thumb:hover, .gallery-thumb:focus-visible { border-color: var(--cyan); }
+.gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.product-copy { padding: 1rem 0; }
+.product-copy h1 { margin: .65rem 0 .5rem; font-size: clamp(2.2rem, 5vw, 4.4rem); }
+.product-meta { display: flex; justify-content: space-between; gap: .5rem; color: var(--cyan); text-transform: uppercase; letter-spacing: .08em; font-size: .7rem; font-weight: 700; }
+.product-meta span:last-child { color: var(--muted); }
+.product-price { margin-bottom: 1.4rem; color: #e8eeff; font-size: 1.3rem; font-weight: 800; }
+.product-description { color: #d2def8; white-space: pre-wrap; font-size: 1.05rem; }
+.specifics { margin-top: 2rem; padding-top: 1.2rem; border-top: 1px solid rgba(126,155,255,.2); }
+.specifics h2 { margin-bottom: .8rem; font-size: 1.2rem; }
+.specifics dl { display: grid; grid-template-columns: minmax(100px, .7fr) minmax(0, 1.3fr); margin: 0; }
+.specifics dt, .specifics dd { margin: 0; padding: .65rem .75rem; border-bottom: 1px solid rgba(126,155,255,.14); }
+.specifics dt { color: var(--muted); font-weight: 700; }
+.specifics dd { color: #e8eeff; }
+@media (max-width: 760px) { .product-detail { grid-template-columns: 1fr; gap: .5rem; } .gallery-main, .gallery-main img { min-height: 300px; } }

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Product | Tristan Merson</title>
+  <link rel="stylesheet" href="shop.css">
+  <link rel="stylesheet" href="product.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="site-auth.js" defer></script>
+  <script src="product.js" defer></script>
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Return to Tristan Merson home">
+      <span class="brand-mark">TM</span>
+      <span>Tristan Merson</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="index.html">Home</a>
+      <a class="active" href="shop.html">Shop</a>
+      <a href="account.html">Account</a>
+      <a id="site-auth-link" class="site-auth-link" href="account.html">Log in</a>
+    </nav>
+  </header>
+
+  <main class="product-page">
+    <p><a class="back-link" href="shop.html">← Back to shop</a></p>
+    <p id="product-status" class="product-status" role="status">Loading product…</p>
+    <article id="product-detail" class="product-detail" hidden>
+      <section class="product-gallery" aria-label="Product images">
+        <div id="gallery-main" class="gallery-main"></div>
+        <div id="gallery-thumbs" class="gallery-thumbs"></div>
+      </section>
+      <section class="product-copy">
+        <div class="product-meta"><span id="product-category"></span><span id="product-badge"></span></div>
+        <h1 id="product-name"></h1>
+        <p id="product-price" class="product-price"></p>
+        <p id="product-description" class="product-description"></p>
+        <section class="specifics" aria-labelledby="specifics-title">
+          <h2 id="specifics-title">Item specifics</h2>
+          <dl id="product-specifics"></dl>
+        </section>
+      </section>
+    </article>
+  </main>
+</body>
+</html>

@@ -63,6 +63,7 @@ input:disabled, textarea:disabled, select:disabled, button:disabled { cursor: no
 .admin-layout { display: grid; grid-template-columns: minmax(320px, .85fr) minmax(400px, 1.15fr); gap: 1.2rem; align-items: start; }
 .editor-panel, .catalog-panel { padding: 1.25rem; }
 .product-form { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; margin-top: 1.25rem; }
+.product-form textarea { min-height: 5rem; }
 .full-width { grid-column: 1 / -1; }
 .check-row { display: flex; flex-wrap: wrap; gap: 1.2rem; padding: .2rem 0; }
 .check-label { display: flex; align-items: center; gap: .55rem; font-weight: 650; }

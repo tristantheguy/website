@@ -57,18 +57,24 @@
     if (!authorized) return;
     status("catalog-status", "Loading products…"); $("refresh-button").disabled = true;
     try {
-      const { data, error } = await client.from("products").select("*").order("sort_order").order("created_at", { ascending: false });
+      const { data, error } = await client.rpc("admin_list_products");
       if (error) throw error; products = data || []; render(); status("catalog-status", `${products.length} product${products.length === 1 ? "" : "s"} loaded.`, "success");
     } catch (error) { status("catalog-status", `Could not load products: ${errorText(error)}`, "error"); }
     finally { $("refresh-button").disabled = false; }
   }
   function reset() { $("product-form").reset(); $("product-id").value = ""; $("product-sort-order").value = "0"; $("editor-title").textContent = "Add a product"; $("save-product-button").textContent = "Add product"; $("cancel-edit-button").hidden = true; }
   function edit(p) {
-    const values = { "product-id": p.id, "product-name": p.name, "product-description": p.description, "product-category": p.category, "product-price": ((p.price_cents || 0) / 100).toFixed(2), "product-price-label": p.price_label, "product-badge-label": p.badge_label, "product-art-style": p.art_style || "blue", "product-sort-order": p.sort_order, "product-image-url": p.image_url };
+    const values = { "product-id": p.id, "product-name": p.name, "product-description": p.description, "product-category": p.category, "product-price": ((p.price_cents || 0) / 100).toFixed(2), "product-price-label": p.price_label, "product-badge-label": p.badge_label, "product-art-style": p.art_style || "blue", "product-sort-order": p.sort_order, "product-image-url": p.image_url, "product-image-urls": Array.isArray(p.image_urls) ? p.image_urls.join("\n") : "", "product-item-specifics": JSON.stringify(p.item_specifics || {}, null, 2), "product-cost": p.cost_cents == null ? "" : (p.cost_cents / 100).toFixed(2) };
     Object.entries(values).forEach(([id, value]) => { $(id).value = value ?? ""; });
     $("product-featured").checked = Boolean(p.featured); $("product-is-active").checked = Boolean(p.is_active); $("editor-title").textContent = "Edit product"; $("save-product-button").textContent = "Save changes"; $("cancel-edit-button").hidden = false; $("product-name").focus();
   }
-  function payload() { return { name: $("product-name").value.trim(), description: $("product-description").value.trim() || null, category: $("product-category").value.trim(), price_cents: Math.round(Number($("product-price").value || 0) * 100), price_label: $("product-price-label").value.trim() || null, badge_label: $("product-badge-label").value.trim() || "Available", art_style: $("product-art-style").value, sort_order: Number.parseInt($("product-sort-order").value, 10) || 0, image_url: $("product-image-url").value.trim() || null, featured: $("product-featured").checked, is_active: $("product-is-active").checked }; }
+  function payload() {
+    let itemSpecifics = {};
+    try { itemSpecifics = JSON.parse($("product-item-specifics").value.trim() || "{}"); } catch (error) { throw new Error("Item specifics must be valid JSON."); }
+    if (!itemSpecifics || Array.isArray(itemSpecifics) || typeof itemSpecifics !== "object") throw new Error("Item specifics must be a JSON object.");
+    const imageUrls = $("product-image-urls").value.split(/\r?\n/).map((url) => url.trim()).filter(Boolean);
+    return { name: $("product-name").value.trim(), description: $("product-description").value.trim() || null, category: $("product-category").value.trim(), price_cents: Math.round(Number($("product-price").value || 0) * 100), cost_cents: $("product-cost").value === "" ? null : Math.round(Number($("product-cost").value) * 100), price_label: $("product-price-label").value.trim() || null, badge_label: $("product-badge-label").value.trim() || "Available", art_style: $("product-art-style").value, sort_order: Number.parseInt($("product-sort-order").value, 10) || 0, image_url: $("product-image-url").value.trim() || null, image_urls: imageUrls, item_specifics: itemSpecifics, featured: $("product-featured").checked, is_active: $("product-is-active").checked };
+  }
   async function remove(product) {
     if (!window.confirm(`Delete “${product.name}”? This cannot be undone.`)) return;
     status("catalog-status", `Deleting ${product.name}…`);

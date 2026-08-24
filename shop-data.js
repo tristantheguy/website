@@ -22,14 +22,18 @@
   }
 
   function productCard(product) {
-    const card = document.createElement("article");
+    const card = document.createElement("a");
     card.className = `product-card${product.featured ? " featured" : ""}`;
+    card.href = `product.html?id=${encodeURIComponent(product.id)}`;
+    card.setAttribute("aria-label", `View ${product.name}`);
 
     const art = document.createElement("div");
     art.className = `product-art art-${["blue", "violet", "teal", "coral"].includes(product.art_style) ? product.art_style : "blue"}`;
-    if (product.image_url) {
+    const gallery = Array.isArray(product.image_urls) ? product.image_urls : [];
+    const cardImageUrl = product.image_url || gallery[0];
+    if (cardImageUrl) {
       const image = document.createElement("img");
-      image.src = product.image_url;
+      image.src = cardImageUrl;
       image.alt = "";
       image.loading = "lazy";
       image.referrerPolicy = "no-referrer";
@@ -99,7 +103,7 @@
     }
 
     const result = await client.from("products")
-      .select("id,name,description,category,image_url,price_cents,price_label,badge_label,art_style,featured,sort_order")
+      .select("id,name,description,category,image_url,image_urls,item_specifics,price_cents,price_label,badge_label,art_style,featured,sort_order")
       .eq("is_active", true)
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: false });
