@@ -37,6 +37,22 @@ alter table public.profiles enable row level security;
 alter table public.profiles add column if not exists display_name text;
 alter table public.products enable row level security;
 
+-- Public dice leaderboard used by the existing game view and anonymous play.
+create table if not exists public.leaderboard (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  score integer not null check (score >= 0),
+  created_at timestamptz not null default now()
+);
+alter table public.leaderboard enable row level security;
+grant select, insert on table public.leaderboard to anon, authenticated;
+drop policy if exists "Public can read leaderboard" on public.leaderboard;
+create policy "Public can read leaderboard" on public.leaderboard
+  for select to anon, authenticated using (true);
+drop policy if exists "Public can insert leaderboard scores" on public.leaderboard;
+create policy "Public can insert leaderboard scores" on public.leaderboard
+  for insert to anon, authenticated with check (score >= 0 and length(trim(name)) > 0);
+
 -- Backfill profiles created before this migration, if their Auth user still exists.
 update public.profiles as profile
 set email = auth_user.email,
