@@ -1,102 +1,235 @@
 (function () {
   "use strict";
 
-  const URL = "https://azuixkurdzbvgsnuotkr.supabase.co";
-  const KEY = "sb_publishable_NFwK2IEoUH5MrSRG5GmnRQ_dkC7w5ML";
-  const client = window.supabase.createClient(URL, KEY);
-  const $ = (id) => document.getElementById(id);
+  const SUPABASE_URL = "https://azuixkurdzbvgsnuotkr.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_NFwK2IEoUH5MrSRG5GmnRQ_dkC7w5ML";
+  const VALID_ART_STYLES = ["blue", "violet", "teal", "coral"];
+  const client = window.supabase
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+    : null;
+  const byId = (id) => document.getElementById(id);
+
+  function safeText(value, fallback = "") {
+    return typeof value === "string" && value.trim() ? value.trim() : fallback;
+  }
 
   function priceText(product) {
-    if (product.price_label) return product.price_label;
+    const label = safeText(product?.price_label);
+    if (label) return label;
+    const cents = Number.isFinite(product?.price_cents) && product.price_cents >= 0
+      ? product.price_cents
+      : 0;
     return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" })
-      .format((product.price_cents || 0) / 100);
+      .format(cents / 100);
   }
 
   function imageUrls(product) {
-    const urls = Array.isArray(product.image_urls) ? product.image_urls : [];
-    return [...new Set([product.image_url, ...urls].filter((url) => typeof url === "string" && url.trim()))];
+    const urls = Array.isArray(product?.image_urls) ? product.image_urls : [];
+    return [...new Set(
+      [product?.image_url, ...urls]
+        .filter((url) => typeof url === "string" && url.trim())
+        .map((url) => url.trim())
+    )];
   }
 
-  function showImage(url, alt) {
+  function applyArtStyle(element, product) {
+    VALID_ART_STYLES.forEach((style) => element.classList.remove(`art-${style}`));
+    const style = VALID_ART_STYLES.includes(product?.art_style) ? product.art_style : "blue";
+    element.classList.add(`art-${style}`);
+  }
+
+  function showGalleryPlaceholder(product) {
+    const main = byId("gallery-main");
+    if (!main) return;
+    const label = document.createElement("span");
+    label.className = "gallery-placeholder-label";
+    label.textContent = safeText(product?.category, "Product").toUpperCase();
+    main.replaceChildren(label);
+    main.classList.add("gallery-placeholder");
+    applyArtStyle(main, product);
+  }
+
+  function setActiveThumbnail(activeButton) {
+    byId("gallery-thumbs")?.querySelectorAll(".gallery-thumb").forEach((button) => {
+      const active = button === activeButton;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+  }
+
+  function showImage(url, product, index, total, button) {
+    const main = byId("gallery-main");
+    if (!main) return;
+    const name = safeText(product?.name, "Product");
     const image = document.createElement("img");
     image.src = url;
-    image.alt = alt;
+    image.alt = `${name}, image ${index + 1} of ${total}`;
+    image.decoding = "async";
     image.referrerPolicy = "no-referrer";
-    image.addEventListener("error", () => image.remove());
-    $("gallery-main").replaceChildren(image);
+    image.addEventListener("error", () => {
+      button?.remove();
+      const next = byId("gallery-thumbs")?.querySelector(".gallery-thumb");
+      if (next) next.click();
+      else showGalleryPlaceholder(product);
+    }, { once: true });
+    main.classList.remove("gallery-placeholder");
+    applyArtStyle(main, product);
+    main.replaceChildren(image);
+    setActiveThumbnail(button);
   }
 
   function renderGallery(product) {
     const urls = imageUrls(product);
-    const main = $("gallery-main");
-    const thumbs = $("gallery-thumbs");
+    const thumbs = byId("gallery-thumbs");
+    if (!thumbs) return;
     thumbs.replaceChildren();
     if (!urls.length) {
-      main.textContent = (product.category || "Product").toUpperCase();
-      main.classList.add("gallery-placeholder");
+      showGalleryPlaceholder(product);
       return;
     }
-    main.classList.remove("gallery-placeholder");
-    urls.forEach((url, index) => {
+
+    const buttons = urls.map((url, index) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "gallery-thumb";
-      button.setAttribute("aria-label", `Show image ${index + 1}`);
+      button.setAttribute("aria-label", `View image ${index + 1} of ${safeText(product?.name, "product")}`);
+      button.setAttribute("aria-pressed", "false");
+
       const image = document.createElement("img");
       image.src = url;
       image.alt = "";
       image.loading = "lazy";
+      image.decoding = "async";
       image.referrerPolicy = "no-referrer";
+      image.addEventListener("error", () => {
+        const wasActive = button.classList.contains("is-active");
+        button.remove();
+        if (wasActive) {
+          const next = thumbs.querySelector(".gallery-thumb");
+          if (next) next.click();
+          else showGalleryPlaceholder(product);
+        }
+      }, { once: true });
       button.append(image);
-      button.onclick = () => showImage(url, product.name);
+      button.addEventListener("click", () => showImage(url, product, index, urls.length, button));
       thumbs.append(button);
+      return button;
     });
-    showImage(urls[0], product.name);
+
+    showImage(urls[0], product, 0, urls.length, buttons[0]);
+  }
+
+  function specificValue(value) {
+    if (Array.isArray(value)) return value.map((item) => specificValue(item)).filter(Boolean).join(", ");
+    if (value && typeof value === "object") {
+      try {
+        return JSON.stringify(value);
+      } catch (_error) {
+        return "";
+      }
+    }
+    return String(value ?? "");
   }
 
   function renderSpecifics(value) {
-    const list = $("product-specifics");
+    const list = byId("product-specifics");
+    const empty = byId("specifics-empty");
+    if (!list || !empty) return;
+    list.replaceChildren();
     const specifics = value && typeof value === "object" && !Array.isArray(value) ? value : {};
     const entries = Object.entries(specifics);
-    if (!entries.length) {
-      const empty = document.createElement("dd");
-      empty.textContent = "No item specifics listed yet.";
-      list.append(empty);
-      return;
-    }
+    list.hidden = entries.length === 0;
+    empty.hidden = entries.length > 0;
     entries.forEach(([key, rawValue]) => {
       const term = document.createElement("dt");
       const detail = document.createElement("dd");
       term.textContent = key;
-      detail.textContent = Array.isArray(rawValue) ? rawValue.join(", ") : String(rawValue ?? "");
+      detail.textContent = specificValue(rawValue);
       list.append(term, detail);
     });
   }
 
-  async function load() {
-    const id = new URLSearchParams(location.search).get("id");
-    if (!id) return $("product-status").textContent = "No product was selected.";
+  function showError(message) {
+    const status = byId("product-status");
+    if (status) {
+      status.textContent = message;
+      status.dataset.state = "error";
+      status.hidden = false;
+    }
+    const loading = byId("product-loading");
+    const detail = byId("product-detail");
+    if (loading) loading.hidden = true;
+    if (detail) detail.hidden = true;
+    byId("main-content")?.setAttribute("aria-busy", "false");
+  }
 
-    const { data: product, error } = await client.from("products")
-      .select("id,name,description,category,image_url,image_urls,item_specifics,price_cents,price_label,badge_label,art_style,featured,sort_order")
-      .eq("id", id)
-      .eq("is_active", true)
-      .maybeSingle();
-    if (error || !product) {
-      $("product-status").textContent = "That product is unavailable or no longer public.";
+  function renderProduct(product) {
+    const name = safeText(product?.name, "Untitled product");
+    const category = safeText(product?.category, "Collection");
+    const availability = safeText(product?.badge_label, "Available");
+    const description = safeText(product?.description, "A useful thing from the builder’s bench.");
+    const categoryUrl = `shop.html?category=${encodeURIComponent(category)}#catalog`;
+
+    document.title = `${name} | Tristan Merson`;
+    const descriptionMeta = document.querySelector('meta[name="description"]');
+    if (descriptionMeta) descriptionMeta.content = description;
+
+    const categoryLink = byId("product-category");
+    if (categoryLink) {
+      categoryLink.textContent = category;
+      categoryLink.href = categoryUrl;
+    }
+    const breadcrumbCategory = byId("breadcrumb-category");
+    if (breadcrumbCategory) {
+      breadcrumbCategory.textContent = category;
+      breadcrumbCategory.href = categoryUrl;
+    }
+    const breadcrumbCategoryItem = byId("breadcrumb-category-item");
+    if (breadcrumbCategoryItem) breadcrumbCategoryItem.hidden = false;
+    const breadcrumbProduct = byId("breadcrumb-product");
+    if (breadcrumbProduct) breadcrumbProduct.textContent = name;
+
+    byId("product-name").textContent = name;
+    byId("product-badge").textContent = availability;
+    byId("purchase-availability").textContent = availability;
+    byId("product-price").textContent = priceText(product);
+    byId("product-description").textContent = description;
+
+    renderGallery(product);
+    renderSpecifics(product?.item_specifics);
+
+    byId("product-status").hidden = true;
+    byId("product-loading").hidden = true;
+    byId("product-detail").hidden = false;
+    byId("main-content").setAttribute("aria-busy", "false");
+  }
+
+  async function load() {
+    const id = new URLSearchParams(window.location.search).get("id");
+    if (!id) {
+      showError("No product was selected. Return to the shop to choose a product.");
+      return;
+    }
+    if (!client) {
+      showError("Product details could not load because the catalog service is unavailable.");
       return;
     }
 
-    document.title = `${product.name} | Tristan Merson`;
-    $("product-status").hidden = true;
-    $("product-detail").hidden = false;
-    $("product-category").textContent = product.category || "Collection";
-    $("product-badge").textContent = product.badge_label || "Available";
-    $("product-name").textContent = product.name;
-    $("product-price").textContent = priceText(product);
-    $("product-description").textContent = product.description || "A useful thing from the builder’s bench.";
-    renderGallery(product);
-    renderSpecifics(product.item_specifics);
+    try {
+      const { data: product, error } = await client.from("products")
+        .select("id,name,description,category,image_url,image_urls,item_specifics,price_cents,price_label,badge_label,art_style,featured,sort_order")
+        .eq("id", id)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (error || !product) {
+        showError("That product is unavailable or no longer public.");
+        return;
+      }
+      renderProduct(product);
+    } catch (_error) {
+      showError("Product details could not load. Check your connection and try again.");
+    }
   }
 
   load();

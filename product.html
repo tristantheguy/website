@@ -2,50 +2,145 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Product | Tristan Merson</title>
+  <meta name="description" content="View product details from the Tristan Merson shop.">
   <link rel="stylesheet" href="shop.css">
   <link rel="stylesheet" href="product.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="site-auth.js" defer></script>
   <script src="product.js" defer></script>
 </head>
-<body>
-  <div class="bg-glow" aria-hidden="true"></div>
-  <div class="bg-grid" aria-hidden="true"></div>
+<body class="product-view">
+  <a class="skip-link" href="#main-content">Skip to product details</a>
 
-  <header class="site-header">
-    <a class="brand" href="index.html" aria-label="Return to Tristan Merson home">
-      <span class="brand-mark">TM</span>
-      <span>Tristan Merson</span>
-    </a>
-    <nav aria-label="Primary navigation">
-      <a href="index.html">Home</a>
-      <a class="active" href="shop.html">Shop</a>
-      <a href="account.html">Account</a>
-      <a id="site-auth-link" class="site-auth-link" href="account.html">Log in</a>
+  <header class="retail-header">
+    <div class="header-primary">
+      <a class="brand" href="index.html" aria-label="Tristan Merson home">
+        <span class="brand-mark" aria-hidden="true">TM</span>
+        <span class="brand-copy">
+          <strong>Tristan Merson</strong>
+          <small>Shop</small>
+        </span>
+      </a>
+
+      <form class="retail-search" role="search" action="shop.html" method="get">
+        <label class="sr-only" for="product-page-search">Search products</label>
+        <input id="product-page-search" name="q" type="search" placeholder="Search products and categories" enterkeyhint="search">
+        <button class="search-submit" type="submit">
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
+            <path d="m21 21-4.35-4.35m2.35-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"></path>
+          </svg>
+          <span>Search</span>
+        </button>
+      </form>
+
+      <div class="header-actions">
+        <a id="site-auth-link" class="account-link" href="account.html">
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22">
+            <path d="M20 21a8 8 0 0 0-16 0m12-13a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"></path>
+          </svg>
+          <span>Log in</span>
+        </a>
+        <button class="cart-summary" type="button" aria-label="Cart, 0 items. Coming soon." disabled>
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="23" height="23">
+            <path d="M3 4h2l2.2 10.1a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 8H6m4 11.5h.01m7 0h.01"></path>
+          </svg>
+          <span class="cart-copy">Cart <small>Coming soon</small></span>
+          <span class="cart-count" aria-hidden="true">0</span>
+        </button>
+      </div>
+    </div>
+
+    <nav class="shop-nav" aria-label="Shop navigation">
+      <div class="shop-nav-inner">
+        <a href="shop.html">Shop home</a>
+        <a href="shop.html?featured=1#catalog">Featured</a>
+        <a href="shop.html#filters">Categories</a>
+        <a href="shop.html?sort=newest#catalog">New products</a>
+        <a href="index.html#about">About Tristan</a>
+      </div>
     </nav>
   </header>
 
-  <main class="product-page">
-    <p><a class="back-link" href="shop.html">← Back to shop</a></p>
-    <p id="product-status" class="product-status" role="status">Loading product…</p>
+  <main id="main-content" class="product-main" aria-busy="true">
+    <nav class="breadcrumbs product-breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li id="breadcrumb-category-item" hidden><a id="breadcrumb-category" href="shop.html"></a></li>
+        <li id="breadcrumb-product" aria-current="page">Product</li>
+      </ol>
+    </nav>
+
+    <p id="product-status" class="product-status" role="status" aria-live="polite">Loading product&hellip;</p>
+
+    <div id="product-loading" class="product-loading" aria-hidden="true">
+      <div class="product-loading-gallery skeleton-block"></div>
+      <div class="product-loading-copy">
+        <span class="product-loading-line product-loading-line--short"></span>
+        <span class="product-loading-line product-loading-line--title"></span>
+        <span class="product-loading-line"></span>
+        <span class="product-loading-line product-loading-line--medium"></span>
+        <span class="product-loading-panel skeleton-block"></span>
+      </div>
+    </div>
+
     <article id="product-detail" class="product-detail" hidden>
-      <section class="product-gallery" aria-label="Product images">
-        <div id="gallery-main" class="gallery-main"></div>
-        <div id="gallery-thumbs" class="gallery-thumbs"></div>
+      <section class="product-gallery" aria-labelledby="gallery-title">
+        <h2 id="gallery-title" class="sr-only">Product gallery</h2>
+        <div id="gallery-thumbs" class="gallery-thumbs" aria-label="Choose a product image"></div>
+        <div id="gallery-main" class="gallery-main" aria-live="polite"></div>
       </section>
-      <section class="product-copy">
-        <div class="product-meta"><span id="product-category"></span><span id="product-badge"></span></div>
-        <h1 id="product-name"></h1>
-        <p id="product-price" class="product-price"></p>
-        <p id="product-description" class="product-description"></p>
-        <section class="specifics" aria-labelledby="specifics-title">
-          <h2 id="specifics-title">Item specifics</h2>
-          <dl id="product-specifics"></dl>
+
+      <div class="product-info-column">
+        <section class="product-copy" aria-labelledby="product-name">
+          <div class="product-heading-meta">
+            <a id="product-category" class="product-category" href="shop.html"></a>
+            <span id="product-badge" class="availability-badge"></span>
+          </div>
+          <h1 id="product-name"></h1>
+
+          <section class="product-description-section" aria-labelledby="description-title">
+            <h2 id="description-title">About this product</h2>
+            <p id="product-description" class="product-description"></p>
+          </section>
+
+          <section class="specifics" aria-labelledby="specifics-title">
+            <h2 id="specifics-title">Item specifics</h2>
+            <dl id="product-specifics"></dl>
+            <p id="specifics-empty" class="specifics-empty" hidden>No item specifics listed yet.</p>
+          </section>
         </section>
-      </section>
+
+        <aside class="purchase-panel" aria-labelledby="purchase-title">
+          <p class="eyebrow">Purchase</p>
+          <h2 id="purchase-title">Product summary</h2>
+          <p id="product-price" class="product-price"></p>
+          <div class="purchase-availability">
+            <span>Availability</span>
+            <strong id="purchase-availability"></strong>
+          </div>
+          <button class="button purchase-button" type="button" disabled>Add to cart &mdash; coming soon</button>
+          <p class="checkout-note">Checkout is not available yet. This button will not place an order or take payment.</p>
+          <a class="continue-shopping" href="shop.html">Continue shopping <span aria-hidden="true">→</span></a>
+        </aside>
+      </div>
     </article>
   </main>
+
+  <footer class="site-footer">
+    <div>
+      <a class="footer-brand" href="index.html"><span class="brand-mark" aria-hidden="true">TM</span><span>Tristan Merson</span></a>
+      <p>Practical projects, thoughtfully made.</p>
+    </div>
+    <nav aria-label="Footer navigation">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="account.html">Account</a>
+      <a href="/privacy-policy">Privacy Policy</a>
+      <a href="/terms-and-conditions">Terms &amp; Conditions</a>
+    </nav>
+  </footer>
 </body>
 </html>
