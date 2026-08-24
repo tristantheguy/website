@@ -35,6 +35,8 @@ alter table public.products add column if not exists is_active boolean not null 
 
 alter table public.profiles enable row level security;
 alter table public.profiles add column if not exists display_name text;
+alter table public.profiles add column if not exists bio text;
+alter table public.profiles add column if not exists avatar_url text;
 alter table public.products enable row level security;
 
 -- Public dice leaderboard used by the existing game view and anonymous play.
@@ -101,6 +103,7 @@ create trigger on_auth_user_created
 
 revoke all on table public.profiles from anon, authenticated;
 grant select on table public.profiles to authenticated;
+grant update (display_name, bio, avatar_url) on table public.profiles to authenticated;
 grant select on table public.products to anon, authenticated;
 grant insert, update, delete on table public.products to authenticated;
 
@@ -143,6 +146,11 @@ drop policy if exists "Users can read own profile" on public.profiles;
 create policy "Users can read own profile" on public.profiles
   for select to authenticated
   using (id = auth.uid());
+drop policy if exists "Users can update own profile fields" on public.profiles;
+create policy "Users can update own profile fields" on public.profiles
+  for update to authenticated
+  using (id = auth.uid())
+  with check (id = auth.uid());
 
 create or replace function public.set_products_updated_at()
 returns trigger language plpgsql set search_path = public

@@ -18,6 +18,15 @@
       || (user.email ? user.email.split("@")[0] : "Player");
   }
 
+  function updateAvatarPreview() {
+    const url = $("profile-avatar-url").value.trim();
+    const image = $("avatar-preview");
+    const empty = $("avatar-preview-empty");
+    image.hidden = !url;
+    empty.hidden = Boolean(url);
+    image.src = url || "";
+  }
+
   async function loadScores(user) {
     const { data, error } = await db
       .from("player_dice_scores")
@@ -46,7 +55,7 @@
 
     const { data: profileData } = await db
       .from("profiles")
-      .select("email,display_name,created_at")
+      .select("email,display_name,bio,avatar_url,created_at")
       .eq("id", user.id)
       .maybeSingle();
     const profile = profileData || {};
@@ -62,8 +71,36 @@
     $("profile-name").textContent = name;
     $("profile-email").textContent = profile.email || user.email || "—";
     $("profile-created").textContent = profile.created_at ? new Date(profile.created_at).toLocaleDateString() : "—";
+    $("profile-display-name").value = name;
+    $("profile-bio").value = profile.bio || "";
+    $("profile-avatar-url").value = profile.avatar_url || "";
+    updateAvatarPreview();
     await loadScores(user);
   }
+
+  $("profile-avatar-url").addEventListener("input", updateAvatarPreview);
+  $("avatar-preview").addEventListener("error", () => {
+    $("avatar-preview").hidden = true;
+    $("avatar-preview-empty").hidden = false;
+    $("avatar-preview-empty").textContent = "That image could not be loaded.";
+  });
+
+  $("profile-form").onsubmit = async (event) => {
+    event.preventDefault();
+    const { data: sessionData } = await db.auth.getSession();
+    const user = sessionData.session && sessionData.session.user;
+    if (!user) return msg("Your session expired. Please sign in again.", true);
+
+    const updates = {
+      display_name: $("profile-display-name").value.trim(),
+      bio: $("profile-bio").value.trim(),
+      avatar_url: $("profile-avatar-url").value.trim()
+    };
+    const { error } = await db.from("profiles").update(updates).eq("id", user.id);
+    if (error) return msg(`Could not save profile: ${error.message}`, true);
+    $("profile-name").textContent = updates.display_name || displayName(user, updates);
+    msg("Profile saved.");
+  };
 
   $("switch").onclick = (event) => {
     event.preventDefault();

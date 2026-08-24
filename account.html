@@ -36,6 +36,18 @@
         <div><dt>Email</dt><dd id="profile-email">—</dd></div>
         <div><dt>Member since</dt><dd id="profile-created">—</dd></div>
       </dl>
+      <form id="profile-form" class="profile-form">
+        <h2>Edit personal info</h2>
+        <label>Display name<input id="profile-display-name" maxlength="80" autocomplete="name"></label>
+        <label>About / bio<textarea id="profile-bio" maxlength="1000" rows="5" placeholder="Tell people a little about yourself."></textarea></label>
+        <label>Profile image URL<input id="profile-avatar-url" type="url" maxlength="1000" placeholder="https://example.com/avatar.jpg" autocomplete="url"></label>
+        <div class="avatar-preview-wrap">
+          <span>Preview</span>
+          <img id="avatar-preview" alt="Profile image preview" hidden>
+          <span id="avatar-preview-empty">No image URL yet.</span>
+        </div>
+        <button type="submit">Save profile</button>
+      </form>
       <h2>My dice scores</h2>
       <p id="score-message">Loading your scores…</p>
       <ol id="personal-scores" class="personal-scores"></ol>
