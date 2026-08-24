@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Shop Admin | Tristan Merson</title>
+  <link rel="stylesheet" href="admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="admin.js" defer></script>
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="../index.html" aria-label="Return to Tristan Merson home">
+      <span class="brand-mark">TM</span>
+      <span>Shop admin</span>
+    </a>
+    <a class="shop-link" href="../shop.html">View shop <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main>
+    <section class="auth-panel panel" id="auth-panel" aria-labelledby="login-title">
+      <p class="eyebrow">Private workbench</p>
+      <h1 id="login-title">Admin sign in</h1>
+      <p class="intro">Use the allowlisted Supabase account to manage the storefront catalog.</p>
+
+      <form id="login-form" class="stack" novalidate>
+        <label>
+          <span>Email</span>
+          <input id="login-email" name="email" type="email" value="mersontristan@gmail.com" autocomplete="username" required />
+        </label>
+        <label>
+          <span>Password</span>
+          <input id="login-password" name="password" type="password" autocomplete="current-password" required />
+        </label>
+        <button id="login-button" class="button primary" type="submit">Sign in</button>
+      </form>
+      <p id="auth-status" class="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="admin-app" hidden>
+      <div class="admin-heading">
+        <div>
+          <p class="eyebrow">Catalog control</p>
+          <h1>Products</h1>
+          <p id="signed-in-as" class="signed-in"></p>
+        </div>
+        <button id="logout-button" class="button quiet" type="button">Log out</button>
+      </div>
+
+      <div class="admin-layout">
+        <section class="panel editor-panel" aria-labelledby="editor-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Product editor</p>
+              <h2 id="editor-title">Add a product</h2>
+            </div>
+            <button id="cancel-edit-button" class="button text-button" type="button" hidden>Cancel edit</button>
+          </div>
+
+          <form id="product-form" class="product-form" novalidate>
+            <input id="product-id" type="hidden" />
+            <label class="full-width">
+              <span>Name <b aria-hidden="true">*</b></span>
+              <input id="product-name" type="text" maxlength="120" required />
+            </label>
+            <label class="full-width">
+              <span>Description</span>
+              <textarea id="product-description" rows="4" maxlength="800"></textarea>
+            </label>
+            <label>
+              <span>Category <b aria-hidden="true">*</b></span>
+              <input id="product-category" type="text" maxlength="80" placeholder="Digital tools" required />
+            </label>
+            <label>
+              <span>Price (USD)</span>
+              <input id="product-price" type="number" min="0" max="999999.99" step="0.01" inputmode="decimal" placeholder="19.00" />
+            </label>
+            <label>
+              <span>Fallback price label</span>
+              <input id="product-price-label" type="text" maxlength="60" placeholder="Coming soon" />
+            </label>
+            <label>
+              <span>Card label</span>
+              <input id="product-badge-label" type="text" maxlength="40" placeholder="Available" />
+            </label>
+            <label>
+              <span>Art color</span>
+              <select id="product-art-style">
+                <option value="blue">Blue</option>
+                <option value="violet">Violet</option>
+                <option value="teal">Teal</option>
+                <option value="coral">Coral</option>
+              </select>
+            </label>
+            <label>
+              <span>Sort order</span>
+              <input id="product-sort-order" type="number" min="-9999" max="9999" step="1" value="0" />
+            </label>
+            <label class="full-width">
+              <span>Image URL (optional)</span>
+              <input id="product-image-url" type="url" maxlength="2048" placeholder="https://…" />
+            </label>
+            <div class="check-row full-width">
+              <label class="check-label"><input id="product-featured" type="checkbox" /><span>Featured card</span></label>
+              <label class="check-label"><input id="product-is-active" type="checkbox" /><span>Publicly visible</span></label>
+            </div>
+            <div class="form-actions full-width">
+              <button id="save-product-button" class="button primary" type="submit">Add product</button>
+            </div>
+          </form>
+          <p id="form-status" class="status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="panel catalog-panel" aria-labelledby="catalog-title">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Inventory</p><h2 id="catalog-title">Current catalog</h2></div>
+            <button id="refresh-button" class="button quiet" type="button">Refresh</button>
+          </div>
+          <p id="catalog-status" class="status" role="status" aria-live="polite"></p>
+          <div id="product-list" class="product-list" aria-live="polite"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
