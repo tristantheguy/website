@@ -9,14 +9,17 @@
     content="A cherry blossom themed gallery of Japan trip memories for Tristan and Megan."
   />
   <link rel="stylesheet" href="japan-gallery.css" />
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/site-ui.css">
+<script src="/site-ui.js" defer></script>
 </head>
 <body>
+<a class="site-skip-link" href="#gallery-app">Skip to main content</a>
   <div class="petal-layer" aria-hidden="true"></div>
 
   <nav class="site-nav" aria-label="Primary">
     <a href="index.html">Home</a>
     <a href="japan-memories.html" aria-current="page">Japan Memories</a>
-    <a href="sms-opt-in.html">SMS Opt-In</a>
     <a href="/privacy-policy">Privacy Policy</a>
     <a href="/terms-and-conditions">Terms &amp; Conditions</a>
   </nav>
@@ -25,43 +28,62 @@
     <p class="eyebrow">Tristan &amp; Megan • Japan Trip</p>
     <h1>Japan Trip Memories</h1>
     <p class="lead">
-      A soft, romantic scrapbook of cherry blossom moments — organized in a simple timeline so you
-      can keep adding captions, places, and favorite highlights over time.
+      A scrapbook of cherry blossoms, mountain views, shared meals, and favorite moments from Japan.
     </p>
   </header>
 
-  <main class="gallery-shell" id="gallery-app">
+  <main class="gallery-shell" id="gallery-app" tabindex="-1">
     <section class="card featured-card" aria-labelledby="featured-title">
       <div class="section-head">
         <h2 id="featured-title">Featured Moments</h2>
-        <p>Slow rolling favorites from your trip.</p>
+        <p>Scroll through a few favorites, then explore the full collection below.</p>
       </div>
-      <div class="featured-strip" id="featured-strip" aria-live="polite"></div>
+      <div class="featured-strip" id="featured-strip" role="region" aria-label="Featured photos" tabindex="0"></div>
     </section>
 
     <section class="card" aria-labelledby="tabs-title">
       <div class="section-head">
-        <h2 id="tabs-title">Browse by Day, Place, or Favorites</h2>
-        <p>Tabs are generated from metadata and can be customized in one JSON file.</p>
+        <h2 id="tabs-title">Explore the Photos</h2>
+        <p>Choose a collection and select any photo to open a larger view.</p>
       </div>
       <div class="tabs" id="gallery-tabs" role="tablist" aria-label="Gallery filters"></div>
-      <div class="gallery-grid" id="gallery-grid"></div>
-      <div class="gallery-actions">
-        <button type="button" class="load-more-btn" id="load-more-btn">Show more photos</button>
+      <p class="gallery-status" id="gallery-status" role="status"></p>
+      <div id="gallery-panel" role="tabpanel" tabindex="0">
+        <div class="gallery-grid" id="gallery-grid"></div>
+        <div class="gallery-actions">
+          <button type="button" class="load-more-btn" id="load-more-btn" hidden>Show more photos</button>
+        </div>
       </div>
+      <noscript><p>Turn on JavaScript to browse this photo gallery.</p></noscript>
     </section>
   </main>
 
-  <div class="lightbox" id="lightbox" hidden>
+  <dialog class="lightbox" id="lightbox" aria-labelledby="lightbox-title" aria-describedby="lightbox-caption">
+    <h2 class="sr-only" id="lightbox-title">Photo viewer</h2>
     <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close photo viewer">×</button>
     <button type="button" class="lightbox-nav prev" id="lightbox-prev" aria-label="Previous photo">‹</button>
     <figure class="lightbox-figure">
-      <img id="lightbox-image" alt="Japan trip memory" />
-      <figcaption id="lightbox-caption"></figcaption>
+      <img id="lightbox-image" alt="" />
+      <figcaption id="lightbox-caption" aria-live="polite"></figcaption>
     </figure>
     <button type="button" class="lightbox-nav next" id="lightbox-next" aria-label="Next photo">›</button>
-  </div>
+  </dialog>
 
   <script src="japan-gallery.js" defer></script>
+
+
+
+
+
+
+<footer class="site-policy-footer">
+<p>Tristan Merson · Personal projects, games, and a catalog preview.</p>
+<nav aria-label="Site information">
+<a href="/">Home</a><a href="/contact/">Contact</a><a href="/privacy-policy/">Privacy</a><a href="/terms-and-conditions/">Terms</a><a href="/refund-policy/">Refunds &amp; purchases</a><a href="/cookie-policy/">Cookies &amp; storage settings</a><a href="/privacy-requests/">Request data deletion</a><a href="/communications/">Email preferences</a><a href="/accessibility/">Accessibility</a><a href="/credits/">Credits</a>
+</nav></footer>
+<section id="site-storage-notice" class="site-storage-notice" aria-label="Cookies and browser storage" hidden>
+<p><strong>Your browser data.</strong> This site uses storage for sign-in, cart selections, and game progress. It has no advertising or analytics trackers. There are no optional tracking cookies to accept.</p>
+<button id="storage-notice-dismiss" type="button">Dismiss notice</button><a href="/cookie-policy/">Storage details and controls</a>
+</section>
 </body>
 </html>

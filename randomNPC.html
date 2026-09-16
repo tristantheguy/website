@@ -1,14 +1,22 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Appearance, Personality, and Voice Generator</title>
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/site-ui.css">
+<script src="/site-ui.js" defer></script>
 </head>
-<body>
+<body class="legacy-tool">
+<a class="site-skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
   <h1>Appearance, Personality, and Voice Generator</h1>
   <h2>for you mark</h2>
   <p>Click the button to generate a random combination of appearance, personality, and voice:</p>
   <button onclick="generate()">Generate</button>
   <button onclick="location.href='index.html'">Return to Homepage</button>
-  <p id="result"></p>
+  <p id="result" role="status"></p>
 
   <script>
     const appearances = ['Hank Hill(king of the hill)',
@@ -2377,9 +2385,22 @@
     }
   </script>
 
-  <footer style="margin: 30px 0; text-align: center; font-family: Arial, sans-serif; color: #fff;">
-    <a href="/privacy-policy" style="color: #fff; margin: 0 10px; font-weight: bold;">Privacy Policy</a> |
-    <a href="/terms-and-conditions" style="color: #fff; margin: 0 10px; font-weight: bold;">Terms and Conditions</a>
-  </footer>
+
+</main>
+
+
+
+
+
+
+<footer class="site-policy-footer">
+<p>Tristan Merson · Personal projects, games, and a catalog preview.</p>
+<nav aria-label="Site information">
+<a href="/">Home</a><a href="/contact/">Contact</a><a href="/privacy-policy/">Privacy</a><a href="/terms-and-conditions/">Terms</a><a href="/refund-policy/">Refunds &amp; purchases</a><a href="/cookie-policy/">Cookies &amp; storage settings</a><a href="/privacy-requests/">Request data deletion</a><a href="/communications/">Email preferences</a><a href="/accessibility/">Accessibility</a><a href="/credits/">Credits</a>
+</nav></footer>
+<section id="site-storage-notice" class="site-storage-notice" aria-label="Cookies and browser storage" hidden>
+<p><strong>Your browser data.</strong> This site uses storage for sign-in, cart selections, and game progress. It has no advertising or analytics trackers. There are no optional tracking cookies to accept.</p>
+<button id="storage-notice-dismiss" type="button">Dismiss notice</button><a href="/cookie-policy/">Storage details and controls</a>
+</section>
 </body>
 </html>

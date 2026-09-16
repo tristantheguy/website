@@ -1,0 +1,2 @@
+# Preserve upstream browser bundles and license notices exactly as supplied.
+assets/vendor/** -text -whitespace

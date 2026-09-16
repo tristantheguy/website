@@ -6,10 +6,14 @@
   <meta name="robots" content="noindex, nofollow" />
   <title>Shop Admin | Tristan Merson</title>
   <link rel="stylesheet" href="admin.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/assets/vendor/supabase-2.116.0.js" defer></script>
   <script src="admin.js" defer></script>
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/site-ui.css">
+<script src="/site-ui.js" defer></script>
 </head>
 <body>
+<a class="site-skip-link" href="#main-content">Skip to main content</a>
   <div class="bg-glow" aria-hidden="true"></div>
   <div class="bg-grid" aria-hidden="true"></div>
 
@@ -21,7 +25,7 @@
     <a class="shop-link" href="../shop.html">View shop <span aria-hidden="true">↗</span></a>
   </header>
 
-  <main>
+  <main id="main-content" tabindex="-1">
     <section class="auth-panel panel" id="auth-panel" aria-labelledby="login-title">
       <p class="eyebrow">Private workbench</p>
       <h1 id="login-title">Admin sign in</h1>
@@ -141,5 +145,20 @@
       </div>
     </section>
   </main>
+
+
+
+
+
+
+<footer class="site-policy-footer">
+<p>Tristan Merson · Personal projects, games, and a catalog preview.</p>
+<nav aria-label="Site information">
+<a href="/">Home</a><a href="/contact/">Contact</a><a href="/privacy-policy/">Privacy</a><a href="/terms-and-conditions/">Terms</a><a href="/refund-policy/">Refunds &amp; purchases</a><a href="/cookie-policy/">Cookies &amp; storage settings</a><a href="/privacy-requests/">Request data deletion</a><a href="/communications/">Email preferences</a><a href="/accessibility/">Accessibility</a><a href="/credits/">Credits</a>
+</nav></footer>
+<section id="site-storage-notice" class="site-storage-notice" aria-label="Cookies and browser storage" hidden>
+<p><strong>Your browser data.</strong> This site uses storage for sign-in, cart selections, and game progress. It has no advertising or analytics trackers. There are no optional tracking cookies to accept.</p>
+<button id="storage-notice-dismiss" type="button">Dismiss notice</button><a href="/cookie-policy/">Storage details and controls</a>
+</section>
 </body>
 </html>

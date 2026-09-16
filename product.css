@@ -172,7 +172,7 @@
 }
 
 .gallery-main.art-teal {
-  background: linear-gradient(135deg, #198590, #24426f);
+  background: linear-gradient(135deg, #126c78, #24426f);
 }
 
 .gallery-main.art-coral {
@@ -227,6 +227,10 @@
   border: 1px solid rgba(61, 86, 186, 0.35);
   border-radius: 6px;
   pointer-events: none;
+}
+
+.gallery-thumb:focus-visible {
+  outline-offset: -4px;
 }
 
 .gallery-thumb img {

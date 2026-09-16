@@ -10,7 +10,7 @@
   --muted: #5e687b;
   --muted-light: #b8c4dc;
   --border: #dce2ec;
-  --border-strong: #c8d0de;
+  --border-strong: #7d899d;
   --accent: #657fe8;
   --accent-strong: #3d56ba;
   --accent-soft: #edf0ff;
@@ -225,7 +225,8 @@ svg {
 }
 
 .retail-search input::placeholder {
-  color: #7a8495;
+  color: var(--muted);
+  opacity: 1;
 }
 
 .retail-search input:disabled {
@@ -398,8 +399,8 @@ body.cart-drawer-open {
 
 .cart-close {
   display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 44px;
+  height: 44px;
   flex: 0 0 auto;
   place-items: center;
   border: 1px solid var(--border);
@@ -439,6 +440,7 @@ body.cart-drawer-open {
 }
 
 .cart-item-copy a {
+  overflow-wrap: anywhere;
   color: var(--text-strong);
   font-weight: 850;
   text-decoration: none;
@@ -459,7 +461,7 @@ body.cart-drawer-open {
 
 .cart-item-controls {
   display: inline-grid;
-  grid-template-columns: 2rem 2rem 2rem;
+  grid-template-columns: 44px 2rem 44px;
   align-items: center;
   align-self: center;
   border: 1px solid var(--border-strong);
@@ -468,12 +470,16 @@ body.cart-drawer-open {
 }
 
 .cart-quantity-button {
-  height: 2rem;
+  height: 44px;
   padding: 0;
   border: 0;
   color: var(--text-strong);
   background: var(--surface-soft);
   font-weight: 900;
+}
+
+.cart-quantity-button:focus-visible {
+  outline-offset: -3px;
 }
 
 .cart-quantity-button:hover:not(:disabled) {
@@ -500,6 +506,8 @@ body.cart-drawer-open {
   background: transparent;
   font-size: 0.76rem;
   font-weight: 750;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .cart-drawer-footer {
@@ -764,8 +772,8 @@ body.cart-drawer-open {
 }
 
 .icon-button {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -889,7 +897,7 @@ body.cart-drawer-open {
 
 .price-separator {
   padding-bottom: 0.55rem;
-  color: #929bab;
+  color: var(--muted);
   font-size: 0.7rem;
 }
 
@@ -1103,7 +1111,7 @@ a.product-card:focus-visible {
 }
 
 .art-teal {
-  background: linear-gradient(135deg, #198590, #24426f);
+  background: linear-gradient(135deg, #126c78, #24426f);
 }
 
 .art-coral {

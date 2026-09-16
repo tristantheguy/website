@@ -2,12 +2,18 @@
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dice Game | Tristan Merson</title>
     <link rel="stylesheet" href="dicestyle.css">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/site-ui.css">
+<script src="/site-ui.js" defer></script>
 </head>
 
 <body>
+<a class="site-skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
 <header class="dice-site-header">
     <a href="../index.html">Tristan Merson</a>
     <nav aria-label="Dice game navigation">
@@ -15,12 +21,12 @@
         <a id="site-auth-link" class="site-auth-link" href="../account.html">Log in</a>
     </nav>
 </header>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/vendor/supabase-2.116.0.js"></script>
 <script src="../site-auth.js"></script>
 <script>
 const SUPABASE_URL = "https://ykfrfjtjfzthumypaxqi.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_4jG2VqKcKpGuGRqAYzNYjg_V5V-qN_W";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
 </script>
 
     <script src="dicegame.js"></script>
@@ -109,9 +115,20 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
         <button id="roll-button" onclick="rollDice()">Roll</button>
     </div>
     <form id="submit-form">
-        <label for="playerName">Enter your name:</label>
-        <input type="text" id="playerName" name="name">
-        <input type="button" value="Save score" onclick="submitScore(score);">
+        <h2>Save your score</h2>
+        <p id="score-privacy-help">You can play without sharing data. Signed-in completed runs save to your account. Guest scores are shared publicly only when you choose to publish them.</p>
+        <label for="playerName">Nickname (optional for account scores):</label>
+        <input type="text" id="playerName" name="nickname" maxlength="80" autocomplete="nickname" aria-describedby="nickname-privacy-help">
+        <p id="nickname-privacy-help">Use a nickname, not your full name, email address, or other personal information.</p>
+        <fieldset id="public-score-consent">
+            <legend>Publish a guest score</legend>
+            <p>Publishing is optional. The nickname and score will be visible to everyone. For removal, use <a href="/privacy-requests/">Data requests</a>.</p>
+            <p><label><input id="score-age-confirmation" type="checkbox"> I am at least 13 years old.</label></p>
+            <p><label><input id="score-terms-consent" type="checkbox"> I agree to the <a href="/terms-and-conditions/" target="_blank" rel="noopener">Terms of Use (opens in a new tab)</a> and have read the <a href="/privacy-policy/" target="_blank" rel="noopener">Privacy Policy (opens in a new tab)</a>.</label></p>
+            <p><label><input id="public-score-sharing" type="checkbox"> Publish this nickname and score on the public leaderboard.</label></p>
+        </fieldset>
+        <button type="submit" id="save-score-button">Publish score</button>
+        <p id="score-save-status" role="status" aria-live="polite"></p>
     </form>
 
     <div id="developer-menu" style="display: none;">
@@ -158,10 +175,23 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
     <div id="leaderboard"></div>
     <script src="scorefetch.js"></script>
 
-  <footer style="margin: 30px 0; text-align: center; font-family: Arial, sans-serif; color: #fff;">
-    <a href="/privacy-policy" style="color: #fff; margin: 0 10px; font-weight: bold;">Privacy Policy</a> |
-    <a href="/terms-and-conditions" style="color: #fff; margin: 0 10px; font-weight: bold;">Terms and Conditions</a>
-  </footer>
+
+</main>
+
+
+
+
+
+
+<footer class="site-policy-footer">
+<p>Tristan Merson · Personal projects, games, and a catalog preview.</p>
+<nav aria-label="Site information">
+<a href="/">Home</a><a href="/contact/">Contact</a><a href="/privacy-policy/">Privacy</a><a href="/terms-and-conditions/">Terms</a><a href="/refund-policy/">Refunds &amp; purchases</a><a href="/cookie-policy/">Cookies &amp; storage settings</a><a href="/privacy-requests/">Request data deletion</a><a href="/communications/">Email preferences</a><a href="/accessibility/">Accessibility</a><a href="/credits/">Credits</a>
+</nav></footer>
+<section id="site-storage-notice" class="site-storage-notice" aria-label="Cookies and browser storage" hidden>
+<p><strong>Your browser data.</strong> This site uses storage for sign-in, cart selections, and game progress. It has no advertising or analytics trackers. There are no optional tracking cookies to accept.</p>
+<button id="storage-notice-dismiss" type="button">Dismiss notice</button><a href="/cookie-policy/">Storage details and controls</a>
+</section>
 </body>
 
 </html>

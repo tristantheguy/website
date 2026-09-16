@@ -5,7 +5,7 @@
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_NFwK2IEoUH5MrSRG5GmnRQ_dkC7w5ML";
   const VALID_ART_STYLES = ["blue", "violet", "teal", "coral"];
   const client = window.supabase
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } })
     : null;
   const byId = (id) => document.getElementById(id);
   let currentProduct = null;

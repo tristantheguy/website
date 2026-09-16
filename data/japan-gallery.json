@@ -1,15 +1,15 @@
 {
   "title": "Japan Trip Memories",
-  "subtitle": "Tristan & Megan \u2022 Cherry Blossom Season",
+  "subtitle": "Tristan & Megan • Cherry Blossom Season",
   "generatedAt": "2026-04-17T00:00:00Z",
   "sourceFolder": "Photos/Japan",
   "orderingStrategy": "Filename numeric fallback (EXIF date/time unavailable in source images).",
   "placeStrategy": "Location metadata unavailable. Add place names manually per image.",
   "editNotes": [
-    "Manual editing guide: Update items[].caption, items[].place, and items[].dayLabel to personalize the story.",
-    "Featured strip: Toggle items[].featured=true or false to control top rolling images.",
-    "Tabs: tabHints controls custom tab grouping (for example [\"Kyoto\", \"Day 2\", \"Favorites\"]).",
-    "When known, replace empty date/time with ISO-style values (YYYY-MM-DD and HH:MM) for precise chronological sorting."
+    "Manual editing guide: Update items[].caption and items[].place with known details; items[].alt describes the visible scene.",
+    "Only add dayLabel, date, and time when verified; filename order does not establish trip dates.",
+    "Featured strip: Toggle items[].featured=true or false to choose the featured photos.",
+    "Tabs: tabHints controls custom groupings such as Favorites."
   ],
   "items": [
     {
@@ -19,15 +19,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Favorites",
       "featured": true,
       "sortIndex": 1,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Favorites"
-      ]
+      ],
+      "alt": "Two travelers wearing sunglasses pose beside a dark stone marker with white Japanese lettering."
     },
     {
       "id": "jp-002",
@@ -36,15 +36,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 2,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Other Moments"
-      ]
+      ],
+      "alt": "A shallow rocky river runs past hillside buildings and trees under a cloudy sky."
     },
     {
       "id": "jp-003",
@@ -53,15 +53,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 3,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Other Moments"
-      ]
+      ],
+      "alt": "A rocky mountain valley and distant ridges seen through a cable car window."
     },
     {
       "id": "jp-004",
@@ -70,15 +70,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Favorites",
       "featured": true,
       "sortIndex": 4,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Favorites"
-      ]
+      ],
+      "alt": "Visitors walk along a path beneath pale pink cherry blossoms."
     },
     {
       "id": "jp-005",
@@ -87,15 +87,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 5,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two travelers pose beneath a station roof, one wearing a white cat-ear headband."
     },
     {
       "id": "jp-006",
@@ -104,15 +104,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 6,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two travelers sit together in airplane seats, one in a gray hoodie and one in a blue shirt."
     },
     {
       "id": "jp-007",
@@ -121,15 +121,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 7,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Other Moments"
-      ]
+      ],
+      "alt": "A human figure sculpture stands among green trees in a garden."
     },
     {
       "id": "jp-008",
@@ -138,15 +138,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Favorites",
       "featured": true,
       "sortIndex": 8,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Favorites"
-      ]
+      ],
+      "alt": "A leafy wooden pergola stands over a mossy garden beneath a blue sky."
     },
     {
       "id": "jp-009",
@@ -155,15 +155,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 9,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Other Moments"
-      ]
+      ],
+      "alt": "A hand holds a wrapped triangular rice ball in front of a cream-colored bag."
     },
     {
       "id": "jp-010",
@@ -172,15 +172,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 10,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two travelers take a selfie outdoors with cherry blossom branches behind them."
     },
     {
       "id": "jp-011",
@@ -189,15 +189,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 11,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Other Moments"
-      ]
+      ],
+      "alt": "A hand holds a green glass bottle with a peach illustration on its label."
     },
     {
       "id": "jp-012",
@@ -206,15 +206,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 12,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two travelers sit together indoors while one holds a small cat on their lap."
     },
     {
       "id": "jp-013",
@@ -223,15 +223,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Favorites",
       "featured": true,
       "sortIndex": 13,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Favorites"
-      ]
+      ],
+      "alt": "An omelet decorated with ketchup drawings sits in dark sauce beside a glass of iced drink."
     },
     {
       "id": "jp-014",
@@ -240,15 +240,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 14,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Other Moments"
-      ]
+      ],
+      "alt": "Clouds of steam rise from a rocky mountainside behind a parking area and visitors."
     },
     {
       "id": "jp-015",
@@ -257,15 +257,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 15,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Other Moments"
-      ]
+      ],
+      "alt": "An assortment of sushi is arranged on a square white plate with chopsticks in front."
     },
     {
       "id": "jp-016",
@@ -274,15 +274,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 1",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 16,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 1",
         "Other Moments"
-      ]
+      ],
+      "alt": "A thick cherry tree branch frames pale blossoms, green shrubs, and distant city buildings."
     },
     {
       "id": "jp-017",
@@ -291,15 +291,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 17,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "Cars fill a parking area beneath wooded hills with steam rising in the distance."
     },
     {
       "id": "jp-018",
@@ -308,15 +308,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 18,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "A cable car passes over a rocky mountain valley, seen through another cabin window."
     },
     {
       "id": "jp-019",
@@ -325,15 +325,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Favorites",
       "featured": true,
       "sortIndex": 19,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Favorites"
-      ]
+      ],
+      "alt": "A river flows over a series of low steps beside buildings and wooded hills."
     },
     {
       "id": "jp-020",
@@ -342,15 +342,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 20,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "Cherry blossoms frame an arched footbridge beyond a roadside railing."
     },
     {
       "id": "jp-021",
@@ -359,15 +359,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 21,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "Packaged snacks, small sushi rolls, and drinks are spread across a metal countertop."
     },
     {
       "id": "jp-022",
@@ -376,15 +376,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 22,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "An illuminated city sidewalk at night is lined with bare-branched trees and storefronts."
     },
     {
       "id": "jp-023",
@@ -393,15 +393,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 23,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "A small dessert glass, strawberries, and a slice of pink roll cake sit on a white plate."
     },
     {
       "id": "jp-024",
@@ -410,15 +410,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 24,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "Hands hold two printed paper tickets over an orange floor."
     },
     {
       "id": "jp-025",
@@ -427,15 +427,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 25,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "A stepped river cascades between green hills and waterside buildings beneath gray clouds."
     },
     {
       "id": "jp-026",
@@ -444,15 +444,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Favorites",
       "featured": true,
       "sortIndex": 26,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Favorites"
-      ]
+      ],
+      "alt": "A tall strawberry parfait with cream and fruit stands on a wooden cafe table."
     },
     {
       "id": "jp-027",
@@ -461,15 +461,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 27,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "A cup of pale tea rests on a striped saucer beside a spoon on a green table."
     },
     {
       "id": "jp-028",
@@ -478,15 +478,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 28,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "A traveler stands beside a large dark stone marker outside a busy visitor building."
     },
     {
       "id": "jp-029",
@@ -495,15 +495,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 29,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "A wooden railing overlooks green and brown mountain slopes beneath clouds."
     },
     {
       "id": "jp-030",
@@ -512,15 +512,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 30,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "A meal tray with several small dishes and a red bowl sits beside a window at night."
     },
     {
       "id": "jp-031",
@@ -529,15 +529,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 31,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "Cherry blossoms arch above a crowded path and green shrubs under a bright blue sky."
     },
     {
       "id": "jp-032",
@@ -546,15 +546,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 2",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 32,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 2",
         "Other Moments"
-      ]
+      ],
+      "alt": "A room with tatami flooring, orange floor bedding, a television, and open balcony doors."
     },
     {
       "id": "jp-033",
@@ -563,15 +563,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 33,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two travelers take a selfie in airplane seats beneath blue cabin lighting."
     },
     {
       "id": "jp-034",
@@ -580,15 +580,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Favorites",
       "featured": true,
       "sortIndex": 34,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Favorites"
-      ]
+      ],
+      "alt": "Two hands hold clear cups of pink drinks with lemon slices outdoors."
     },
     {
       "id": "jp-035",
@@ -597,15 +597,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 35,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "Cable lines cross a view of wooded slopes and distant mountain ridges beneath heavy clouds."
     },
     {
       "id": "jp-036",
@@ -614,15 +614,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 36,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "Thin slices of marbled meat, onion rings, and leafy vegetables fill a dark round dish."
     },
     {
       "id": "jp-037",
@@ -631,15 +631,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 37,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "Orange floor bedding lies on tatami mats beside open doors leading to a balcony."
     },
     {
       "id": "jp-038",
@@ -648,15 +648,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 38,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two travelers wearing sunglasses pose outdoors beneath a partly cloudy sky."
     },
     {
       "id": "jp-039",
@@ -665,15 +665,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 39,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two colorful ice cream desserts have animal faces made from cookies and toppings."
     },
     {
       "id": "jp-040",
@@ -682,15 +682,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 40,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "Cherry blossom branches and a tall building rise against a clear blue sky."
     },
     {
       "id": "jp-041",
@@ -699,15 +699,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 41,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "Tree roots and small stones cross a shaded garden path."
     },
     {
       "id": "jp-042",
@@ -716,15 +716,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Favorites",
       "featured": true,
       "sortIndex": 42,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Favorites"
-      ]
+      ],
+      "alt": "A balcony bath overlooks a railing, green plants, and wooded mountains."
     },
     {
       "id": "jp-043",
@@ -733,15 +733,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 43,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "A plate of greens and vegetables with small side dishes rests on a restaurant counter."
     },
     {
       "id": "jp-044",
@@ -750,15 +750,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 44,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two travelers wearing sunglasses take a selfie in front of a distant mountain view."
     },
     {
       "id": "jp-045",
@@ -767,15 +767,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 45,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "A fluffy gray cat sits upright on a cushioned bench beside a round wooden table."
     },
     {
       "id": "jp-046",
@@ -784,15 +784,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 46,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two travelers wearing matching patterned robes take a selfie indoors."
     },
     {
       "id": "jp-047",
@@ -801,15 +801,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 47,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two short glasses of yellow and pale drinks with ice sit on patterned coasters at a bar."
     },
     {
       "id": "jp-048",
@@ -818,15 +818,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 3",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 48,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 3",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two iced drinks in short glasses rest on a wooden bar counter beneath drink dispensers."
     },
     {
       "id": "jp-049",
@@ -835,15 +835,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 49,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "A hand holds a clear cup of yellow fruit pieces and green grapes above a cream-colored bag."
     },
     {
       "id": "jp-050",
@@ -852,15 +852,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 50,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two travelers hold drinks while taking a selfie beneath sunlit cherry tree branches."
     },
     {
       "id": "jp-051",
@@ -869,15 +869,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Favorites",
       "featured": true,
       "sortIndex": 51,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Favorites"
-      ]
+      ],
+      "alt": "Passengers in a cable car look toward clouds of steam rising from a rocky mountainside."
     },
     {
       "id": "jp-052",
@@ -886,15 +886,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 52,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "A cream-colored cat rests inside a round wooden cubby on a green carpet."
     },
     {
       "id": "jp-053",
@@ -903,15 +903,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 53,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "A hand holds a wrapped round snack stamped with a checkerboard design and lettering."
     },
     {
       "id": "jp-054",
@@ -920,15 +920,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 54,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "A clear packaged fruit cup with yellow pieces and green grapes is held above a bag."
     },
     {
       "id": "jp-055",
@@ -937,15 +937,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 55,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two smiling travelers take a close-up selfie while seated together on an airplane."
     },
     {
       "id": "jp-056",
@@ -954,15 +954,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 56,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "A traveler in a patterned robe sits at a low table with a teapot and two cups."
     },
     {
       "id": "jp-057",
@@ -971,15 +971,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 57,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "An airplane wing and buildings below are visible through a cabin window."
     },
     {
       "id": "jp-058",
@@ -988,15 +988,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 58,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "Steam rises from a rocky mountainside beneath cable lines, viewed from a cabin window."
     },
     {
       "id": "jp-059",
@@ -1005,15 +1005,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 59,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "A round tray holds many small dishes beside soup bowls and a small cooking pot."
     },
     {
       "id": "jp-060",
@@ -1022,15 +1022,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Favorites",
       "featured": true,
       "sortIndex": 60,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Favorites"
-      ]
+      ],
+      "alt": "A wood-paneled cat room contains raised platforms, curved rails, hanging lamps, and seating."
     },
     {
       "id": "jp-061",
@@ -1039,15 +1039,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 61,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "Two travelers take a selfie outside a wooden building beneath a cloudy sky."
     },
     {
       "id": "jp-062",
@@ -1056,15 +1056,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 62,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "Visitors gather around a dark egg-shaped marker in front of a building with Japanese signs."
     },
     {
       "id": "jp-063",
@@ -1073,15 +1073,15 @@
       "time": "",
       "place": "",
       "caption": "",
-      "dayLabel": "Day 4",
+      "dayLabel": "",
       "groupLabel": "Other Moments",
       "featured": false,
       "sortIndex": 63,
       "sortSource": "filename-fallback",
       "tabHints": [
-        "Day 4",
         "Other Moments"
-      ]
+      ],
+      "alt": "A dense cluster of city buildings viewed from above beneath an overcast sky."
     }
   ]
 }

@@ -1,5 +1,5 @@
 body {
-  background-image: url("wood.png");
+  background-image: linear-gradient(140deg, #182a3e, #121212);
   background-repeat: no-repeat;
   background-size: cover;
   background-color: #121212;
@@ -583,3 +583,9 @@ select {
 .dice-site-header nav { display: flex; align-items: center; gap: .8rem; }
 .dice-site-header nav a { font-weight: 500; }
 .dice-site-header .site-auth-link { padding: .55rem .85rem; border-radius: 999px; background: #67dfff; color: #08101a; font-weight: 700; }
+
+/* Readable privacy controls and links on the dark game surface. */
+body a { color: #b8dfff; }
+#submit-form fieldset { max-width: 700px; border: 1px solid #8198b4; margin-top: 1rem; padding: 1rem; }
+#submit-form label { line-height: 1.6; }
+#submit-form input[type="checkbox"] { width: 1.2rem; height: 1.2rem; vertical-align: middle; }

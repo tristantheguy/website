@@ -9,9 +9,12 @@
     content="Browse tools, creative goods, and practical projects from Tristan Merson."
   >
   <link rel="stylesheet" href="shop.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/assets/vendor/supabase-2.116.0.js" defer></script>
   <script src="site-auth.js" defer></script>
   <script src="shop-data.js" defer></script>
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/site-ui.css">
+<script src="/site-ui.js" defer></script>
 </head>
 <body class="shop-view">
   <a class="skip-link" href="#main-content">Skip to products</a>
@@ -38,7 +41,7 @@
           disabled
         >
         <button id="search-clear" class="search-clear" type="button" aria-label="Clear search" hidden>×</button>
-        <button class="search-submit" type="submit">
+        <button class="search-submit" type="submit" aria-label="Search products">
           <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
             <path d="m21 21-4.35-4.35m2.35-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"></path>
           </svg>
@@ -74,7 +77,7 @@
     </nav>
   </header>
 
-  <main id="main-content" class="shop-main">
+  <main id="main-content" class="shop-main" tabindex="-1">
     <nav class="breadcrumbs" aria-label="Breadcrumb">
       <ol>
         <li><a href="index.html">Home</a></li>
@@ -90,7 +93,7 @@
       </div>
       <div class="shop-notice" role="note">
         <span aria-hidden="true">✦</span>
-        <p><strong>Catalog preview</strong> Checkout and cart purchases are not available yet.</p>
+        <p><strong>Catalog preview</strong> No orders or payments are accepted. Numeric preview prices are in USD. <a href="/refund-policy/">Purchasing policy</a>.</p>
       </div>
     </section>
 
@@ -242,17 +245,21 @@
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div>
-      <a class="footer-brand" href="index.html"><span class="brand-mark" aria-hidden="true">TM</span><span>Tristan Merson</span></a>
-      <p>Practical projects, thoughtfully made.</p>
-    </div>
-    <nav aria-label="Footer navigation">
-      <a href="index.html">Home</a>
-      <a href="account.html">Account</a>
-      <a href="/privacy-policy">Privacy Policy</a>
-      <a href="/terms-and-conditions">Terms &amp; Conditions</a>
-    </nav>
-  </footer>
+
+
+
+
+
+
+
+<footer class="site-policy-footer">
+<p>Tristan Merson · Personal projects, games, and a catalog preview.</p>
+<nav aria-label="Site information">
+<a href="/">Home</a><a href="/contact/">Contact</a><a href="/privacy-policy/">Privacy</a><a href="/terms-and-conditions/">Terms</a><a href="/refund-policy/">Refunds &amp; purchases</a><a href="/cookie-policy/">Cookies &amp; storage settings</a><a href="/privacy-requests/">Request data deletion</a><a href="/communications/">Email preferences</a><a href="/accessibility/">Accessibility</a><a href="/credits/">Credits</a>
+</nav></footer>
+<section id="site-storage-notice" class="site-storage-notice" aria-label="Cookies and browser storage" hidden>
+<p><strong>Your browser data.</strong> This site uses storage for sign-in, cart selections, and game progress. It has no advertising or analytics trackers. There are no optional tracking cookies to accept.</p>
+<button id="storage-notice-dismiss" type="button">Dismiss notice</button><a href="/cookie-policy/">Storage details and controls</a>
+</section>
 </body>
 </html>

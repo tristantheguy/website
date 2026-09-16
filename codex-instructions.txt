@@ -1,12 +1,1 @@
-Add two public pages to the website:
-- /privacy-policy
-- /terms-and-conditions
-
-Use the provided markdown content exactly, replacing placeholders with the real domain, contact email, and today's date.
-
-Also:
-- add both links to the global footer
-- make both pages publicly accessible without login
-- keep the SMS compliance language unchanged
-- make styling match the rest of the site
-- return the final live URLs after implementation
+The retired Lyra SMS program is no longer offered. Maintain the current personal-site policies in scripts/build_policy_pages.py, using only a verified public contact email. Rebuild pages and run scripts/integrate_site.py after changes. Do not restore SMS enrollment or old SMS-specific terms. See docs/COMPLIANCE-REVIEW.md for evidence, limits, and operational follow-ups.

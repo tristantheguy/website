@@ -9,7 +9,7 @@
   const VALID_SORTS = new Set(["recommended", "price-asc", "price-desc", "newest", "name", "manual"]);
   const configured = !SUPABASE_PUBLISHABLE_KEY.startsWith("PASTE_");
   const client = configured && window.supabase
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } })
     : null;
 
   let loadedProducts = [];
@@ -18,6 +18,9 @@
   let catalogReady = false;
   let filterDrawerOpen = false;
   let mobileFilters = null;
+  let filterReturnFocus = null;
+  let activeModal = null;
+  const modalInertStates = new Map();
 
   const state = {
     query: "",
@@ -38,6 +41,59 @@
   let cartInitialized = false;
   let cartOpen = false;
   let cartReturnFocus = null;
+
+  function modalControls(panel) {
+    return [...panel.querySelectorAll('a[href], button, input, select, textarea, [tabindex]')]
+      .filter((element) => !element.disabled && element.tabIndex >= 0 &&
+        !element.closest('[hidden], [inert]') && element.getClientRects().length);
+  }
+
+  function activateModal(panel, backdrop) {
+    activeModal = panel;
+    // Filters are nested inside the catalog. Keep their ancestors available while
+    // making sibling branches inert, preserving each branch's previous state.
+    const isolate = (parent) => {
+      [...parent.children].forEach((element) => {
+        if (element === panel || element === backdrop) return;
+        if (element.contains(panel) || (backdrop && element.contains(backdrop))) {
+          isolate(element);
+        } else {
+          modalInertStates.set(element, element.inert);
+          element.inert = true;
+        }
+      });
+    };
+    isolate(document.body);
+  }
+
+  function deactivateModal(panel) {
+    if (activeModal !== panel) return;
+    activeModal = null;
+    modalInertStates.forEach((wasInert, element) => { element.inert = wasInert; });
+    modalInertStates.clear();
+  }
+
+  function trapModalFocus(event) {
+    if (!activeModal || event.key !== 'Tab') return;
+    const controls = modalControls(activeModal);
+    const first = controls[0] || activeModal;
+    const last = controls[controls.length - 1] || activeModal;
+    const current = document.activeElement;
+    if (!activeModal.contains(current) || (event.shiftKey && current === first)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
+    } else if (!event.shiftKey && current === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function restoreVisibleFocus(preferred, fallback) {
+    const target = preferred instanceof HTMLElement && preferred.isConnected &&
+      !preferred.closest('[inert], [hidden]') && preferred.getClientRects().length
+      ? preferred : fallback;
+    target?.focus();
+  }
 
   function safeCartString(value, maximumLength) {
     return typeof value === "string" ? value.trim().slice(0, maximumLength) : "";
@@ -124,6 +180,11 @@
   function renderCart() {
     const list = byId("storefront-cart-items");
     if (!list) return;
+    const previousFocus = list.contains(document.activeElement) ? document.activeElement : null;
+    const previousRow = previousFocus?.closest('.cart-item');
+    const previousRowIndex = previousRow ? [...list.children].indexOf(previousRow) : -1;
+    const previousItemId = previousRow?.dataset.cartItemId;
+    const previousAction = previousFocus?.dataset.cartAction;
     if (!cartItems.length) {
       const empty = document.createElement("p");
       empty.className = "cart-empty";
@@ -133,6 +194,7 @@
       const rows = cartItems.map((item) => {
         const row = document.createElement("article");
         row.className = "cart-item";
+        row.dataset.cartItemId = item.id;
 
         const copy = document.createElement("div");
         copy.className = "cart-item-copy";
@@ -172,6 +234,14 @@
     const subtotal = byId("storefront-cart-subtotal");
     if (subtotal) subtotal.textContent = moneyFormatter.format(cartSubtotalCents() / 100);
     updateCartCounts();
+    if (previousFocus && cartOpen) {
+      const rows = [...list.querySelectorAll('.cart-item')];
+      const replacementRow = rows.find((row) => row.dataset.cartItemId === previousItemId) ||
+        rows[Math.min(previousRowIndex, rows.length - 1)];
+      const replacement = replacementRow && [...replacementRow.querySelectorAll('[data-cart-action]')]
+        .find((button) => button.dataset.cartAction === previousAction && !button.disabled);
+      (replacement || replacementRow?.querySelector('a') || byId('storefront-cart').querySelector('[data-cart-close]'))?.focus();
+    }
   }
 
   function closeCart(restoreFocus = true) {
@@ -179,24 +249,29 @@
     const backdrop = byId("storefront-cart-backdrop");
     if (!drawer || !cartOpen) return;
     cartOpen = false;
+    deactivateModal(drawer);
     drawer.hidden = true;
     if (backdrop) backdrop.hidden = true;
     document.body.classList.remove("cart-drawer-open");
     document.querySelectorAll("[data-cart-open], .cart-summary").forEach((button) => {
       button.setAttribute("aria-expanded", "false");
     });
-    if (restoreFocus && cartReturnFocus instanceof HTMLElement) cartReturnFocus.focus();
+    if (restoreFocus) restoreVisibleFocus(cartReturnFocus, document.querySelector('[data-cart-open]'));
+    cartReturnFocus = null;
   }
 
   function openCart(trigger) {
     const drawer = byId("storefront-cart");
     const backdrop = byId("storefront-cart-backdrop");
     if (!drawer) return;
+    if (cartOpen) return;
+    if (filterDrawerOpen) closeFilterDrawer(false);
     cartReturnFocus = trigger instanceof HTMLElement ? trigger : document.activeElement;
     renderCart();
     cartOpen = true;
     drawer.hidden = false;
     if (backdrop) backdrop.hidden = false;
+    activateModal(drawer, backdrop);
     document.body.classList.add("cart-drawer-open");
     document.querySelectorAll("[data-cart-open], .cart-summary").forEach((button) => {
       button.setAttribute("aria-expanded", "true");
@@ -224,22 +299,6 @@
     window.dispatchEvent(new CustomEvent("storefrontcart:change", { detail: { count: cartQuantity() } }));
   }
 
-  function trapCartFocus(event) {
-    if (!cartOpen || event.key !== "Tab") return;
-    const drawer = byId("storefront-cart");
-    const focusable = [...drawer.querySelectorAll("a[href], button:not(:disabled)")];
-    if (!focusable.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  }
-
   function createCartUi() {
     if (byId("storefront-cart")) return;
     const backdrop = document.createElement("button");
@@ -248,6 +307,7 @@
     backdrop.type = "button";
     backdrop.dataset.cartClose = "";
     backdrop.setAttribute("aria-label", "Close cart");
+    backdrop.setAttribute("aria-hidden", "true");
     backdrop.tabIndex = -1;
     backdrop.hidden = true;
 
@@ -257,6 +317,7 @@
     drawer.setAttribute("role", "dialog");
     drawer.setAttribute("aria-modal", "true");
     drawer.setAttribute("aria-labelledby", "storefront-cart-title");
+    drawer.tabIndex = -1;
     drawer.hidden = true;
     drawer.innerHTML = `
       <div class="cart-drawer-header">
@@ -298,7 +359,12 @@
     byId("storefront-cart-backdrop")?.addEventListener("click", () => closeCart());
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && cartOpen) closeCart();
-      trapCartFocus(event);
+      trapModalFocus(event);
+    });
+    document.addEventListener('focusin', (event) => {
+      if (activeModal && !activeModal.contains(event.target)) {
+        (modalControls(activeModal)[0] || activeModal).focus();
+      }
     });
     window.addEventListener("storage", (event) => {
       if (event.key !== CART_STORAGE_KEY) return;
@@ -749,6 +815,8 @@
   }
 
   function clearFilters() {
+    const resetHadFocus = document.activeElement === byId('clear-filters');
+    const emptyResetHadFocus = document.activeElement === byId('empty-clear-filters');
     state.query = "";
     state.category = "";
     state.featured = false;
@@ -758,39 +826,54 @@
     state.sort = "recommended";
     writeStateToControls();
     applyFilters();
+    if (resetHadFocus) byId('category-filter')?.focus();
+    if (emptyResetHadFocus) byId('product-search')?.focus();
   }
 
   function closeFilterDrawer(restoreFocus = true) {
     const panel = byId("filters");
     const backdrop = byId("filter-backdrop");
     const toggle = byId("filter-toggle");
+    const wasOpen = filterDrawerOpen;
     filterDrawerOpen = false;
+    deactivateModal(panel);
     panel?.classList.remove("is-open");
     document.body.classList.remove("filter-drawer-open");
     if (backdrop) backdrop.hidden = true;
     if (toggle) toggle.setAttribute("aria-expanded", "false");
+    panel?.removeAttribute('role');
+    panel?.removeAttribute('aria-modal');
     if (mobileFilters?.matches && panel) {
       panel.setAttribute("aria-hidden", "true");
       panel.inert = true;
     }
-    if (restoreFocus) toggle?.focus();
+    if (restoreFocus && wasOpen) restoreVisibleFocus(filterReturnFocus, toggle);
+    filterReturnFocus = null;
   }
 
   function openFilterDrawer() {
     const panel = byId("filters");
     if (!panel) return;
     if (!mobileFilters?.matches) {
-      panel.scrollIntoView({ block: "start", behavior: "smooth" });
+      panel.scrollIntoView({ block: "start", behavior: "auto" });
       byId("category-filter")?.focus({ preventScroll: true });
       return;
     }
+    if (filterDrawerOpen) return;
+    if (cartOpen) closeCart(false);
+    filterReturnFocus = document.activeElement;
     filterDrawerOpen = true;
     panel.inert = false;
     panel.removeAttribute("aria-hidden");
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.tabIndex = -1;
     panel.classList.add("is-open");
     document.body.classList.add("filter-drawer-open");
     const backdrop = byId("filter-backdrop");
     if (backdrop) backdrop.hidden = false;
+    backdrop?.setAttribute('aria-hidden', 'true');
+    activateModal(panel, backdrop);
     byId("filter-toggle")?.setAttribute("aria-expanded", "true");
     byId("filter-close")?.focus();
   }
@@ -800,14 +883,17 @@
     if (!panel) return;
     if (mobileFilters?.matches) {
       if (!filterDrawerOpen) {
+        if (panel.contains(document.activeElement)) byId('filter-toggle')?.focus();
         panel.setAttribute("aria-hidden", "true");
         panel.inert = true;
       }
       return;
     }
+    const closingControlHadFocus = document.activeElement === byId('filter-close');
     closeFilterDrawer(false);
     panel.inert = false;
     panel.removeAttribute("aria-hidden");
+    if (closingControlHadFocus) byId('category-filter')?.focus();
   }
 
   function stateFromUrl() {

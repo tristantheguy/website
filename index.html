@@ -9,15 +9,18 @@
     content="Personal homepage of Tristan Merson — registered nurse exploring pediatric and behavioral health, AI, automation, gaming, and practical system design."
   />
   <link rel="stylesheet" type="text/css" href="homepage.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/vendor/supabase-2.116.0.js"></script>
   <script src="site-auth.js" defer></script>
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/site-ui.css">
+<script src="/site-ui.js" defer></script>
 </head>
 <body>
+<a class="site-skip-link" href="#main-content">Skip to main content</a>
   <div class="bg-glow" aria-hidden="true"></div>
   <div class="bg-grid" aria-hidden="true"></div>
   <nav class="site-nav" aria-label="Primary">
     <a href="index.html" aria-current="page">Home</a>
-    <a href="sms-opt-in.html">SMS Opt-In</a>
     <a href="japan-memories.html">Japan Memories</a>
     <a href="shop.html">Shop</a>
     <a href="/privacy-policy">Privacy Policy</a>
@@ -36,7 +39,7 @@
     </p>
   </header>
 
-  <main>
+  <main id="main-content" tabindex="-1">
     <section class="panel" id="about">
       <h3>About Tristan</h3>
       <p>
@@ -92,16 +95,21 @@
     </section>
   </main>
 
-  <footer>
-    <a href="sms-opt-in.html">SMS Opt-In</a>
-    <span aria-hidden="true">|</span>
-    <a href="japan-memories.html">Japan Memories</a>
-    <a href="/shop.html">Shop</a>
-    <a href="/account.html">Account</a>
-    <span aria-hidden="true">|</span>
-    <a href="/privacy-policy">Privacy Policy</a>
-    <span aria-hidden="true">|</span>
-    <a href="/terms-and-conditions">Terms and Conditions</a>
-  </footer>
+
+
+
+
+
+
+
+<footer class="site-policy-footer">
+<p>Tristan Merson · Personal projects, games, and a catalog preview.</p>
+<nav aria-label="Site information">
+<a href="/">Home</a><a href="/contact/">Contact</a><a href="/privacy-policy/">Privacy</a><a href="/terms-and-conditions/">Terms</a><a href="/refund-policy/">Refunds &amp; purchases</a><a href="/cookie-policy/">Cookies &amp; storage settings</a><a href="/privacy-requests/">Request data deletion</a><a href="/communications/">Email preferences</a><a href="/accessibility/">Accessibility</a><a href="/credits/">Credits</a>
+</nav></footer>
+<section id="site-storage-notice" class="site-storage-notice" aria-label="Cookies and browser storage" hidden>
+<p><strong>Your browser data.</strong> This site uses storage for sign-in, cart selections, and game progress. It has no advertising or analytics trackers. There are no optional tracking cookies to accept.</p>
+<button id="storage-notice-dismiss" type="button">Dismiss notice</button><a href="/cookie-policy/">Storage details and controls</a>
+</section>
 </body>
 </html>

@@ -1,0 +1,41 @@
+/* Shared accessibility and policy controls. System fonts; no remote assets. */
+[hidden] { display: none !important; }
+html { scroll-padding-top: 1rem; }
+*:focus-visible { outline: 3px solid #1375d1; outline-offset: 4px; box-shadow: 0 0 0 6px #fff; }
+.site-skip-link { position: fixed; left: 1rem; top: -8rem; z-index: 10000; padding: .8rem 1rem; background: #fff; color: #142441; border: 2px solid #142441; }
+.site-skip-link:focus { top: 1rem; }
+.site-policy-footer { position: relative; z-index: 1; display: block; box-sizing: border-box; width: 100%; margin: 2rem 0 0; padding: 1.5rem max(1rem, calc((100vw - 1100px) / 2)); background: #101a2c; color: #e4ecfa; border-top: 1px solid #506487; font: 400 .95rem/1.6 system-ui, sans-serif; text-align: left; }
+.site-policy-footer p { margin: 0 0 .8rem; color: #e4ecfa; }
+.site-policy-footer nav { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; }
+.site-policy-footer a, .site-policy-footer a:visited { display: inline-block; padding: .2rem 0; color: #c4e1ff; text-decoration: underline; }
+.site-storage-notice { position: relative; z-index: 2; box-sizing: border-box; max-width: 1100px; margin: 1rem auto; padding: 1rem 1.25rem; background: #edf5ff; color: #142441; border: 1px solid #53749b; border-radius: 12px; font: 400 1rem/1.5 system-ui, sans-serif; }
+.site-storage-notice p { margin: 0 0 .8rem; color: #142441; }
+.site-storage-notice a, .site-storage-notice a:visited { color: #174f91; text-decoration: underline; }
+.site-storage-notice button, .policy-main button { appearance: none; display: inline-block; width: auto; min-height: 44px; margin: .4rem .6rem .4rem 0; padding: .6rem 1rem; border: 2px solid #315d8d; border-radius: 8px; background: #fff; color: #173d6a; font: 600 1rem/1.4 system-ui, sans-serif; cursor: pointer; }
+.site-storage-notice button:hover, .policy-main button:hover { background: #dcecff; }
+.policy-body { margin: 0; color: #e8efff; background: radial-gradient(ellipse at top right, #162b48, #0b1120 65%); font: 400 1rem/1.7 system-ui, sans-serif; }
+.policy-header, .policy-main { width: min(760px, calc(100% - 2.5rem)); margin: auto; }
+.policy-header { padding: 1.5rem 0; display: flex; flex-wrap: wrap; gap: 1rem; }
+.policy-header a, .policy-main a { color: #9cdaff; text-underline-offset: .2em; }
+.policy-main { padding: 1rem 0 3rem; overflow-wrap: anywhere; }
+.policy-main h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.2; }
+.policy-main h2 { margin-top: 2rem; line-height: 1.3; font-size: 1.35rem; }
+.policy-main .policy-date { color: #bac8e1; }
+.policy-main .policy-summary { padding: 1rem 1.2rem; background: #192a43; border-left: 3px solid #7cbfff; border-radius: 0 8px 8px 0; }
+.policy-main label { display: block; margin: .9rem 0; }
+.policy-main label:has(input[type=checkbox]) { display: flex; align-items: flex-start; gap: .7rem; }
+.policy-main input[type=checkbox] { flex: 0 0 auto; width: 1.3rem; height: 1.3rem; margin-top: .25rem; }
+.policy-main input:not([type=checkbox]), .policy-main select, .policy-main textarea { display: block; box-sizing: border-box; width: 100%; margin-top: .4rem; padding: .7rem; border: 1px solid #8da2c4; border-radius: 6px; color: #18253b; background: #fff; font: inherit; }
+.policy-main table { width: 100%; border-collapse: collapse; }
+.policy-main th, .policy-main td { padding: .7rem; text-align: left; vertical-align: top; border-bottom: 1px solid #526582; }
+.policy-main code { overflow-wrap: anywhere; }
+.legacy-tool { margin: 0; color: #edf2ff; background: radial-gradient(ellipse at top, #26385a, #101827); font: 400 1rem/1.6 system-ui, sans-serif; }
+.legacy-tool main { box-sizing: border-box; max-width: 900px; margin: auto; padding: 2rem 1.25rem; min-height: 60vh; }
+.legacy-tool button { font: inherit; padding: .6rem 1rem; margin: .3rem; border: 1px solid #98bbe7; border-radius: 7px; background: #e9f3ff; color: #172a47; cursor: pointer; }
+.legacy-tool main a { color: #b0dcff; }
+.legacy-tool #magic { animation: none; color: #edf2ff; }
+.legacy-tool #effect, .legacy-tool #result { min-height: 4rem; padding: 1rem; border: 1px solid #7b96c3; border-radius: 8px; background: #192941; }
+.legacy-tool iframe { max-width: 100%; border: 0; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

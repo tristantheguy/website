@@ -1,6 +1,6 @@
 /* Style the body element */
 body {
-  background-image: url('https://wallpaperaccess.com/full/3872532.jpg'); /* Set the background image of the body element */
+  background-image: linear-gradient(140deg, #14213d, #283c5b); /* Set the background image of the body element */
   background-size: cover; /* Make the background image cover the full area of the page */
 }
 
@@ -11,7 +11,7 @@ body {
   left: 0; /* Position the banner at the left of the page */
   right: 0; /* Make the banner extend to the right edge of the page */
   height: 200px; /* Set the height of the banner */
-  background-image: url('https://d1rw89lz12ur5s.cloudfront.net/photo/elsewherecomics/file/db611650df7911e8a5c1c16a4395f2d8/large/pathfinder%20banner.jpg'); /* Set the background image of the banner */
+  background-image: linear-gradient(140deg, #14213d, #283c5b); /* Set the background image of the banner */
   background-size: cover; /* Make the background image cover the full area of the banner */
 }
 
@@ -35,7 +35,7 @@ body {
   padding: 0px; /* Remove the padding from the list */
   text-align: center; /* Center the links within the panel */
   left: 100px; /* hopefully something*/
- 
+
 }
 
 /* Style the links in the panel */
@@ -48,7 +48,7 @@ body {
   background-color: white; /* Add a white background color to the links */
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Add a subtle shadow effect to the links */
   color: black; /* Set
-  
-  
-  
- 
+
+
+
+

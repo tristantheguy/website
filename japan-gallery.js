@@ -7,6 +7,8 @@ const state = {
   lightboxIndex: 0,
   visibleCount: 0,
   lightboxFallback: null,
+  lightboxTrigger: null,
+  previousOverflow: '',
 };
 
 const MOBILE_QUERY = '(max-width: 700px)';
@@ -18,6 +20,8 @@ const LOAD_MORE_STEP_MOBILE = 4;
 const featuredStripEl = document.getElementById('featured-strip');
 const tabsEl = document.getElementById('gallery-tabs');
 const gridEl = document.getElementById('gallery-grid');
+const panelEl = document.getElementById('gallery-panel');
+const statusEl = document.getElementById('gallery-status');
 const loadMoreBtnEl = document.getElementById('load-more-btn');
 const lightboxEl = document.getElementById('lightbox');
 const lightboxImageEl = document.getElementById('lightbox-image');
@@ -28,11 +32,12 @@ const lightboxCaptionEl = document.getElementById('lightbox-caption');
 // This script will automatically regenerate tabs and ordering based on those fields.
 init().catch((error) => {
   console.error('Unable to load gallery metadata:', error);
-  gridEl.innerHTML = '<p>Unable to load gallery metadata right now.</p>';
+  statusEl.textContent = 'The photos could not be loaded. Please try refreshing the page.';
 });
 
 async function init() {
   const response = await fetch(DATA_PATH);
+  if (!response.ok) throw new Error(`Gallery request failed: ${response.status}`);
   const metadata = await response.json();
 
   const ordered = [...metadata.items].sort(compareByTypeThenChronological);
@@ -115,15 +120,32 @@ function buildTabs(items) {
 
 function renderTabs(tabs) {
   tabsEl.innerHTML = '';
-  tabs.forEach((tabName) => {
+  tabs.forEach((tabName, index) => {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'tab-btn';
-    button.role = 'tab';
+    button.setAttribute('role', 'tab');
+    button.id = `gallery-tab-${index}`;
+    button.setAttribute('aria-controls', 'gallery-panel');
+    button.tabIndex = tabName === state.activeTab ? 0 : -1;
     button.textContent = tabName;
     button.setAttribute('aria-selected', tabName === state.activeTab ? 'true' : 'false');
     button.addEventListener('click', () => applyTab(tabName));
     tabsEl.appendChild(button);
+  });
+  tabsEl.addEventListener('keydown', (event) => {
+    const buttons = [...tabsEl.querySelectorAll('[role="tab"]')];
+    const current = buttons.indexOf(event.target);
+    if (current === -1) return;
+    let next;
+    if (event.key === 'ArrowRight') next = (current + 1) % buttons.length;
+    if (event.key === 'ArrowLeft') next = (current - 1 + buttons.length) % buttons.length;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = buttons.length - 1;
+    if (next === undefined) return;
+    event.preventDefault();
+    applyTab(buttons[next].textContent);
+    buttons[next].focus();
   });
 }
 
@@ -141,7 +163,10 @@ function applyTab(tabName) {
   state.filteredItems = state.allItems.filter(match);
   renderGrid();
   [...tabsEl.querySelectorAll('.tab-btn')].forEach((btn) => {
-    btn.setAttribute('aria-selected', btn.textContent === tabName ? 'true' : 'false');
+    const selected = btn.textContent === tabName;
+    btn.setAttribute('aria-selected', String(selected));
+    btn.tabIndex = selected ? 0 : -1;
+    if (selected) panelEl.setAttribute('aria-labelledby', btn.id);
   });
 }
 
@@ -155,12 +180,10 @@ function renderFeatured(featuredItems) {
   const track = document.createElement('div');
   track.className = 'featured-track';
 
-  // Duplicate the list to create a seamless, slow horizontal roll.
-  const doubled = [...source, ...source];
-  doubled.forEach((item) => {
+  source.forEach((item) => {
     const img = document.createElement('img');
     img.src = item.filePath;
-    img.alt = item.caption || item.place || item.dayLabel || 'Japan memory';
+    img.alt = photoDescription(item);
     img.className = 'featured-item';
     img.loading = 'lazy';
     track.appendChild(img);
@@ -188,6 +211,8 @@ function renderGrid() {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'photo-button';
+    button.setAttribute('aria-label', `Open photo: ${photoDescription(item)}`);
+    button.setAttribute('aria-haspopup', 'dialog');
     button.addEventListener('click', () => {
       const absoluteIndex = state.filteredItems.indexOf(item);
       openLightbox(absoluteIndex, image.currentSrc || image.src, image.alt);
@@ -195,14 +220,14 @@ function renderGrid() {
 
     const image = document.createElement('img');
     image.src = item.filePath;
-    image.alt = item.caption || item.place || item.dayLabel || 'Japan trip photo';
+    image.alt = photoDescription(item);
     image.loading = 'lazy';
 
     const meta = document.createElement('div');
     meta.className = 'photo-meta';
     meta.innerHTML = `
-      <strong>${escapeHtml(item.caption || item.place || item.dayLabel || 'Japan memory')}</strong>
-      <p>${escapeHtml(formatMeta(item))}</p>
+      <strong>${escapeHtml(item.caption || photoDescription(item))}</strong>
+      ${formatMeta(item) ? `<p>${escapeHtml(formatMeta(item))}</p>` : ''}
     `;
 
     button.appendChild(image);
@@ -213,18 +238,31 @@ function renderGrid() {
   updateLoadMoreButton();
 }
 
+function photoDescription(item) {
+  return item.alt || item.caption || 'Japan trip photo';
+}
+
 function formatMeta(item) {
   const parts = [];
   if (item.dayLabel) parts.push(item.dayLabel);
   if (item.date) parts.push(item.date);
   if (item.time) parts.push(item.time);
   if (item.place) parts.push(item.place);
-  if (!parts.length) parts.push('Details can be added in metadata JSON');
   return parts.join(' • ');
 }
 
 function wireLightboxEvents() {
   document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+  lightboxEl.addEventListener('cancel', (event) => {
+    event.preventDefault();
+    closeLightbox();
+  });
+  lightboxEl.addEventListener('close', () => {
+    document.body.style.overflow = state.previousOverflow;
+    state.lightboxFallback = null;
+    if (state.lightboxTrigger?.isConnected) state.lightboxTrigger.focus();
+    state.lightboxTrigger = null;
+  });
   lightboxImageEl.addEventListener('error', () => {
     if (state.lightboxFallback?.src && lightboxImageEl.src !== state.lightboxFallback.src) {
       lightboxImageEl.src = state.lightboxFallback.src;
@@ -243,29 +281,47 @@ function wireLightboxEvents() {
     }
   });
   window.addEventListener('keydown', (event) => {
-    if (lightboxEl.hasAttribute('hidden')) return;
-    if (event.key === 'Escape') closeLightbox();
-    if (event.key === 'ArrowRight') stepLightbox(1);
-    if (event.key === 'ArrowLeft') stepLightbox(-1);
+    if (!lightboxEl.open) return;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+      event.preventDefault();
+      stepLightbox(event.key === 'ArrowRight' ? 1 : -1);
+    }
+    if (event.key === 'Tab') {
+      const controls = [...lightboxEl.querySelectorAll('button:not([disabled])')];
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
   });
 }
 
 function openLightbox(index, fallbackSrc = '', fallbackAlt = 'Japan trip memory') {
+  state.lightboxTrigger = document.activeElement;
+  state.previousOverflow = document.body.style.overflow;
   state.lightboxIndex = Number.isInteger(index) && index >= 0 ? index : 0;
   state.lightboxFallback = { src: fallbackSrc, alt: fallbackAlt };
   renderLightbox();
-  lightboxEl.removeAttribute('hidden');
+  // A native modal dialog makes the rest of the document inert, including later-added UI.
+  lightboxEl.showModal();
+  document.body.style.overflow = 'hidden';
+  document.getElementById('lightbox-close').focus();
 }
 
 function closeLightbox() {
-  lightboxEl.setAttribute('hidden', '');
-  state.lightboxFallback = null;
+  lightboxEl.close();
 }
 
 function stepLightbox(direction) {
   const len = state.filteredItems.length;
   if (!len) return;
   state.lightboxIndex = (state.lightboxIndex + direction + len) % len;
+  state.lightboxFallback = null;
   renderLightbox();
 }
 
@@ -274,11 +330,13 @@ function renderLightbox() {
   const fallback = state.lightboxFallback || {};
 
   const source = item?.filePath || fallback.src || '';
-  const altText = item?.caption || item?.place || item?.dayLabel || fallback.alt || 'Japan trip memory';
+  const altText = item ? photoDescription(item) : fallback.alt || 'Japan trip photo';
 
   lightboxImageEl.src = source;
   lightboxImageEl.alt = altText;
-  lightboxCaptionEl.textContent = item ? formatMeta(item) : '';
+  lightboxCaptionEl.textContent = item
+    ? [`Photo ${state.lightboxIndex + 1} of ${state.filteredItems.length}`, item.caption || altText, formatMeta(item)].filter(Boolean).join(' • ')
+    : altText;
 }
 
 function escapeHtml(value) {
@@ -300,27 +358,15 @@ function getLoadMoreStep() {
 
 function wireLoadMoreEvents() {
   loadMoreBtnEl.addEventListener('click', () => {
+    const previousCount = Math.min(state.visibleCount, state.filteredItems.length);
     state.visibleCount = Math.min(state.visibleCount + getLoadMoreStep(), state.filteredItems.length);
     renderGrid();
+    gridEl.querySelectorAll('.photo-button')[previousCount]?.focus();
   });
-
-  const mediaQuery = window.matchMedia(MOBILE_QUERY);
-  const onViewportChange = () => {
-    state.visibleCount = Math.min(state.visibleCount, state.filteredItems.length);
-    if (!state.visibleCount) {
-      state.visibleCount = getInitialVisibleCount();
-    }
-    renderGrid();
-  };
-
-  if (typeof mediaQuery.addEventListener === 'function') {
-    mediaQuery.addEventListener('change', onViewportChange);
-  } else if (typeof mediaQuery.addListener === 'function') {
-    mediaQuery.addListener(onViewportChange);
-  }
 }
 
 function updateLoadMoreButton() {
+  statusEl.textContent = `${state.activeTab}: showing ${Math.min(state.visibleCount, state.filteredItems.length)} of ${state.filteredItems.length} photos.`;
   if (!state.filteredItems.length) {
     loadMoreBtnEl.hidden = true;
     return;

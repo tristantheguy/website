@@ -5,10 +5,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Account | Tristan Merson</title>
   <link rel="stylesheet" href="account.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/vendor/supabase-2.116.0.js"></script>
   <script src="account.js" defer></script>
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/site-ui.css">
+<script src="/site-ui.js" defer></script>
 </head>
 <body>
+<a class="site-skip-link" href="#main-content">Skip to main content</a>
   <header class="account-header">
     <a href="index.html">Tristan Merson</a>
     <nav aria-label="Account navigation">
@@ -17,16 +21,29 @@
     </nav>
   </header>
 
-  <main class="card">
+  <main class="card" id="main-content" tabindex="-1">
     <p class="eyebrow">Your account</p>
     <h1 id="title">Create an account</h1>
-    <p id="message">Create an account to keep your details ready for future orders and game scores.</p>
+    <p id="message">Create an account to save your game scores. Accounts are for people age 13 and older.</p>
 
     <form id="account-form">
-      <label id="name-field">Display name<input id="name" required maxlength="80" autocomplete="name"></label>
+      <label id="name-field">Nickname (optional)<input id="name" maxlength="80" autocomplete="nickname" aria-describedby="nickname-help"></label>
+      <p id="nickname-help" class="form-help">Use a nickname, not your full name or email address.</p>
       <label>Email<input id="email" type="email" required autocomplete="email"></label>
       <label>Password<input id="password" type="password" required minlength="8" autocomplete="new-password"></label>
+      <fieldset id="registration-consent" class="consent-fields">
+        <legend>Before you create an account</legend>
+        <label class="checkbox-label"><input id="age-confirmation" type="checkbox" required> <span>I am at least 13 years old.</span></label>
+        <label class="checkbox-label"><input id="terms-consent" type="checkbox" required> <span>I agree to the <a href="/terms-and-conditions/" target="_blank" rel="noopener">Terms of Use (opens in a new tab)</a> and have read the <a href="/privacy-policy/" target="_blank" rel="noopener">Privacy Policy (opens in a new tab)</a>.</span></label>
+        <p class="form-help">Your email is used for account access and service messages. Creating an account does not subscribe you to marketing.</p>
+      </fieldset>
       <button type="submit" id="submit-button">Create account</button>
+    </form>
+
+    <form id="password-reset-form" hidden>
+      <label>New password<input id="new-password" type="password" required minlength="8" autocomplete="new-password"></label>
+      <label>Confirm new password<input id="confirm-password" type="password" required minlength="8" autocomplete="new-password"></label>
+      <button type="submit" id="reset-password-button">Save new password</button>
     </form>
 
     <section id="profile-panel" hidden aria-labelledby="profile-title">
@@ -38,25 +55,45 @@
       </dl>
       <a id="admin-link" class="admin-link" href="admin/index.html" hidden>Open Admin</a>
       <form id="profile-form" class="profile-form">
-        <h2>Edit personal info</h2>
-        <label>Display name<input id="profile-display-name" maxlength="80" autocomplete="name"></label>
-        <label>About / bio<textarea id="profile-bio" maxlength="1000" rows="5" placeholder="Tell people a little about yourself."></textarea></label>
-        <label>Profile image URL<input id="profile-avatar-url" type="url" maxlength="1000" placeholder="https://example.com/avatar.jpg" autocomplete="url"></label>
+        <h2>Edit optional profile details</h2>
+        <p id="profile-help" class="form-help">These fields are optional. Avoid including sensitive information, your address, or contact details.</p>
+        <label>Nickname (optional)<input id="profile-display-name" maxlength="80" autocomplete="nickname" aria-describedby="profile-help"></label>
+        <label>About / bio (optional)<textarea id="profile-bio" maxlength="1000" rows="5" aria-describedby="profile-help"></textarea></label>
+        <label>Profile image URL (optional)<input id="profile-avatar-url" type="url" maxlength="1000" placeholder="https://example.com/avatar.jpg" autocomplete="url" aria-describedby="avatar-help"></label>
+        <p id="avatar-help" class="form-help">Use an HTTPS image you have permission to use. Previewing contacts the image host and shares your IP address with it. Images load only when you choose Preview image.</p>
+        <button id="preview-avatar-button" type="button">Preview image</button>
         <div class="avatar-preview-wrap">
           <span>Preview</span>
-          <img id="avatar-preview" alt="Profile image preview" hidden>
-          <span id="avatar-preview-empty">No image URL yet.</span>
+          <img id="avatar-preview" alt="Profile image preview" referrerpolicy="no-referrer" hidden>
+          <span id="avatar-preview-empty">No preview loaded.</span>
         </div>
         <button type="submit">Save profile</button>
       </form>
       <h2>My dice scores</h2>
       <p id="score-message">Loading your scores…</p>
       <ol id="personal-scores" class="personal-scores"></ol>
+      <h2>Your data</h2>
+      <p><a href="/privacy-requests/">Request account deletion or access to your data</a>. Requests are reviewed by the site owner; following this link does not delete your account.</p>
     </section>
 
     <p id="status" role="status"></p>
     <p class="account-links"><a href="#" id="switch">Already have an account? Sign in</a> · <a href="#" id="forgot">Forgot password?</a></p>
     <button id="logout" hidden>Log out</button>
   </main>
+
+
+
+
+
+
+<footer class="site-policy-footer">
+<p>Tristan Merson · Personal projects, games, and a catalog preview.</p>
+<nav aria-label="Site information">
+<a href="/">Home</a><a href="/contact/">Contact</a><a href="/privacy-policy/">Privacy</a><a href="/terms-and-conditions/">Terms</a><a href="/refund-policy/">Refunds &amp; purchases</a><a href="/cookie-policy/">Cookies &amp; storage settings</a><a href="/privacy-requests/">Request data deletion</a><a href="/communications/">Email preferences</a><a href="/accessibility/">Accessibility</a><a href="/credits/">Credits</a>
+</nav></footer>
+<section id="site-storage-notice" class="site-storage-notice" aria-label="Cookies and browser storage" hidden>
+<p><strong>Your browser data.</strong> This site uses storage for sign-in, cart selections, and game progress. It has no advertising or analytics trackers. There are no optional tracking cookies to accept.</p>
+<button id="storage-notice-dismiss" type="button">Dismiss notice</button><a href="/cookie-policy/">Storage details and controls</a>
+</section>
 </body>
 </html>
