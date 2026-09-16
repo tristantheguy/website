@@ -23,6 +23,7 @@ for file in ROOT.rglob("*.html"):
     if file.name == "README.html":
         continue
     text = re.sub(r'<a\b[^>]*href="(?:/)?sms-opt-in.html"[^>]*>.*?</a>\s*', '', text, flags=re.S)
+    text = text.replace('href="/privacy-policy"', 'href="/privacy-policy/"')
     text = text.replace('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2', '/assets/vendor/supabase-2.116.0.js')
     if '<meta charset=' not in text.lower():
         text = text.replace('<head>', '<head>\n<meta charset="UTF-8">', 1)
