@@ -1,6 +1,7 @@
 """Apply shared static navigation/accessibility; safe to rerun after policy generation."""
 from pathlib import Path
 import re
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 FOOTER = '''<footer class="site-policy-footer">
@@ -13,7 +14,10 @@ NOTICE = '''<section id="site-storage-notice" class="site-storage-notice" aria-l
 <button id="storage-notice-dismiss" type="button">Dismiss notice</button><a href="/cookie-policy/">Storage details and controls</a>
 </section>'''
 
-for file in ROOT.rglob("*.html"):
+files = [ROOT / name for name in sys.argv[1:]] if len(sys.argv) > 1 else ROOT.rglob("*.html")
+for file in files:
+    if ROOT not in file.resolve().parents or file.suffix != ".html" or not file.is_file():
+        raise SystemExit("Integration target must be an existing HTML file inside this site.")
     if ".git" in file.parts or "assets" in file.parts:
         continue
     text = file.read_text(encoding="utf-8")
