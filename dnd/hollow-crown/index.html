@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Hollow Crown — Vaultroot's Sap Puzzle</title>
+<meta name="description" content="Deep beneath the Hollow Crown, balance Vaultroot’s golden sap and awaken an ancient treasure. An interactive Pathfinder 1e puzzle.">
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/site-ui.css">
+<link rel="stylesheet" href="/dnd/hollow-crown/puzzle.css">
+<script type="module" src="/dnd/hollow-crown/game.mjs"></script>
+<meta name="referrer" content="no-referrer">
+<script src="/site-ui.js" defer></script>
+</head>
+<body>
+<a class="site-skip-link" href="#main-content">Skip to main content</a>
+<nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">← Tristan’s website</a><span>Pathfinder 1e · The Hollow Crown</span></nav>
+<main id="main-content" tabindex="-1">
+<header class="intro">
+<p class="eyebrow">An encounter beneath the earth</p>
+<div class="crown" aria-hidden="true">♛</div>
+<h1>The Hollow Crown</h1>
+<p class="subtitle">Vaultroot’s Sap Puzzle</p>
+<p class="lore">In the hush of the rootbound vault, golden sap stirs.<br class="desktop-break"> Balance its ancient vessels, and the forest will yield its treasure.</p>
+</header>
+<section class="puzzle" aria-labelledby="puzzle-heading">
+<div class="panel-heading"><h2 id="puzzle-heading">The rootbound vessels</h2><span class="move-counter"><span id="moves">0</span> transfers</span></div>
+<p class="instruction">Tap a vat, then tap another to pour. Sap flows until the source is empty or the destination is full.</p>
+<div class="objective"><span aria-hidden="true">◇</span> The offering: <strong>4 measures · 4 measures · empty</strong></div>
+<div class="vat-stage">
+<svg class="roots" viewBox="0 0 900 320" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke-linecap="round"><path d="M-30 300 Q120 220 160 290 T360 280 Q480 230 600 285 T940 270"/><path d="M40 320 Q170 275 190 170 M240 310 Q280 250 290 190 M390 320 Q440 290 440 165 M570 315 Q630 265 600 180 M780 320 Q750 260 750 170"/><path d="M150 287 Q120 250 95 260 M460 280 Q520 290 535 320 M760 280 Q830 210 900 220"/></g></svg>
+<div id="vats" class="vats"></div>
+</div>
+<p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Select a vat to begin.</p>
+<div class="controls"><button id="undo" type="button" disabled><span aria-hidden="true">↶</span> Undo</button><button id="reset" type="button"><span aria-hidden="true">↻</span> Reset puzzle</button></div>
+</section>
+<section id="treasure" class="treasure" aria-labelledby="treasure-heading">
+<div class="chest-scene" aria-hidden="true"><div class="treasure-rays"></div><div class="chest"><div class="chest-lid"></div><div class="chest-base"><span>◆</span></div></div><div class="sparkles"><i>✦</i><i>✧</i><i>✦</i><i>✧</i><i>✦</i></div></div>
+<div class="treasure-copy"><p class="eyebrow">The vault’s covenant</p><h2 id="treasure-heading">A treasure held by roots</h2><p id="treasure-message">The roots hold fast. Make the offering to awaken the lever.</p></div>
+<button id="lever" class="lever" type="button" disabled><span class="lever-icon" aria-hidden="true">╱</span><span id="lever-label">Release treasure</span><small id="lever-state">Locked</small></button>
+</section>
+<p class="session-note">A puzzle for your table. Progress lasts for this visit.</p>
+<noscript><p class="status">Enable JavaScript to play this puzzle.</p></noscript>
+</main>
+<footer class="site-policy-footer">
+<p>Tristan Merson · Personal projects, games, and a catalog preview.</p>
+<nav aria-label="Site information">
+<a href="/">Home</a><a href="/contact/">Contact</a><a href="/privacy-policy/">Privacy</a><a href="/terms-and-conditions/">Terms</a><a href="/refund-policy/">Refunds &amp; purchases</a><a href="/cookie-policy/">Cookies &amp; storage settings</a><a href="/privacy-requests/">Request data deletion</a><a href="/communications/">Email preferences</a><a href="/accessibility/">Accessibility</a><a href="/credits/">Credits</a>
+</nav></footer>
+<section id="site-storage-notice" class="site-storage-notice" aria-label="Cookies and browser storage" hidden>
+<p><strong>Your browser data.</strong> This site uses storage for sign-in, cart selections, and game progress. It has no advertising or analytics trackers. There are no optional tracking cookies to accept.</p>
+<button id="storage-notice-dismiss" type="button">Dismiss notice</button><a href="/cookie-policy/">Storage details and controls</a>
+</section>
+</body>
+</html>
