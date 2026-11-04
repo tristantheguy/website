@@ -8,6 +8,23 @@
   const client = window.supabase ? window.supabase.createClient(URL, KEY) : null;
   let products = [];
   let authorized = false;
+  let authRevision = 0;
+  let activeUserId = null;
+  function currentAdmin(revision) { return revision === authRevision && authorized && activeUserId !== null; }
+  function clearPrivateAdminUi() {
+    authorized = false;
+    products = [];
+    $("admin-app").hidden = true;
+    $("signed-in-as").textContent = "";
+    $("product-list").replaceChildren();
+    $("category-options")?.replaceChildren();
+    $("product-form").reset();
+    setBusy($("product-form"), false);
+    $("product-cost").value = "";
+    status("catalog-status");
+    status("form-status");
+    checkCategoryWarning();
+  }
   function status(id, text = "", state = "") { const el = $(id); el.textContent = text; state ? el.dataset.state = state : delete el.dataset.state; }
   const errorText = (error) => error?.message || "Something went wrong. Please try again.";
   const normalizedCategory = (value) => String(value || "").trim().replace(/\s+/g, " ").toLocaleLowerCase();
@@ -56,24 +73,45 @@
     return data === true;
   }
   async function requireAdmin() {
+    const revision = authRevision, userId = activeUserId;
     const { data, error } = await client.auth.getUser();
-    if (error || !await verify(data.user)) { authorized = false; throw new Error("Admin authorization expired. Sign in again."); }
+    const allowed = !error && data.user?.id === userId && await verify(data.user);
+    if (revision !== authRevision || activeUserId !== userId || !allowed) {
+      if (revision === authRevision) authorized = false;
+      throw new Error("Admin authorization expired. Sign in again.");
+    }
     authorized = true;
   }
-  async function showSession(session) {
-    authorized = false;
+  async function showSession(session, expectedRevision = null) {
+    if (expectedRevision !== null && expectedRevision !== authRevision) return;
+    const revision = expectedRevision === null ? ++authRevision : expectedRevision;
+    clearPrivateAdminUi();
+    activeUserId = session?.user?.id || null;
     $("auth-panel").hidden = Boolean(session);
     $("admin-app").hidden = true;
     if (!session) return;
     status("auth-status", "Verifying admin access…");
     try {
-      authorized = await verify(session.user);
-      if (!authorized) { await client.auth.signOut(); $("auth-panel").hidden = false; status("auth-status", "This account is not on the shop admin allowlist.", "error"); return; }
+      const allowed = await verify(session.user);
+      if (revision !== authRevision || activeUserId !== session.user.id) return;
+      authorized = allowed;
+      if (!authorized) {
+        await client.auth.signOut();
+        if (revision !== authRevision) return;
+        $("auth-panel").hidden = false;
+        status("auth-status", "This account is not on the shop admin allowlist.", "error");
+        return;
+      }
       $("admin-app").hidden = false;
       $("signed-in-as").textContent = `Signed in as ${session.user.email}`;
       status("auth-status");
-      await load();
-    } catch (error) { $("auth-panel").hidden = false; status("auth-status", `Could not verify admin access: ${errorText(error)}`, "error"); }
+      await load(revision);
+    } catch (error) {
+      if (revision !== authRevision) return;
+      clearPrivateAdminUi();
+      $("auth-panel").hidden = false;
+      status("auth-status", `Could not verify admin access: ${errorText(error)}`, "error");
+    }
   }
   const priceText = (p) => p.price_label || new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format((p.price_cents || 0) / 100);
   function render() {
@@ -91,14 +129,15 @@
       actions.append(editButton, deleteButton); row.append(details, actions); list.append(row);
     });
   }
-  async function load() {
-    if (!authorized) return;
+  async function load(revision = authRevision) {
+    if (!currentAdmin(revision)) return;
     status("catalog-status", "Loading products…"); $("refresh-button").disabled = true;
     try {
       const { data, error } = await client.rpc("admin_list_products");
+      if (!currentAdmin(revision)) return;
       if (error) throw error; products = data || []; updateCategoryOptions(); checkCategoryWarning(); render(); status("catalog-status", `${products.length} product${products.length === 1 ? "" : "s"} loaded.`, "success");
-    } catch (error) { status("catalog-status", `Could not load products: ${errorText(error)}`, "error"); }
-    finally { $("refresh-button").disabled = false; }
+    } catch (error) { if (currentAdmin(revision)) status("catalog-status", `Could not load products: ${errorText(error)}`, "error"); }
+    finally { if (currentAdmin(revision)) $("refresh-button").disabled = false; }
   }
   function reset() { $("product-form").reset(); $("product-id").value = ""; $("product-sort-order").value = "0"; $("editor-title").textContent = "Add a product"; $("save-product-button").textContent = "Add product"; $("cancel-edit-button").hidden = true; checkCategoryWarning(); }
   function edit(p) {
@@ -116,24 +155,75 @@
   async function remove(product) {
     if (!window.confirm(`Delete “${product.name}”? This cannot be undone.`)) return;
     status("catalog-status", `Deleting ${product.name}…`);
-    try { await requireAdmin(); const { error } = await client.from("products").delete().eq("id", product.id); if (error) throw error; if ($("product-id").value === product.id) reset(); await load(); }
-    catch (error) { status("catalog-status", `Could not delete product: ${errorText(error)}`, "error"); }
+    const revision = authRevision;
+    try {
+      await requireAdmin();
+      if (!currentAdmin(revision)) return;
+      const { error } = await client.from("products").delete().eq("id", product.id);
+      if (!currentAdmin(revision)) return;
+      if (error) throw error;
+      if ($("product-id").value === product.id) reset();
+      await load(revision);
+    } catch (error) { if (revision === authRevision) status("catalog-status", `Could not delete product: ${errorText(error)}`, "error"); }
   }
   $("login-form").onsubmit = async (event) => {
     event.preventDefault(); setBusy(event.currentTarget, true); status("auth-status", "Signing in…");
-    try { const { data, error } = await client.auth.signInWithPassword({ email: $("login-email").value.trim(), password: $("login-password").value }); if (error) throw error; await showSession(data.session); }
-    catch (error) { status("auth-status", `Sign in failed: ${errorText(error)}`, "error"); }
+    const revision = authRevision;
+    try {
+      const { data, error } = await client.auth.signInWithPassword({ email: $("login-email").value.trim(), password: $("login-password").value });
+      if (revision !== authRevision) return;
+      if (error) throw error;
+      await showSession(data.session);
+    } catch (error) { if (revision === authRevision) status("auth-status", `Sign in failed: ${errorText(error)}`, "error"); }
     finally { setBusy(event.currentTarget, false); }
   };
   $("product-form").onsubmit = async (event) => {
     event.preventDefault(); if (!event.currentTarget.reportValidity()) return; const id = $("product-id").value; setBusy(event.currentTarget, true); status("form-status", id ? "Saving changes…" : "Adding product…");
-    try { await requireAdmin(); const query = id ? client.from("products").update(payload()).eq("id", id) : client.from("products").insert(payload()); const { error } = await query; if (error) throw error; reset(); status("form-status", id ? "Product updated." : "Product added.", "success"); await load(); }
-    catch (error) { status("form-status", `Could not save product: ${errorText(error)}`, "error"); }
-    finally { setBusy(event.currentTarget, false); }
+    const revision = authRevision;
+    try {
+      await requireAdmin();
+      if (!currentAdmin(revision)) return;
+      const query = id ? client.from("products").update(payload()).eq("id", id) : client.from("products").insert(payload());
+      const { error } = await query;
+      if (!currentAdmin(revision)) return;
+      if (error) throw error;
+      reset();
+      status("form-status", id ? "Product updated." : "Product added.", "success");
+      await load(revision);
+    } catch (error) { if (revision === authRevision) status("form-status", `Could not save product: ${errorText(error)}`, "error"); }
+    finally { if (revision === authRevision) setBusy(event.currentTarget, false); }
   };
-  $("cancel-edit-button").onclick = reset; $("refresh-button").onclick = load;
+  $("cancel-edit-button").onclick = reset; $("refresh-button").onclick = () => load();
   $("product-category").addEventListener("input", checkCategoryWarning);
-  $("logout-button").onclick = async () => { await client.auth.signOut(); reset(); await showSession(null); };
+  $("logout-button").onclick = async () => {
+    const revision = ++authRevision;
+    activeUserId = null;
+    clearPrivateAdminUi();
+    $("auth-panel").hidden = false;
+    const { error } = await client.auth.signOut();
+    if (revision !== authRevision) return;
+    if (error) return status("auth-status", "Could not sign out. Refresh and try again.", "error");
+    await showSession(null);
+  };
   if (!client) { status("auth-status", "Supabase could not load. Check your connection and refresh.", "error"); setBusy($("login-form"), true); }
-  else client.auth.getSession().then(({ data, error }) => error ? status("auth-status", errorText(error), "error") : showSession(data.session));
+  else {
+    client.auth.onAuthStateChange((event, session) => {
+      if (!["SIGNED_IN", "SIGNED_OUT", "USER_UPDATED"].includes(event)) return;
+      const revision = ++authRevision;
+      clearPrivateAdminUi();
+      activeUserId = session?.user?.id || null;
+      $("auth-panel").hidden = Boolean(session);
+      setTimeout(() => {
+        if (revision === authRevision) showSession(session, revision);
+      }, 0);
+    });
+    const initialRevision = authRevision;
+    client.auth.getSession().then(({ data, error }) => {
+      if (initialRevision !== authRevision) return;
+      if (error) status("auth-status", errorText(error), "error");
+      else return showSession(data.session);
+    }).catch(() => {
+      if (initialRevision === authRevision) status("auth-status", "Could not load your session. Refresh and try again.", "error");
+    });
+  }
 })();
