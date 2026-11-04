@@ -11,10 +11,7 @@ async function loadLeaderboard() {
     const leaderboard = document.getElementById("leaderboard");
 
     if (typeof supabaseClient === "undefined" || !supabaseClient) {
-        console.error("Supabase client is not initialized before leaderboard fetch.", {
-            supabaseClient,
-            windowSupabase: window.supabase,
-        });
+        console.error("Supabase client is not initialized before leaderboard fetch.");
         leaderboard.textContent = "Unable to load leaderboard right now.";
         return;
     }

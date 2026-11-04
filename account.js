@@ -5,6 +5,8 @@
   const KEY = "sb_publishable_NFwK2IEoUH5MrSRG5GmnRQ_dkC7w5ML";
   const $ = (id) => document.getElementById(id);
   let signIn = false;
+  let authRevision = 0;
+  let activeUserId = null;
   let recovery = new URLSearchParams(location.search).get("flow") === "recovery"
     || new URLSearchParams(location.hash.slice(1)).get("type") === "recovery";
 
@@ -57,10 +59,39 @@
     $("avatar-preview").src = url;
   }
 
-  async function loadScores(user) {
+  function clearPrivateProfile() {
+    $("profile-panel").hidden = true;
+    $("admin-link").hidden = true;
+    for (const id of ["profile-name", "profile-email", "profile-created", "score-message"]) $(id).textContent = "";
+    for (const id of ["profile-display-name", "profile-bio", "profile-avatar-url"]) $(id).value = "";
+    $("personal-scores").replaceChildren();
+    clearAvatarPreview();
+  }
+
+  function currentProfile(user, revision) {
+    return !recovery && revision === authRevision && activeUserId === user.id;
+  }
+
+  function renderSignedOut() {
+    authRevision += 1;
+    activeUserId = null;
+    recovery = false;
+    clearPrivateProfile();
+    $("account-form").hidden = false;
+    $("password-reset-form").hidden = true;
+    $("switch").hidden = false;
+    $("forgot").hidden = false;
+    $("logout").hidden = true;
+    $("title").textContent = signIn ? "Sign in" : "Create an account";
+    $("message").textContent = "Sign in to see your profile and scores.";
+    msg("");
+  }
+
+  async function loadScores(user, revision) {
     const { data, error } = await db.from("player_dice_scores")
       .select("score,mode,created_at").eq("user_id", user.id)
       .order("score", { ascending: false }).limit(25);
+    if (!currentProfile(user, revision)) return;
     if (error) {
       $("score-message").textContent = "Your scores could not be loaded. Please try again later.";
       return;
@@ -75,6 +106,9 @@
   }
 
   function renderRecovery() {
+    authRevision += 1;
+    activeUserId = null;
+    clearPrivateProfile();
     recovery = true;
     $("title").textContent = "Choose a new password";
     $("message").textContent = "Enter and confirm a new password with at least 8 characters.";
@@ -88,10 +122,13 @@
 
   async function render(user) {
     if (!user || recovery) return;
+    const revision = ++authRevision;
+    activeUserId = user.id;
+    clearPrivateProfile();
     const { data: profileData, error } = await db.from("profiles")
       .select("display_name,bio,avatar_url,is_admin,created_at")
       .eq("id", user.id).maybeSingle();
-    if (recovery) return;
+    if (!currentProfile(user, revision)) return;
     const profile = profileData || {};
     $("title").textContent = "Your profile";
     $("message").textContent = "Manage your account and saved dice-game scores here.";
@@ -111,7 +148,7 @@
     $("profile-avatar-url").value = profile.avatar_url || "";
     clearAvatarPreview();
     if (error) msg("Some profile details could not be loaded. Please try again later.", true);
-    await loadScores(user);
+    await loadScores(user, revision);
   }
 
   $("preview-avatar-button").onclick = updateAvatarPreview;
@@ -126,6 +163,8 @@
 
   $("profile-form").onsubmit = async (event) => {
     event.preventDefault();
+    const revision = authRevision;
+    const userId = activeUserId;
     const avatarUrl = safeAvatarUrl($("profile-avatar-url").value.trim());
     if (avatarUrl === null) {
       $("profile-avatar-url").setCustomValidity("Use an HTTPS image URL without a username or password, or leave this field empty.");
@@ -135,18 +174,22 @@
     try {
       const { data: sessionData } = await db.auth.getSession();
       const user = sessionData.session && sessionData.session.user;
-      if (!user) return msg("Your session expired. Please sign in again.", true);
+      if (!user || user.id !== userId || !currentProfile(user, revision)) {
+        if (revision === authRevision) msg("Your session expired. Please sign in again.", true);
+        return;
+      }
       const updates = {
         display_name: $("profile-display-name").value.trim(),
         bio: $("profile-bio").value.trim(),
         avatar_url: avatarUrl
       };
       const { error } = await db.from("profiles").update(updates).eq("id", user.id);
+      if (!currentProfile(user, revision)) return;
       if (error) return msg(`Could not save profile: ${error.message}`, true);
       $("profile-name").textContent = updates.display_name || "Player";
       msg("Profile saved.");
     } catch (_error) {
-      msg("Could not save your profile. Check your connection and try again.", true);
+      if (revision === authRevision) msg("Could not save your profile. Check your connection and try again.", true);
     }
   };
 
@@ -246,11 +289,22 @@
   // Keep Supabase calls outside the auth callback to avoid locking its session handler.
   db.auth.onAuthStateChange((event, session) => {
     if (event === "PASSWORD_RECOVERY") renderRecovery();
+    else if (event === "SIGNED_OUT") renderSignedOut();
     else if (event === "SIGNED_IN" && session && !recovery) {
-      setTimeout(() => render(session.user).catch(() => msg("Could not load your profile. Please reload to try again.", true)), 0);
+      const revision = ++authRevision;
+      activeUserId = session.user.id;
+      clearPrivateProfile();
+      setTimeout(() => {
+        if (revision !== authRevision || activeUserId !== session.user.id) return;
+        render(session.user).catch(() => {
+          if (activeUserId === session.user.id && !recovery) msg("Could not load your profile. Please reload to try again.", true);
+        });
+      }, 0);
     }
   });
+  const initialRevision = authRevision;
   db.auth.getSession().then(({ data, error }) => {
+    if (initialRevision !== authRevision) return;
     if (error) return msg("Your session could not be loaded. Please try signing in again.", true);
     const user = data.session && data.session.user;
     if (recovery && user) renderRecovery();
