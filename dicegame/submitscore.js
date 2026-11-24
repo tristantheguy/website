@@ -10,12 +10,13 @@ function renderScorePrivacy(user) {
     const consent = document.getElementById("public-score-consent");
     const button = document.getElementById("save-score-button");
     if (!consent || !button) return;
-    consent.hidden = Boolean(user);
-    consent.disabled = Boolean(user);
-    button.textContent = user ? "Save score to my account" : "Publish score";
+    consent.hidden = true;
+    consent.disabled = true;
+    button.disabled = !user;
+    button.textContent = user ? "Save score to my account" : "Sign in to save privately";
     document.getElementById("score-privacy-help").textContent = user
         ? "Completed runs save to your account automatically. Account scores are not sent to the public leaderboard. You can also save your current score here."
-        : "You can play without sharing data. To publish a score, choose a nickname and confirm the choices below. Completed guest runs are never published automatically.";
+        : "Play freely. Public score publishing is paused while score verification is added. Sign in to save scores privately.";
 }
 
 async function submitScore(score, options = {}) {
@@ -35,6 +36,7 @@ async function submitScore(score, options = {}) {
     scoreSaveInProgress = true;
     const button = document.getElementById("save-score-button");
     button.disabled = true;
+    let canSavePrivately = false;
     try {
         const accountClient = window.siteSupabaseClient;
         if (!accountClient) throw new Error("Account services could not load. Reload the page to try again.");
@@ -47,9 +49,12 @@ async function submitScore(score, options = {}) {
             user = authData.user;
         }
         renderScorePrivacy(user);
+        canSavePrivately = Boolean(user);
 
-        if (!user && options.automatic) {
-            scoreSaveMessage(`Run complete: ${score} points. Choose the sharing options and Publish score to share this result, or keep playing without publishing.`);
+        if (!user) {
+            scoreSaveMessage(options.automatic
+                ? `Run complete: ${score} points. Sign in to save scores privately. Public publishing is paused.`
+                : "Sign in to save your score privately. Public score publishing is paused.");
             return;
         }
 
@@ -74,33 +79,12 @@ async function submitScore(score, options = {}) {
             return;
         }
 
-        if (!enteredName || enteredName.length > 80) {
-            nameInput.focus();
-            throw new Error("Choose a nickname of 1 to 80 characters before publishing.");
-        }
-        if (!document.getElementById("score-age-confirmation").checked) {
-            document.getElementById("score-age-confirmation").focus();
-            throw new Error("Guest score publishing is for people age 13 or older. Confirm your age to continue.");
-        }
-        if (!document.getElementById("score-terms-consent").checked) {
-            document.getElementById("score-terms-consent").focus();
-            throw new Error("Read and accept the terms before publishing a guest score.");
-        }
-        if (!document.getElementById("public-score-sharing").checked) {
-            document.getElementById("public-score-sharing").focus();
-            throw new Error("Choose the public sharing option to publish this score. You can keep playing without sharing.");
-        }
-        const { error } = await supabaseClient.from("leaderboard").insert([{ name: enteredName, score: value }]);
-        if (error) throw new Error("Your score could not be published. Please try again later.");
-        completedScoreToSave = null;
-        document.getElementById("public-score-sharing").checked = false;
-        scoreSaveMessage(`${value} points published under ${enteredName}.`);
-        loadLeaderboard();
+
     } catch (error) {
         scoreSaveMessage(error.message || "Your score could not be saved. Check your connection and try again.");
     } finally {
         scoreSaveInProgress = false;
-        button.disabled = false;
+        button.disabled = !canSavePrivately;
     }
 }
 
