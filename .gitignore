@@ -20,3 +20,11 @@ Gemfile.lock
 # Local Python build/verification cache
 __pycache__/
 *.pyc
+
+# Private local credentials must stay outside the published repository.
+.env
+.env.*
+!.env.example
+**/client_secret_*.apps.googleusercontent.com.json
+**/google api key.txt
+**/credentials.private.*
