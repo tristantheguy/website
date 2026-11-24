@@ -55,13 +55,12 @@ create table if not exists public.leaderboard (
   created_at timestamptz not null default now()
 );
 alter table public.leaderboard enable row level security;
-grant select, insert on table public.leaderboard to anon, authenticated;
+grant select on table public.leaderboard to anon, authenticated;
 drop policy if exists "Public can read leaderboard" on public.leaderboard;
 create policy "Public can read leaderboard" on public.leaderboard
   for select to anon, authenticated using (true);
 drop policy if exists "Public can insert leaderboard scores" on public.leaderboard;
-create policy "Public can insert leaderboard scores" on public.leaderboard
-  for insert to anon, authenticated with check (score >= 0 and length(trim(name)) > 0);
+-- Browser writes remain disabled until an authoritative submission service exists.
 
 -- Backfill profiles created before this migration, if their Auth user still exists.
 update public.profiles as profile
@@ -193,3 +192,24 @@ for each row execute function public.set_products_updated_at();
 -- insert into public.profiles (id, email, is_admin)
 -- values ('AUTH_USER_UUID', 'mersontristan@gmail.com', true)
 -- on conflict (id) do update set email = excluded.email, is_admin = true;
+
+-- Security hardening, November 24 2026. This keeps existing public scores readable
+-- and account scores private; browser clients cannot publish unverified scores.
+revoke insert, update, delete, truncate, references, trigger on table public.leaderboard from public, anon, authenticated;
+revoke truncate, references, trigger on all tables in schema public from public, anon, authenticated;
+revoke execute on function public.is_admin(), public.admin_list_products() from public, anon;
+revoke create on schema public from public, anon, authenticated;
+
+do $security$
+begin
+  if not exists (select 1 from pg_constraint where conrelid = 'public.profiles'::regclass and conname = 'profiles_display_name_length_security') then
+    alter table public.profiles add constraint profiles_display_name_length_security check (char_length(display_name) <= 80);
+  end if;
+  if not exists (select 1 from pg_constraint where conrelid = 'public.player_dice_scores'::regclass and conname = 'player_dice_scores_display_name_length_security') then
+    alter table public.player_dice_scores add constraint player_dice_scores_display_name_length_security check (char_length(display_name) <= 80);
+  end if;
+  if not exists (select 1 from pg_constraint where conrelid = 'public.leaderboard'::regclass and conname = 'leaderboard_name_length_security') then
+    alter table public.leaderboard add constraint leaderboard_name_length_security check (char_length(name) <= 80);
+  end if;
+end
+$security$;
